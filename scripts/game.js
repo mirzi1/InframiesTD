@@ -2,10 +2,11 @@ var config = {
     type: Phaser.AUTO,
     width: 1280,
     height: 720,
+    parent: 'main-game',
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 0 }
+            gravity: { y: 500 }
         }
     },
     scene: {
@@ -26,7 +27,7 @@ function preload ()
 function create ()
 {
     this.add.image(640, 360, 'bg');
-    /*
+    
     var particles = this.add.particles('particle');
 
     var emitter = particles.createEmitter({
@@ -42,5 +43,5 @@ function create ()
     logo.setCollideWorldBounds(true);
 
     emitter.startFollow(logo);
-    */
+    
 }
