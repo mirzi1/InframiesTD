@@ -22,6 +22,7 @@ var versionText;
 var background;
 var path;
 
+var LIVES = 100;
 var ENEMY_SPEED = 1/10000;
 
 function preload(){
@@ -38,25 +39,50 @@ var Enemy = new Phaser.Class({
         Phaser.GameObjects.Image.call(this,scene,0,0,'particle');
         this.follower = {t: 0, vec: new Phaser.Math.Vector2()};
         this.hp = 0;
+        this.prevx = 0;
+        this.prevy = 0;
     },
-    update: function(time, delta){
+    update:
+    function(time, delta){
+
         // move the t point along the path, 0 is the start and 0 is the end
         this.follower.t += ENEMY_SPEED * delta;
-            
         // get the new x and y coordinates in vec
         path.getPoint(this.follower.t, this.follower.vec);
-        
         // update enemy x and y to the newly obtained x and y
         this.setPosition(this.follower.vec.x, this.follower.vec.y);
 
-        // if we have reached the end of the path, remove the enemy
+
+
+        //prevratenie podla smeru
+        if(this.x < this.prevx){
+            this.setFlip(true);
+        }else{
+            this.setFlip(false);
+        }
+
+        if(this.y < this.prevy){
+            this.setTexture('logo');
+        }else{
+            this.setTexture('particle');
+        }
+
+        this.prevx = this.x;
+        this.prevy = this.y;
+
+
+
+
+        // akcie po dokonceni cesty
         if (this.follower.t >= 1)
         {
-            this.setActive(false);
-            this.setVisible(false);
+            this.destroy();
+            LIVES--;
+            versionText.setText('inframiesTD ' + LIVES);
         }
     },
-    startOnPath: function (){
+    startOnPath:
+    function(){
         this.follower.t = 0;
         path.getPoint(this.follower.t, this.follower.vec);
         this.setPosition(this.follower.vec.x, this.follower.vec.y);
@@ -65,7 +91,7 @@ var Enemy = new Phaser.Class({
 
 function create(){
     background = this.add.image(640, 360, 'bg');        //background bude vzdy naspodku
-    versionText = this.add.text(0, 0, 'inframiesTD', {fontSize:'16px', fill:'#FFF'}); 
+    versionText = this.add.text(0, 0, 'inframiesTD ' + LIVES, {fontSize:'16px', fill:'#FFF'}); 
     graphics = this.add.graphics();                     //cesty
 
     //path 1
@@ -116,12 +142,4 @@ function update(time, delta){
         }       
     }
 }
-
-function generateLevel(level){
-    switch(level){
-        case 1: //path = this.add.path(96,-32);
-        //path.lineTo(480,164);
-        versionText.setText('cc');break;
-    }
     
-}
