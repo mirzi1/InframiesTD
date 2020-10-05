@@ -22,21 +22,28 @@ var versionText;
 var background;
 var path;
 
+var animFrame = 0;
+
+
 var LIVES = 100;
 var ENEMY_SPEED = 1/10000;
 
 function preload(){
-    //nacitanie contentu, lepsi bude spritesheet + json
     this.load.image('bg', 'assets/graphics/menubg.png');
     this.load.image('logo', 'assets/graphics/logo.png');
     this.load.image('particle', 'assets/graphics/particle.png');
+    this.load.spritesheet('a2', 'assets/graphics/attackers/a2.png' ,{frameHeight: 100, frameWidth: 100});
+
+
+
+
 }
 
 var Enemy = new Phaser.Class({
     Extends: Phaser.GameObjects.Image,
     initialize:
-    function Enemy(scene){
-        Phaser.GameObjects.Image.call(this,scene,0,0,'particle');
+    function Enemy(game){
+        Phaser.GameObjects.Image.call(this,game,0,0,'a2');
         this.follower = {t: 0, vec: new Phaser.Math.Vector2()};
         this.hp = 0;
         this.prevx = 0;
@@ -52,26 +59,17 @@ var Enemy = new Phaser.Class({
         // update enemy x and y to the newly obtained x and y
         this.setPosition(this.follower.vec.x, this.follower.vec.y);
 
-
-
         //prevratenie podla smeru
         if(this.x < this.prevx){
-            this.setFlip(true);
-        }else{
             this.setFlip(false);
-        }
-
-        if(this.y < this.prevy){
-            this.setTexture('logo');
         }else{
-            this.setTexture('particle');
+            this.setFlip(true);
         }
 
         this.prevx = this.x;
         this.prevy = this.y;
 
-
-
+        this.setFrame(animFrame);
 
         // akcie po dokonceni cesty
         if (this.follower.t >= 1)
@@ -127,8 +125,7 @@ function create(){
 
 function update(time, delta){
     // if its time for the next enemy
-    if (time > this.nextEnemy)
-    {        
+    if (time > this.nextEnemy){        
         var enemy = enemies.get();
         if (enemy)
         {
@@ -139,7 +136,12 @@ function update(time, delta){
             enemy.startOnPath();
             
             this.nextEnemy = time + 2000;
-        }       
+        }   
+    }
+    //oppa yandev style
+    if(time%5==0){
+    animFrame++;
+    if(animFrame>=10)animFrame=0;  
     }
 }
     
