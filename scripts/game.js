@@ -44,10 +44,11 @@ function preload(){
 }
 
 var Enemy = new Phaser.Class({
-    Extends: Phaser.GameObjects.Image,
+    Extends: Phaser.GameObjects.Sprite,
     initialize:
     function Enemy(game){
-        Phaser.GameObjects.Image.call(this,game,0,0,'a2');
+        Phaser.GameObjects.Sprite.call(this,game,0,0,'a2');
+        this.play('a2_normal');
         this.follower = {t: 0, vec: new Phaser.Math.Vector2()};
         this.hp = 0;
         this.prevx = 0;
@@ -98,6 +99,14 @@ function create(){
     versionText = this.add.text(0, 0, 'inframiesTD ' + VERSION, {fontSize:'16px', fill:'#FFF'});
     infoText = this.add.text(20, 20, 'HP: ' + LIVES + '\nCASH: ' + MONEY, {fontSize:'30px', fill:'#0FF'});
     graphics = this.add.graphics();                     //cesty
+
+    //generovanie animacii (dlhy chunk kodu)
+    this.anims.create({
+        key: "a2_normal",
+        frameRate: 7,
+        frames: this.anims.generateFrameNumbers("a2",{start:0, end:9}),
+        repeat: -1
+    });
 
     //path 1
     path = this.add.path(320, 110);
