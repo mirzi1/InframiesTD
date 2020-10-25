@@ -19,17 +19,21 @@ var config = {
 var game = new Phaser.Game(config);
 var graphics;
 var versionText;
+var infoText;
+var background_main;
 var background;
 var path;
 
-var animFrame = 0;
+//var animFrame = 0;
 
-
+var VERSION = "v0.1"
 var LIVES = 100;
+var MONEY = 100;
 var ENEMY_SPEED = 1/10000;
 
 function preload(){
-    this.load.image('bg', 'assets/graphics/menubg.png');
+    this.load.image('bg', 'assets/graphics/bg.png');
+    this.load.image('bg1', 'assets/graphics/bg1.png');
     this.load.image('logo', 'assets/graphics/logo.png');
     this.load.image('particle', 'assets/graphics/particle.png');
     this.load.spritesheet('a2', 'assets/graphics/attackers/a2.png' ,{frameHeight: 100, frameWidth: 100});
@@ -69,14 +73,15 @@ var Enemy = new Phaser.Class({
         this.prevx = this.x;
         this.prevy = this.y;
 
-        this.setFrame(animFrame);
+        //trash
+        //this.setFrame(animFrame);
 
         // akcie po dokonceni cesty
         if (this.follower.t >= 1)
         {
             this.destroy();
             LIVES--;
-            versionText.setText('inframiesTD ' + LIVES);
+            infoText.setText('HP: ' + LIVES + '\nCASH: ' + MONEY);
         }
     },
     startOnPath:
@@ -88,16 +93,20 @@ var Enemy = new Phaser.Class({
 });
 
 function create(){
-    background = this.add.image(640, 360, 'bg');        //background bude vzdy naspodku
-    versionText = this.add.text(0, 0, 'inframiesTD ' + LIVES, {fontSize:'16px', fill:'#FFF'}); 
+    background_main = this.add.image(640, 360, 'bg');        //background bude vzdy naspodku
+    background = this.add.image(715, 415, 'bg1');        //background bude vzdy naspodku
+    versionText = this.add.text(0, 0, 'inframiesTD ' + VERSION, {fontSize:'16px', fill:'#FFF'});
+    infoText = this.add.text(20, 20, 'HP: ' + LIVES + '\nCASH: ' + MONEY, {fontSize:'30px', fill:'#0FF'});
     graphics = this.add.graphics();                     //cesty
 
     //path 1
-    path = this.add.path(0, 500);
-    path.lineTo(500, 500);
-    path.lineTo(300, 300);
-    path.lineTo(500, 100);
-    path.lineTo(1280, 100);
+    path = this.add.path(320, 110);
+    path.lineTo(320, 200);
+    path.lineTo(520, 200);
+    path.lineTo(520, 300);
+    path.lineTo(330, 500);
+    path.lineTo(1000, 500);
+    path.lineTo(1000, 110);
 
     graphics.lineStyle(3, 0xaaaaaa);
     path.draw(graphics);
@@ -138,10 +147,13 @@ function update(time, delta){
             this.nextEnemy = time + 2000;
         }   
     }
+    /*
     //oppa yandev style
     if(time%5==0){
     animFrame++;
     if(animFrame>=10)animFrame=0;  
     }
+    */
+
 }
     
