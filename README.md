@@ -4,4 +4,6 @@ It uses Phaser HTML5 framework as the base. The project should be finished by 16
 
 ![Screenshot](https://i.imgur.com/vraBUWv.gif)
 
+![Screenshot2](https://i.imgur.com/cZ7GUAE.png)
+
 This repo acts as a simple way to collaborate between members in my team.
