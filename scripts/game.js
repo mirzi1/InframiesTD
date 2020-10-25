@@ -32,14 +32,20 @@ var MONEY = 100;
 var ENEMY_SPEED = 1/10000;
 
 function preload(){
+    //nacitanie spritov
+    //misc
     this.load.image('bg', 'assets/graphics/bg.png');
     this.load.image('bg1', 'assets/graphics/bg1.png');
     this.load.image('logo', 'assets/graphics/logo.png');
     this.load.image('particle', 'assets/graphics/particle.png');
+
+    //attackers
     this.load.spritesheet('a2', 'assets/graphics/attackers/a2.png' ,{frameHeight: 100, frameWidth: 100});
 
-
-
+    //towers
+    this.load.spritesheet('t1', 'assets/graphics/towers/t1.png' ,{frameHeight: 100, frameWidth: 100});
+    this.load.spritesheet('t2', 'assets/graphics/towers/t2.png' ,{frameHeight: 100, frameWidth: 100});
+    this.load.spritesheet('t3', 'assets/graphics/towers/t3.png' ,{frameHeight: 80, frameWidth: 120});
 
 }
 
@@ -103,10 +109,33 @@ function create(){
     //generovanie animacii (dlhy chunk kodu)
     this.anims.create({
         key: "a2_normal",
-        frameRate: 7,
+        frameRate: 15,
         frames: this.anims.generateFrameNumbers("a2",{start:0, end:9}),
         repeat: -1
     });
+    this.anims.create({
+        key: "t1_fire",
+        frameRate: 15,
+        frames: this.anims.generateFrameNumbers("t1",{start:0, end:8}),
+        repeat: -1  //TODO: zmen vsade na 0 ked bude kod pre towery pridany
+    });
+    this.anims.create({
+        key: "t2_fire",
+        frameRate: 15,
+        frames: this.anims.generateFrameNumbers("t2",{start:0, end:9}),
+        repeat: -1
+    });
+    this.anims.create({
+        key: "t3_fire",
+        frameRate: 15,
+        frames: this.anims.generateFrameNumbers("t3",{start:0, end:10}),
+        repeat: -1
+    });
+
+    //TODO: odstran ked bude hotovy kod pre towery
+    this.add.sprite(200,200,'t1').play('t1_fire');
+    this.add.sprite(700,350,'t2').play('t2_fire');
+    this.add.sprite(1230,500,'t3').play('t3_fire').setFlip(true);
 
     //path 1
     path = this.add.path(320, 110);
