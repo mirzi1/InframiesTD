@@ -20,10 +20,21 @@ var infoText;
 var background_main;
 var background;
 var path;
+var selector;
+
+var key1;
+var key2;
+var key3;
+var key4;
+var key5;
+var key6;
+var key7;
+var key8;
 
 var VERSION = "v0.1"
 var LIVES = 100;
 var MONEY = 100;
+var SELECTED_TOWER = 0;
 var ENEMY_SPEED = 1/10000;
 var BULLET_DAMAGE = 30;
 
@@ -44,8 +55,14 @@ function preload(){
     this.load.image('logo', 'assets/graphics/logo.png');
     this.load.image('particle', 'assets/graphics/particle.png');
 
+    //ui
+    this.load.image('button', 'assets/graphics/ui/button.png');
+    this.load.image('selector', 'assets/graphics/ui/selector.png');
+
     //attackers
     this.load.spritesheet('a2', 'assets/graphics/attackers/a2.png' ,{frameHeight: 100, frameWidth: 100});
+    this.load.spritesheet('a2_hurt', 'assets/graphics/attackers/a2_hurt.png' ,{frameHeight: 100, frameWidth: 100});
+    this.load.spritesheet('a2_death', 'assets/graphics/attackers/a2_death.png' ,{frameHeight: 100, frameWidth: 100});
 
     //towers
     this.load.spritesheet('t1', 'assets/graphics/towers/t1.png' ,{frameHeight: 100, frameWidth: 100});
@@ -107,11 +124,35 @@ var Enemy = new Phaser.Class({
     function(damage) {
         this.hp -= damage;
 
+        this.play('a2_hurt');
+        this.once('animationcomplete', ()=>{
+            this.play('a2_normal');
+        });
+
         // if hp drops below 0 we deactivate this enemy
         if(this.hp <= 0) {
+            createDeadEnemy(this.x,this.y,2, this.flipX);
             this.destroy();
         }
     }
+});
+
+var DeadEnemy = new Phaser.Class({
+    Extends: Phaser.GameObjects.Sprite,
+    initialize:
+        function Enemy(game){
+            Phaser.GameObjects.Sprite.call(this,game,0,0,'a2');
+        },
+    doYourThing:
+        function(x,y,sprite,direction){
+            this.x = x;
+            this.y = y;
+            if(direction){this.setFlip(true)}
+            this.play('a2_death');
+            this.once('animationcomplete', ()=>{
+                this.destroy();
+            });
+        }
 });
 
 var Turret = new Phaser.Class({
@@ -203,13 +244,33 @@ function create(){
     infoText = this.add.text(20, 20, 'HP: ' + LIVES + '\nCASH: ' + MONEY, {fontSize:'30px', fill:'#0FF'});      // -||-
     graphics = this.add.graphics();                         //cesty
 
+    //tlacidla nalavo
+    for(var i=0; i<8; i++){
+        this.add.image(50,83*i+90, 'button');
+    }
+
+    selector = this.add.image(0,0,'selector');
+    moveSelector(SELECTED_TOWER);
+
     //generovanie animacii
     //attackers
     this.anims.create({key: "a2_normal", frameRate: 15, frames: this.anims.generateFrameNumbers("a2",{start:0, end:9}), repeat: -1});
+    this.anims.create({key: "a2_hurt", frameRate: 15, frames: this.anims.generateFrameNumbers("a2_hurt",{start:0, end:9}), repeat: 0});
+    this.anims.create({key: "a2_death", frameRate: 15, frames: this.anims.generateFrameNumbers("a2_death",{start:0, end:10}), repeat: 0});
     //towers
     this.anims.create({key: "t1_fire", frameRate: 15, frames: this.anims.generateFrameNumbers("t1",{start:8, end:0}), repeat: 0});
     this.anims.create({key: "t2_fire", frameRate: 15, frames: this.anims.generateFrameNumbers("t2",{start:0, end:9}), repeat: 0});
     this.anims.create({key: "t3_fire", frameRate: 15, frames: this.anims.generateFrameNumbers("t3",{start:0, end:10}), repeat: 0});
+
+    //tlacitka
+    key1 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE);
+    key2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
+    key3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
+    key4 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR);
+    key5 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE);
+    key6 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SIX);
+    key7 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SEVEN);
+    key8 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.EIGHT);
 
     //path 1
     path = this.add.path(320, 110);
@@ -226,6 +287,7 @@ function create(){
     turrets = this.add.group({ classType: Turret, runChildUpdate: true });
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
     enemies = this.physics.add.group({ classType: Enemy, runChildUpdate: true });
+    deadEnemies = this.add.group({ classType: DeadEnemy, runChildUpdate: true });
 
     this.physics.add.overlap(enemies, bullets, damageEnemy);
     this.input.on('pointerdown', placeTurret);
@@ -250,6 +312,16 @@ function create(){
 }
 
 function update(time, delta){
+    //keyboard
+    if(key1.isDown){SELECTED_TOWER=0;moveSelector(SELECTED_TOWER);}
+    if(key2.isDown){SELECTED_TOWER=1;moveSelector(SELECTED_TOWER);}
+    if(key3.isDown){SELECTED_TOWER=2;moveSelector(SELECTED_TOWER);}
+    if(key4.isDown){SELECTED_TOWER=3;moveSelector(SELECTED_TOWER);}
+    if(key5.isDown){SELECTED_TOWER=4;moveSelector(SELECTED_TOWER);}
+    if(key6.isDown){SELECTED_TOWER=5;moveSelector(SELECTED_TOWER);}
+    if(key7.isDown){SELECTED_TOWER=6;moveSelector(SELECTED_TOWER);}
+    if(key8.isDown){SELECTED_TOWER=7;moveSelector(SELECTED_TOWER);}
+
     // spawn utocnika podla arrayu kazdych n milisekund
     if (time > this.nextEnemy){        
         var enemy = enemies.get();
@@ -296,9 +368,15 @@ function getEnemy(x, y, distance) {
 
 function addBullet(x, y, angle) {
     var bullet = bullets.get();
-    if (bullet)
-    {
+    if (bullet) {
         bullet.fire(x, y, angle);
+    }
+}
+
+function createDeadEnemy(x, y, sprite, direction){
+    var deadenemy = deadEnemies.get();
+    if(deadenemy){
+        deadenemy.doYourThing(x,y,sprite,direction);
     }
 }
 
@@ -312,4 +390,9 @@ function damageEnemy(enemy, bullet) {
         // decrease the enemy hp with BULLET_DAMAGE
         enemy.receiveDamage(BULLET_DAMAGE);
     }
+}
+
+function moveSelector(position){
+    selector.x = 50;
+    selector.y = 83*position+90;
 }
