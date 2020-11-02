@@ -340,6 +340,8 @@ function update(time, delta){
     if(key7.isDown){SELECTED_TOWER=6;moveSelector(SELECTED_TOWER);}
     if(key8.isDown){SELECTED_TOWER=7;moveSelector(SELECTED_TOWER);}
 
+    selector.angle++;
+
     // spawn utocnika podla arrayu kazdych n milisekund
     if (time > this.nextEnemy){        
         var enemy = enemies.get();
