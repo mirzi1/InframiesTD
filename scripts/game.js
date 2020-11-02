@@ -38,6 +38,11 @@ var SELECTED_TOWER = 0;
 var ENEMY_SPEED = 1/10000;
 var BULLET_DAMAGE = 30;
 
+var bigfont = { font: "bold 32px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+var smallfont = { font: "bold 14px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+
+var TOWER_PRICES = [100,200,300,400,500,600,700,1000];
+
 var level1 =       [[ -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0],
                     [ -1, 0, 0,-1,-1,-1, 0,-1, 0,-1,-1, 0, 0],
                     [ -1, 0, 0,-1,-1,-1, 0,-1, 0,-1,-1, 0, 0],
@@ -68,6 +73,10 @@ function preload(){
     this.load.spritesheet('t1', 'assets/graphics/towers/t1.png' ,{frameHeight: 100, frameWidth: 100});
     this.load.spritesheet('t2', 'assets/graphics/towers/t2.png' ,{frameHeight: 100, frameWidth: 100});
     this.load.spritesheet('t3', 'assets/graphics/towers/t3.png' ,{frameHeight: 80, frameWidth: 120});
+
+    //projectiles
+    this.load.spritesheet('p1', 'assets/graphics/projectiles/p1.png' ,{frameHeight: 20, frameWidth: 20});
+    this.load.spritesheet('p1_destroy', 'assets/graphics/projectiles/p1_destroy.png' ,{frameHeight: 20, frameWidth: 20});
 
 }
 
@@ -131,16 +140,16 @@ var Enemy = new Phaser.Class({
 
         // if hp drops below 0 we deactivate this enemy
         if(this.hp <= 0) {
-            createDeadEnemy(this.x,this.y,2, this.flipX);
+            createAnimated(this.x,this.y,'a2', this.flipX);
             this.destroy();
         }
     }
 });
 
-var DeadEnemy = new Phaser.Class({
+var AnimatedObject = new Phaser.Class({
     Extends: Phaser.GameObjects.Sprite,
     initialize:
-        function Enemy(game){
+        function AnimatedObject(game){
             Phaser.GameObjects.Sprite.call(this,game,0,0,'a2');
         },
     doYourThing:
@@ -148,7 +157,10 @@ var DeadEnemy = new Phaser.Class({
             this.x = x;
             this.y = y;
             if(direction){this.setFlip(true)}
-            this.play('a2_death');
+            switch(sprite){
+                case 'a2': this.play('a2_death');break;
+                case 'p1': this.play('p1_destroy');break;
+            }
             this.once('animationcomplete', ()=>{
                 this.destroy();
             });
@@ -175,7 +187,7 @@ var Turret = new Phaser.Class({
         if(enemy) {
             var angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
             addBullet(this.x, this.y, angle);
-            this.angle = (angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG;
+            this.angle = (((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG )-90);
             this.play('t1_fire');
         }
     },
@@ -196,7 +208,8 @@ var Bullet = new Phaser.Class({
 
         function Bullet (scene)
         {
-            Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'particle');
+            Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'p1');
+            this.play('p1');
 
             this.incX = 0;
             this.incY = 0;
@@ -230,8 +243,8 @@ var Bullet = new Phaser.Class({
 
         if (this.lifespan <= 0)
         {
-            this.setActive(false);
-            this.setVisible(false);
+            createAnimated(this.x,this.y,'p1', false);
+            this.destroy();
         }
     }
 
@@ -240,13 +253,15 @@ var Bullet = new Phaser.Class({
 function create(){
     background_main = this.add.image(640, 360, 'bg');       //background bude vzdy naspodku
     background = this.add.image(715, 415, 'bg1');           //background bude vzdy naspodku
-    versionText = this.add.text(0, 0, 'inframiesTD ' + VERSION, {fontSize:'16px', fill:'#FFF'});                //misc text
-    infoText = this.add.text(20, 20, 'HP: ' + LIVES + '\nCASH: ' + MONEY, {fontSize:'30px', fill:'#0FF'});      // -||-
+    versionText = this.add.text(0, 0, 'inframiesTD ' + VERSION, smallfont);                //misc text
+    infoText = this.add.text(120, 20, 'HP: ' + LIVES + '\nCASH: ' + MONEY, bigfont);      // -||-
     graphics = this.add.graphics();                         //cesty
 
     //tlacidla nalavo
     for(var i=0; i<8; i++){
         this.add.image(50,83*i+90, 'button');
+        this.add.text(20,83*i+56, i+1, bigfont);
+        this.add.text(20,83*i+106, TOWER_PRICES[i], smallfont);
     }
 
     selector = this.add.image(0,0,'selector');
@@ -256,11 +271,14 @@ function create(){
     //attackers
     this.anims.create({key: "a2_normal", frameRate: 15, frames: this.anims.generateFrameNumbers("a2",{start:0, end:9}), repeat: -1});
     this.anims.create({key: "a2_hurt", frameRate: 15, frames: this.anims.generateFrameNumbers("a2_hurt",{start:0, end:9}), repeat: 0});
-    this.anims.create({key: "a2_death", frameRate: 15, frames: this.anims.generateFrameNumbers("a2_death",{start:0, end:10}), repeat: 0});
+    this.anims.create({key: "a2_death", frameRate: 15, frames: this.anims.generateFrameNumbers("a2_death",{start:3, end:10}), repeat: 0});
     //towers
     this.anims.create({key: "t1_fire", frameRate: 15, frames: this.anims.generateFrameNumbers("t1",{start:8, end:0}), repeat: 0});
     this.anims.create({key: "t2_fire", frameRate: 15, frames: this.anims.generateFrameNumbers("t2",{start:0, end:9}), repeat: 0});
     this.anims.create({key: "t3_fire", frameRate: 15, frames: this.anims.generateFrameNumbers("t3",{start:0, end:10}), repeat: 0});
+    //projectiles
+    this.anims.create({key: "p1", frameRate: 15, frames: this.anims.generateFrameNumbers("p1",{start:0, end:6}), repeat: -1});
+    this.anims.create({key: "p1_destroy", frameRate: 15, frames: this.anims.generateFrameNumbers("p1_destroy",{start:0, end:4}), repeat: 0});
 
     //tlacitka
     key1 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE);
@@ -287,7 +305,7 @@ function create(){
     turrets = this.add.group({ classType: Turret, runChildUpdate: true });
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
     enemies = this.physics.add.group({ classType: Enemy, runChildUpdate: true });
-    deadEnemies = this.add.group({ classType: DeadEnemy, runChildUpdate: true });
+    AnimatedObjects = this.add.group({ classType: AnimatedObject, runChildUpdate: true });
 
     this.physics.add.overlap(enemies, bullets, damageEnemy);
     this.input.on('pointerdown', placeTurret);
@@ -373,10 +391,10 @@ function addBullet(x, y, angle) {
     }
 }
 
-function createDeadEnemy(x, y, sprite, direction){
-    var deadenemy = deadEnemies.get();
-    if(deadenemy){
-        deadenemy.doYourThing(x,y,sprite,direction);
+function createAnimated(x, y, sprite, direction){
+    var animatedobject = AnimatedObjects.get();
+    if(animatedobject){
+        animatedobject.doYourThing(x,y,sprite,direction);
     }
 }
 
@@ -384,8 +402,8 @@ function damageEnemy(enemy, bullet) {
     // only if both enemy and bullet are alive
     if (enemy.active === true && bullet.active === true) {
         // we remove the bullet right away
-        bullet.setActive(false);
-        bullet.setVisible(false);
+        createAnimated(bullet.x,bullet.y,'p1', false);
+        bullet.destroy();
 
         // decrease the enemy hp with BULLET_DAMAGE
         enemy.receiveDamage(BULLET_DAMAGE);
