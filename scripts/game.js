@@ -44,7 +44,7 @@ var cursor_default = 'url(assets/graphics/ui/cursor.cur)'
 
 var TOWER_PRICES = [100,200,300,400,500,600,700,1000];
 
-var level1 =       [[ -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0],
+var level1 =       [[ -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, -1],
                     [ -1, 0, 0,-1,-1,-1, 0,-1, 0,-1,-1, 0, 0],
                     [ -1, 0, 0,-1,-1,-1, 0,-1, 0,-1,-1, 0, 0],
                     [ -1, 0, 0,-1,-1,-1, 0, 0, 0,-1,-1, 0, 0],
@@ -65,6 +65,7 @@ function preload(){
     this.load.image('button', 'assets/graphics/ui/button.png');
     this.load.image('selector', 'assets/graphics/ui/selector.png');
     this.load.spritesheet('towericons', 'assets/graphics/ui/towericons.png' ,{frameHeight: 50, frameWidth: 50});
+    this.load.spritesheet('freespace', 'assets/graphics/ui/freespace.png' ,{frameHeight: 100, frameWidth: 100});
 
     //attackers
     this.load.spritesheet('a2', 'assets/graphics/attackers/a2.png' ,{frameHeight: 97, frameWidth: 55});
@@ -275,7 +276,7 @@ function create(){
         this.add.image(50,83*i+90, 'button');
         this.add.image(50,83*i+90, 'towericons', i);
         this.add.text(20,83*i+56, i+1, bigfont);
-        this.add.text(20,83*i+106, TOWER_PRICES[i], smallfont);
+        this.add.text(20,83*i+106, TOWER_PRICES[i]+'$', smallfont);
     }
 
     selector = this.add.image(0,0,'selector');
@@ -299,6 +300,8 @@ function create(){
     this.anims.create({key: "p2_destroy", frameRate: 15, frames: this.anims.generateFrameNumbers("p2_destroy",{start:0, end:3}), repeat: 0});
     this.anims.create({key: "p3", frameRate: 15, frames: this.anims.generateFrameNumbers("p3",{start:0, end:6}), repeat: -1});
     this.anims.create({key: "p3_destroy", frameRate: 15, frames: this.anims.generateFrameNumbers("p3_destroy",{start:0, end:6}), repeat: 0});
+    //ui
+    this.anims.create({key: "freespace_destroy", frameRate: 10, frames: this.anims.generateFrameNumbers("freespace",{start:0, end:1}), repeat: 3});
 
     //tlacitka
     key1 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE);
@@ -390,7 +393,7 @@ function placeTurret(pointer) {
             turret.setVisible(true);
             turret.place(i, j);
         }
-    }
+    }else{blinkAvailableSpaces();}
 }
 
 function canPlaceTurret(i, j) {
@@ -435,4 +438,12 @@ function damageEnemy(enemy, bullet) {
 function moveSelector(position){
     selector.x = 50;
     selector.y = 83*position+90;
+}
+
+function blinkAvailableSpaces(){
+    for(var i = 0; i<level1.length; i++){
+        for(var j = 0; j<level1[i].length; j++){
+            if(level1[i][j]==0){createAnimated(50+100*j,50+100*i,'freespace', false);}
+        }
+    }
 }
