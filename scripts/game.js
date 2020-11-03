@@ -34,12 +34,13 @@ var key8;
 var VERSION = "v0.1"
 var LIVES = 100;
 var MONEY = 100;
-var SELECTED_TOWER = 0;
+var SELECTED_TOWER = 1;
 var ENEMY_SPEED = 1/10000;
 var BULLET_DAMAGE = 30;
 
 var bigfont = { font: "bold 32px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 var smallfont = { font: "bold 14px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+var cursor_default = 'url(assets/graphics/ui/cursor.cur)'
 
 var TOWER_PRICES = [100,200,300,400,500,600,700,1000];
 
@@ -63,11 +64,12 @@ function preload(){
     //ui
     this.load.image('button', 'assets/graphics/ui/button.png');
     this.load.image('selector', 'assets/graphics/ui/selector.png');
+    this.load.spritesheet('towericons', 'assets/graphics/ui/towericons.png' ,{frameHeight: 50, frameWidth: 50});
 
     //attackers
-    this.load.spritesheet('a2', 'assets/graphics/attackers/a2.png' ,{frameHeight: 100, frameWidth: 100});
-    this.load.spritesheet('a2_hurt', 'assets/graphics/attackers/a2_hurt.png' ,{frameHeight: 100, frameWidth: 100});
-    this.load.spritesheet('a2_death', 'assets/graphics/attackers/a2_death.png' ,{frameHeight: 100, frameWidth: 100});
+    this.load.spritesheet('a2', 'assets/graphics/attackers/a2.png' ,{frameHeight: 97, frameWidth: 55});
+    this.load.spritesheet('a2_hurt', 'assets/graphics/attackers/a2_hurt.png' ,{frameHeight: 97, frameWidth: 54});
+    this.load.spritesheet('a2_destroy', 'assets/graphics/attackers/a2_death.png' ,{frameHeight: 100, frameWidth: 100});
 
     //towers
     this.load.spritesheet('t1', 'assets/graphics/towers/t1.png' ,{frameHeight: 100, frameWidth: 100});
@@ -77,6 +79,10 @@ function preload(){
     //projectiles
     this.load.spritesheet('p1', 'assets/graphics/projectiles/p1.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p1_destroy', 'assets/graphics/projectiles/p1_destroy.png' ,{frameHeight: 20, frameWidth: 20});
+    this.load.spritesheet('p2', 'assets/graphics/projectiles/p2.png' ,{frameHeight: 40, frameWidth: 40});
+    this.load.spritesheet('p2_destroy', 'assets/graphics/projectiles/p2_destroy.png' ,{frameHeight: 40, frameWidth: 40});
+    this.load.spritesheet('p3', 'assets/graphics/projectiles/p3.png' ,{frameHeight: 20, frameWidth: 20});
+    this.load.spritesheet('p3_destroy', 'assets/graphics/projectiles/p3_destroy.png' ,{frameHeight: 20, frameWidth: 20});
 
 }
 
@@ -157,10 +163,7 @@ var AnimatedObject = new Phaser.Class({
             this.x = x;
             this.y = y;
             if(direction){this.setFlip(true)}
-            switch(sprite){
-                case 'a2': this.play('a2_death');break;
-                case 'p1': this.play('p1_destroy');break;
-            }
+            this.play(sprite+'_destroy');
             this.once('animationcomplete', ()=>{
                 this.destroy();
             });
@@ -168,27 +171,35 @@ var AnimatedObject = new Phaser.Class({
 });
 
 var Turret = new Phaser.Class({
+    /*turret IDs:
+    1. laser
+    2. electric
+    3. canon
+     */
     Extends: Phaser.GameObjects.Sprite,
 
     initialize:
 
         function Turret (scene)
         {
-            Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 't1');
+            Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 't'+SELECTED_TOWER);
             this.nextTic = 0;
+            this.turretType = SELECTED_TOWER;
         },
     place: function(i, j) {
         this.y = i * 100 + 100/2;
         this.x = j * 100 + 100/2;
-        level1[i][j] = 1;
+        level1[i][j] = this.turretType;
     },
     fire: function() {
         var enemy = getEnemy(this.x, this.y, 200);
         if(enemy) {
             var angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
-            addBullet(this.x, this.y, angle);
-            this.angle = (((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG )-90);
-            this.play('t1_fire');
+            addBullet(this.x, this.y, angle, this.turretType);
+            switch(this.turretType){
+                case 1: case 3: this.angle = (((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG )-90); break;
+            }
+            this.play('t'+this.turretType+'_fire');
         }
     },
     update: function (time, delta)
@@ -209,7 +220,6 @@ var Bullet = new Phaser.Class({
         function Bullet (scene)
         {
             Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'p1');
-            this.play('p1');
 
             this.incX = 0;
             this.incY = 0;
@@ -218,15 +228,18 @@ var Bullet = new Phaser.Class({
             this.speed = Phaser.Math.GetSpeed(600, 1);
         },
 
-    fire: function (x, y, angle)
+    fire: function (x, y, angle,type)
     {
+        this.type = type;
+
         this.setActive(true);
         this.setVisible(true);
         //  Bullets fire from the middle of the screen to the given x/y
         this.setPosition(x, y);
+        this.play('p'+type);
 
         //  we don't need to rotate the bullets as they are round
-        //    this.setRotation(angle);
+        this.setRotation(angle);
 
         this.dx = Math.cos(angle);
         this.dy = Math.sin(angle);
@@ -243,7 +256,7 @@ var Bullet = new Phaser.Class({
 
         if (this.lifespan <= 0)
         {
-            createAnimated(this.x,this.y,'p1', false);
+            createAnimated(this.x,this.y,'p'+this.type, false);
             this.destroy();
         }
     }
@@ -260,25 +273,32 @@ function create(){
     //tlacidla nalavo
     for(var i=0; i<8; i++){
         this.add.image(50,83*i+90, 'button');
+        this.add.image(50,83*i+90, 'towericons', i);
         this.add.text(20,83*i+56, i+1, bigfont);
         this.add.text(20,83*i+106, TOWER_PRICES[i], smallfont);
     }
 
     selector = this.add.image(0,0,'selector');
-    moveSelector(SELECTED_TOWER);
+    moveSelector(SELECTED_TOWER-1);
+
+    this.input.setDefaultCursor('url(assets/graphics/ui/cursor.cur), pointer');
 
     //generovanie animacii
     //attackers
     this.anims.create({key: "a2_normal", frameRate: 15, frames: this.anims.generateFrameNumbers("a2",{start:0, end:9}), repeat: -1});
     this.anims.create({key: "a2_hurt", frameRate: 15, frames: this.anims.generateFrameNumbers("a2_hurt",{start:0, end:9}), repeat: 0});
-    this.anims.create({key: "a2_death", frameRate: 15, frames: this.anims.generateFrameNumbers("a2_death",{start:3, end:10}), repeat: 0});
+    this.anims.create({key: "a2_destroy", frameRate: 15, frames: this.anims.generateFrameNumbers("a2_destroy",{start:3, end:10}), repeat: 0});
     //towers
     this.anims.create({key: "t1_fire", frameRate: 15, frames: this.anims.generateFrameNumbers("t1",{start:8, end:0}), repeat: 0});
-    this.anims.create({key: "t2_fire", frameRate: 15, frames: this.anims.generateFrameNumbers("t2",{start:0, end:9}), repeat: 0});
+    this.anims.create({key: "t2_fire", frameRate: 15, frames: this.anims.generateFrameNumbers("t2",{start:9, end:0}), repeat: 0});
     this.anims.create({key: "t3_fire", frameRate: 15, frames: this.anims.generateFrameNumbers("t3",{start:0, end:10}), repeat: 0});
     //projectiles
     this.anims.create({key: "p1", frameRate: 15, frames: this.anims.generateFrameNumbers("p1",{start:0, end:6}), repeat: -1});
     this.anims.create({key: "p1_destroy", frameRate: 15, frames: this.anims.generateFrameNumbers("p1_destroy",{start:0, end:4}), repeat: 0});
+    this.anims.create({key: "p2", frameRate: 15, frames: this.anims.generateFrameNumbers("p2",{start:0, end:4}), repeat: -1});
+    this.anims.create({key: "p2_destroy", frameRate: 15, frames: this.anims.generateFrameNumbers("p2_destroy",{start:0, end:3}), repeat: 0});
+    this.anims.create({key: "p3", frameRate: 15, frames: this.anims.generateFrameNumbers("p3",{start:0, end:6}), repeat: -1});
+    this.anims.create({key: "p3_destroy", frameRate: 15, frames: this.anims.generateFrameNumbers("p3_destroy",{start:0, end:6}), repeat: 0});
 
     //tlacitka
     key1 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE);
@@ -331,14 +351,14 @@ function create(){
 
 function update(time, delta){
     //keyboard
-    if(key1.isDown){SELECTED_TOWER=0;moveSelector(SELECTED_TOWER);}
-    if(key2.isDown){SELECTED_TOWER=1;moveSelector(SELECTED_TOWER);}
-    if(key3.isDown){SELECTED_TOWER=2;moveSelector(SELECTED_TOWER);}
-    if(key4.isDown){SELECTED_TOWER=3;moveSelector(SELECTED_TOWER);}
-    if(key5.isDown){SELECTED_TOWER=4;moveSelector(SELECTED_TOWER);}
-    if(key6.isDown){SELECTED_TOWER=5;moveSelector(SELECTED_TOWER);}
-    if(key7.isDown){SELECTED_TOWER=6;moveSelector(SELECTED_TOWER);}
-    if(key8.isDown){SELECTED_TOWER=7;moveSelector(SELECTED_TOWER);}
+    if(key1.isDown){SELECTED_TOWER=1;moveSelector(SELECTED_TOWER-1);}
+    if(key2.isDown){SELECTED_TOWER=2;moveSelector(SELECTED_TOWER-1);}
+    if(key3.isDown){SELECTED_TOWER=3;moveSelector(SELECTED_TOWER-1);}
+    if(key4.isDown){SELECTED_TOWER=4;moveSelector(SELECTED_TOWER-1);}
+    if(key5.isDown){SELECTED_TOWER=5;moveSelector(SELECTED_TOWER-1);}
+    if(key6.isDown){SELECTED_TOWER=6;moveSelector(SELECTED_TOWER-1);}
+    if(key7.isDown){SELECTED_TOWER=7;moveSelector(SELECTED_TOWER-1);}
+    if(key8.isDown){SELECTED_TOWER=8;moveSelector(SELECTED_TOWER-1);}
 
     selector.angle++;
 
@@ -386,10 +406,10 @@ function getEnemy(x, y, distance) {
     return false;
 }
 
-function addBullet(x, y, angle) {
+function addBullet(x, y, angle, type) {
     var bullet = bullets.get();
     if (bullet) {
-        bullet.fire(x, y, angle);
+        bullet.fire(x, y, angle, type);
     }
 }
 
@@ -404,7 +424,7 @@ function damageEnemy(enemy, bullet) {
     // only if both enemy and bullet are alive
     if (enemy.active === true && bullet.active === true) {
         // we remove the bullet right away
-        createAnimated(bullet.x,bullet.y,'p1', false);
+        createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);
         bullet.destroy();
 
         // decrease the enemy hp with BULLET_DAMAGE
