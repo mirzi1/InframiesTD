@@ -13,38 +13,47 @@ var config = {
     }
 };
 
-var game = new Phaser.Game(config);
-var graphics;
-var versionText;
-var infoText;
-var background_main;
-var background;
-var path;
-var selector;
+let game = new Phaser.Game(config);
+let graphics;
+let versionText;
+let infoText;
+let background_main;
+let background;
+let path;
+let selector;
+let selectedImg;
+let selectedInfo;
 
-var key1;
-var key2;
-var key3;
-var key4;
-var key5;
-var key6;
-var key7;
-var key8;
+let key1;
+let key2;
+let key3;
+let key4;
+let key5;
+let key6;
+let key7;
+let key8;
 
-var VERSION = "v0.1"
-var LIVES = 100;
-var MONEY = 100;
-var SELECTED_TOWER = 1;
-var ENEMY_SPEED = 1/10000;
-var BULLET_DAMAGE = 30;
+let LIVES = 100;
+let MONEY = 100;
+let SELECTED_TOWER = 1;
 
-var bigfont = { font: "bold 32px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
-var smallfont = { font: "bold 14px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
-var cursor_default = 'url(assets/graphics/ui/cursor.cur)'
+const VERSION = "v0.1"
+const ENEMY_SPEED = 1/10000;
+const BULLET_DAMAGE = 30;
 
-var TOWER_PRICES = [100,200,300,400,500,600,700,1000];
+const bigfont = { font: "bold 32px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+const smallfont = { font: "bold 14px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+const cursor_default = 'url(assets/graphics/ui/cursor.cur)'
 
-var level1 =       [[ -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, -1],
+const HUD_ICON_SCALE = 0.5;
+
+const TOWER_PRICES = [100,200,300,400,500,600,700,1000];
+const TOWER_DAMAGE = [100,200,300,400,500,600,700,1000];
+
+const ENEMY_HEALTH = [100,200,300,400,500,600,700,1000];
+const ENEMY_REWARD = [100,200,300,400,500,600,700,1000];
+
+const level1 =       [[ -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, -1],
                     [ -1, 0, 0,-1,-1,-1, 0,-1, 0,-1,-1, 0, 0],
                     [ -1, 0, 0,-1,-1,-1, 0,-1, 0,-1,-1, 0, 0],
                     [ -1, 0, 0,-1,-1,-1, 0, 0, 0,-1,-1, 0, 0],
@@ -59,7 +68,6 @@ function preload(){
     this.load.image('bg', 'assets/graphics/bg.png');
     this.load.image('bg1', 'assets/graphics/bg1.png');
     this.load.image('logo', 'assets/graphics/logo.png');
-    this.load.image('particle', 'assets/graphics/particle.png');
 
     //ui
     this.load.image('button', 'assets/graphics/ui/button.png');
@@ -87,7 +95,7 @@ function preload(){
 
 }
 
-var Enemy = new Phaser.Class({
+let Enemy = new Phaser.Class({
     Extends: Phaser.GameObjects.Sprite,
     initialize:
     function Enemy(game){
@@ -153,7 +161,7 @@ var Enemy = new Phaser.Class({
     }
 });
 
-var AnimatedObject = new Phaser.Class({
+let AnimatedObject = new Phaser.Class({
     Extends: Phaser.GameObjects.Sprite,
     initialize:
         function AnimatedObject(game){
@@ -171,7 +179,7 @@ var AnimatedObject = new Phaser.Class({
         }
 });
 
-var Turret = new Phaser.Class({
+let Turret = new Phaser.Class({
     /*turret IDs:
     1. laser
     2. electric
@@ -212,7 +220,7 @@ var Turret = new Phaser.Class({
     }
 });
 
-var Bullet = new Phaser.Class({
+let Bullet = new Phaser.Class({
 
     Extends: Phaser.GameObjects.Sprite,
 
@@ -268,14 +276,21 @@ function create(){
     background_main = this.add.image(640, 360, 'bg');       //background bude vzdy naspodku
     background = this.add.image(715, 415, 'bg1');           //background bude vzdy naspodku
     versionText = this.add.text(0, 0, 'inframiesTD ' + VERSION, smallfont);                //misc text
-    infoText = this.add.text(120, 20, 'HP: ' + LIVES + '\nCASH: ' + MONEY, bigfont);      // -||-
+    infoText = this.add.text(800, 20, 'HP: ' + LIVES + '\nCASH: ' + MONEY, bigfont);      // -||-
     graphics = this.add.graphics();                         //cesty
 
+    this.add.image(200,50, 'button');
+    selectedImg = this.add.image(200,50,'t1', SELECTED_TOWER-1);
+    selectedImg.setScale(HUD_ICON_SCALE);
+    selectedInfo = this.add.text(250,20,getTurretInfo(SELECTED_TOWER-1),smallfont);
+
+    updateTurretInfo();
+
     //tlacidla nalavo
-    for(var i=0; i<8; i++){
-        this.add.image(50,83*i+90, 'button');
-        this.add.image(50,83*i+90, 'towericons', i);
-        this.add.text(20,83*i+56, i+1, bigfont);
+    for(let i=0; i<8; i++){
+        this.add.image(50,83*i+90, 'button');//.setTint(255+i*8192,255+i*16);       //myslim ze stacilo srandiciek
+        this.add.image(50,83*i+90, 't'+(i+1)).setScale(HUD_ICON_SCALE);
+        this.add.text(20,83*i+56, i+1, smallfont);
         this.add.text(20,83*i+106, TOWER_PRICES[i]+'$', smallfont);
     }
 
@@ -354,20 +369,20 @@ function create(){
 
 function update(time, delta){
     //keyboard
-    if(key1.isDown){SELECTED_TOWER=1;moveSelector(SELECTED_TOWER-1);}
-    if(key2.isDown){SELECTED_TOWER=2;moveSelector(SELECTED_TOWER-1);}
-    if(key3.isDown){SELECTED_TOWER=3;moveSelector(SELECTED_TOWER-1);}
-    if(key4.isDown){SELECTED_TOWER=4;moveSelector(SELECTED_TOWER-1);}
-    if(key5.isDown){SELECTED_TOWER=5;moveSelector(SELECTED_TOWER-1);}
-    if(key6.isDown){SELECTED_TOWER=6;moveSelector(SELECTED_TOWER-1);}
-    if(key7.isDown){SELECTED_TOWER=7;moveSelector(SELECTED_TOWER-1);}
-    if(key8.isDown){SELECTED_TOWER=8;moveSelector(SELECTED_TOWER-1);}
+    if(key1.isDown){SELECTED_TOWER=1;moveSelector(SELECTED_TOWER-1);updateTurretInfo();}
+    if(key2.isDown){SELECTED_TOWER=2;moveSelector(SELECTED_TOWER-1);updateTurretInfo();}
+    if(key3.isDown){SELECTED_TOWER=3;moveSelector(SELECTED_TOWER-1);updateTurretInfo();}
+    if(key4.isDown){SELECTED_TOWER=4;moveSelector(SELECTED_TOWER-1);updateTurretInfo();}
+    if(key5.isDown){SELECTED_TOWER=5;moveSelector(SELECTED_TOWER-1);updateTurretInfo();}
+    if(key6.isDown){SELECTED_TOWER=6;moveSelector(SELECTED_TOWER-1);updateTurretInfo();}
+    if(key7.isDown){SELECTED_TOWER=7;moveSelector(SELECTED_TOWER-1);updateTurretInfo();}
+    if(key8.isDown){SELECTED_TOWER=8;moveSelector(SELECTED_TOWER-1);updateTurretInfo();}
 
     selector.angle++;
 
     // spawn utocnika podla arrayu kazdych n milisekund
     if (time > this.nextEnemy){        
-        var enemy = enemies.get();
+        let enemy = enemies.get();
         if (enemy)
         {
             enemy.setActive(true);
@@ -383,10 +398,10 @@ function update(time, delta){
 }
 
 function placeTurret(pointer) {
-    var i = Math.floor(pointer.y/100);
-    var j = Math.floor(pointer.x/100);
+    let i = Math.floor(pointer.y/100);
+    let j = Math.floor(pointer.x/100);
     if(canPlaceTurret(i, j)) {
-        var turret = turrets.get();
+        let turret = turrets.get();
         if (turret)
         {
             turret.setActive(true);
@@ -401,8 +416,8 @@ function canPlaceTurret(i, j) {
 }
 
 function getEnemy(x, y, distance) {
-    var enemyUnits = enemies.getChildren();
-    for(var i = 0; i < enemyUnits.length; i++) {
+    let enemyUnits = enemies.getChildren();
+    for(let i = 0; i < enemyUnits.length; i++) {
         if(enemyUnits[i].active && Phaser.Math.Distance.Between(x, y, enemyUnits[i].x, enemyUnits[i].y) < distance)
             return enemyUnits[i];
     }
@@ -410,14 +425,14 @@ function getEnemy(x, y, distance) {
 }
 
 function addBullet(x, y, angle, type) {
-    var bullet = bullets.get();
+    let bullet = bullets.get();
     if (bullet) {
         bullet.fire(x, y, angle, type);
     }
 }
 
 function createAnimated(x, y, sprite, direction){
-    var animatedobject = AnimatedObjects.get();
+    let animatedobject = AnimatedObjects.get();
     if(animatedobject){
         animatedobject.doYourThing(x,y,sprite,direction);
     }
@@ -441,9 +456,19 @@ function moveSelector(position){
 }
 
 function blinkAvailableSpaces(){
-    for(var i = 0; i<level1.length; i++){
-        for(var j = 0; j<level1[i].length; j++){
+    for(let i = 0; i<level1.length; i++){
+        for(let j = 0; j<level1[i].length; j++){
             if(level1[i][j]==0){createAnimated(50+100*j,50+100*i,'freespace', false);}
         }
     }
+}
+
+function updateTurretInfo(){
+    selectedImg.setTexture('t'+(SELECTED_TOWER));
+    selectedInfo.setText(getTurretInfo(SELECTED_TOWER-1));
+}
+
+function getTurretInfo(type){
+    return   'Damage: '+TOWER_DAMAGE[type]
+            +'\nUpgrade price: '+TOWER_PRICES[type]*4+'$';
 }
