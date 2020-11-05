@@ -288,7 +288,7 @@ function create(){
 
     //tlacidla nalavo
     for(let i=0; i<8; i++){
-        this.add.image(50,83*i+90, 'button');//.setTint(255+i*8192,255+i*16);       //myslim ze stacilo srandiciek
+        this.add.image(50,83*i+90, 'button').setInteractive().on('pointerdown', e => changeSelectedTurret(i+1));
         this.add.image(50,83*i+90, 't'+(i+1)).setScale(HUD_ICON_SCALE);
         this.add.text(20,83*i+56, i+1, smallfont);
         this.add.text(20,83*i+106, TOWER_PRICES[i]+'$', smallfont);
@@ -346,8 +346,9 @@ function create(){
     AnimatedObjects = this.add.group({ classType: AnimatedObject, runChildUpdate: true });
 
     this.physics.add.overlap(enemies, bullets, damageEnemy);
-    this.input.on('pointerdown', placeTurret);
     this.nextEnemy = 0;
+
+    this.input.on('pointerdown', placeTurret);
 
     /*
     var particles = this.add.particles('particle');
@@ -369,15 +370,20 @@ function create(){
 
 function update(time, delta){
     //keyboard
-    if(key1.isDown){SELECTED_TOWER=1;moveSelector(SELECTED_TOWER-1);updateTurretInfo();}
-    if(key2.isDown){SELECTED_TOWER=2;moveSelector(SELECTED_TOWER-1);updateTurretInfo();}
-    if(key3.isDown){SELECTED_TOWER=3;moveSelector(SELECTED_TOWER-1);updateTurretInfo();}
-    if(key4.isDown){SELECTED_TOWER=4;moveSelector(SELECTED_TOWER-1);updateTurretInfo();}
-    if(key5.isDown){SELECTED_TOWER=5;moveSelector(SELECTED_TOWER-1);updateTurretInfo();}
-    if(key6.isDown){SELECTED_TOWER=6;moveSelector(SELECTED_TOWER-1);updateTurretInfo();}
-    if(key7.isDown){SELECTED_TOWER=7;moveSelector(SELECTED_TOWER-1);updateTurretInfo();}
-    if(key8.isDown){SELECTED_TOWER=8;moveSelector(SELECTED_TOWER-1);updateTurretInfo();}
+    //tlac 1-8 pre turrety
+    //for(let i=1; i<8; i++){
+        //one day
+    //}
+    if(key1.isDown){changeSelectedTurret(1)}
+    if(key2.isDown){changeSelectedTurret(2)}
+    if(key3.isDown){changeSelectedTurret(3)}
+    if(key4.isDown){changeSelectedTurret(4)}
+    if(key5.isDown){changeSelectedTurret(5)}
+    if(key6.isDown){changeSelectedTurret(6)}
+    if(key7.isDown){changeSelectedTurret(7)}
+    if(key8.isDown){changeSelectedTurret(8)}
 
+    //tocime ukazovatelom
     selector.angle++;
 
     // spawn utocnika podla arrayu kazdych n milisekund
@@ -398,17 +404,20 @@ function update(time, delta){
 }
 
 function placeTurret(pointer) {
-    let i = Math.floor(pointer.y/100);
-    let j = Math.floor(pointer.x/100);
-    if(canPlaceTurret(i, j)) {
-        let turret = turrets.get();
-        if (turret)
-        {
-            turret.setActive(true);
-            turret.setVisible(true);
-            turret.place(i, j);
+    if(pointer.x>100) {
+        let i = Math.floor(pointer.y / 100);
+        let j = Math.floor(pointer.x / 100);
+        if (canPlaceTurret(i, j)) {
+            let turret = turrets.get();
+            if (turret) {
+                turret.setActive(true);
+                turret.setVisible(true);
+                turret.place(i, j);
+            }
+        } else {
+            blinkAvailableSpaces();
         }
-    }else{blinkAvailableSpaces();}
+    }
 }
 
 function canPlaceTurret(i, j) {
@@ -448,6 +457,12 @@ function damageEnemy(enemy, bullet) {
         // decrease the enemy hp with BULLET_DAMAGE
         enemy.receiveDamage(BULLET_DAMAGE);
     }
+}
+
+function changeSelectedTurret(id){
+    SELECTED_TOWER=id;
+    moveSelector(SELECTED_TOWER-1);
+    updateTurretInfo();
 }
 
 function moveSelector(position){
