@@ -1,4 +1,4 @@
-var config = {
+let config = {
     type: Phaser.AUTO,
     width: 1280,
     height: 720,
@@ -43,7 +43,6 @@ const BULLET_DAMAGE = 30;
 
 const bigfont = { font: "bold 32px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 const smallfont = { font: "bold 14px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
-const cursor_default = 'url(assets/graphics/ui/cursor.cur)'
 
 const HUD_ICON_SCALE = 0.5;
 
@@ -72,7 +71,8 @@ function preload(){
     //ui
     this.load.image('button', 'assets/graphics/ui/button.png');
     this.load.image('selector', 'assets/graphics/ui/selector.png');
-    this.load.spritesheet('towericons', 'assets/graphics/ui/towericons.png' ,{frameHeight: 50, frameWidth: 50});
+    this.load.spritesheet('button_small', 'assets/graphics/ui/button_small.png' ,{frameHeight: 40, frameWidth: 80});
+    this.load.spritesheet('button_icons', 'assets/graphics/ui/button_icons.png' ,{frameHeight: 24, frameWidth: 16});
     this.load.spritesheet('freespace', 'assets/graphics/ui/freespace.png' ,{frameHeight: 100, frameWidth: 100});
 
     //attackers
@@ -194,6 +194,7 @@ let Turret = new Phaser.Class({
             Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 't'+SELECTED_TOWER);
             this.nextTic = 0;
             this.turretType = SELECTED_TOWER;
+            this.setInteractive().on('pointerdown', e => changeSelectedTurret(this.turretType));
         },
     place: function(i, j) {
         this.y = i * 100 + 100/2;
@@ -201,9 +202,9 @@ let Turret = new Phaser.Class({
         level1[i][j] = this.turretType;
     },
     fire: function() {
-        var enemy = getEnemy(this.x, this.y, 200);
+        let enemy = getEnemy(this.x, this.y, 200);
         if(enemy) {
-            var angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
+            let angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
             addBullet(this.x, this.y, angle, this.turretType);
             switch(this.turretType){
                 case 1: case 3: this.angle = (((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG )-90); break;
@@ -282,7 +283,11 @@ function create(){
     this.add.image(200,50, 'button');
     selectedImg = this.add.image(200,50,'t1', SELECTED_TOWER-1);
     selectedImg.setScale(HUD_ICON_SCALE);
-    selectedInfo = this.add.text(250,20,getTurretInfo(SELECTED_TOWER-1),smallfont);
+    selectedInfo = this.add.text(250,10,getTurretInfo(SELECTED_TOWER-1),smallfont);
+    this.add.image(290,70, 'button_small', 1);
+    this.add.image(380,70, 'button_small', 2);
+    this.add.image(290,70, 'button_icons', 0);
+    this.add.image(380,70, 'button_icons', 1);
 
     updateTurretInfo();
 
