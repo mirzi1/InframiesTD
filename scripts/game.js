@@ -47,9 +47,19 @@ const smallfont = { font: "bold 14px Arial", fill: "#fff", boundsAlignH: "center
 const HUD_ICON_SCALE = 0.5;
 
 const TOWER_PRICES = [100,200,300,400,500,600,700,1000];
-const TOWER_DAMAGE = [100,200,300,400,500,600,700,1000];
 const TOWER_SPEED = [700,1400,2000,1000,1000,1000,1000,1000];
-const TOWER_RANGE = [200,300,180,200,200,200,200,200]
+const TOWER_RANGE = [400,400,200,200,200,200,200,200]
+const TOWER_UPGRADE_DESCRIPTION = ['Double damage, see hidden enemies', '3 electrical bolts on hit', 'faster reload, bigger explosions', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL']
+
+const TOWER_DAMAGE = [100,200,300,400,500,600,700,1000,
+                      150,250,350,450,550,650,750,1000,
+                      20, 100];
+const PROJECTILE_SPEED = [500,600,450,400,500,600,700,1000,
+                          500,600,300,400,500,600,700,1000,
+                          200, 300];
+const PROJECTILE_LIFESPAN = [500,500,1500,500,500,500,500,500,
+                             500,500,500,500,500,500,500,500,
+                             700, 200];
 
 const ENEMY_HEALTH = [100,200,300,400,500,600,700,1000];
 const ENEMY_REWARD = [100,200,300,400,500,600,700,1000];
@@ -94,6 +104,7 @@ function preload(){
     this.load.spritesheet('p2_destroy', 'assets/graphics/projectiles/p2_destroy.png' ,{frameHeight: 40, frameWidth: 40});
     this.load.spritesheet('p3', 'assets/graphics/projectiles/p3.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p3_destroy', 'assets/graphics/projectiles/p3_destroy.png' ,{frameHeight: 20, frameWidth: 20});
+    this.load.spritesheet('p17_destroy', 'assets/graphics/projectiles/p17_destroy.png' ,{frameHeight: 40, frameWidth: 40});
 
 }
 
@@ -174,7 +185,10 @@ let AnimatedObject = new Phaser.Class({
             this.x = x;
             this.y = y;
             if(direction){this.setFlip(true)}
-            this.play(sprite+'_destroy');
+            switch(sprite){
+                case 'p3': this.play('p3_destroy');this.setScale(4);break;
+                default: this.play(sprite+'_destroy');break;
+            }
             this.once('animationcomplete', ()=>{
                 this.destroy();
             });
@@ -242,12 +256,13 @@ let Bullet = new Phaser.Class({
             this.incY = 0;
             this.lifespan = 0;
 
-            this.speed = Phaser.Math.GetSpeed(600, 1);
+            this.speed = 0;
         },
 
     fire: function (x, y, angle,type)
     {
         this.type = type;
+        this.speed = Phaser.Math.GetSpeed(PROJECTILE_SPEED[type-1], 1);
 
         this.setActive(true);
         this.setVisible(true);
@@ -261,7 +276,7 @@ let Bullet = new Phaser.Class({
         this.dx = Math.cos(angle);
         this.dy = Math.sin(angle);
 
-        this.lifespan = 1000;
+        this.lifespan = PROJECTILE_LIFESPAN[type-1];
     },
 
     update: function (time, delta)
@@ -326,7 +341,12 @@ function create(){
     this.anims.create({key: "p2", frameRate: 15, frames: this.anims.generateFrameNumbers("p2",{start:0, end:4}), repeat: -1});
     this.anims.create({key: "p2_destroy", frameRate: 15, frames: this.anims.generateFrameNumbers("p2_destroy",{start:0, end:3}), repeat: 0});
     this.anims.create({key: "p3", frameRate: 15, frames: this.anims.generateFrameNumbers("p3",{start:0, end:6}), repeat: -1});
-    this.anims.create({key: "p3_destroy", frameRate: 15, frames: this.anims.generateFrameNumbers("p3_destroy",{start:0, end:6}), repeat: 0});
+    this.anims.create({key: "p3_destroy", frameRate: 10, frames: this.anims.generateFrameNumbers("p3_destroy",{start:3, end:6}), repeat: 0});
+
+    this.anims.create({key: "p17", frameRate: 15, frames: this.anims.generateFrameNumbers("p17_destroy",{start:1, end:4}), repeat: -1});         //blue electric
+    this.anims.create({key: "p17_destroy", frameRate: 15, frames: this.anims.generateFrameNumbers("p17_destroy",{start:2, end:3}), repeat: 0});
+    this.anims.create({key: "p18", frameRate: 1, frames: this.anims.generateFrameNumbers("p3_destroy",{start:4, end:5}), repeat: -1});  //explosion
+    this.anims.create({key: "p18_destroy", frameRate: 45, frames: this.anims.generateFrameNumbers("p3_destroy",{start:3, end:6}), repeat: 0});  //explosion
     //ui
     this.anims.create({key: "freespace_destroy", frameRate: 10, frames: this.anims.generateFrameNumbers("freespace",{start:0, end:1}), repeat: 3});
 
@@ -409,7 +429,7 @@ function update(time, delta){
             // ulozenie utocnika na zaciatok
             enemy.startOnPath();
             
-            this.nextEnemy = time + 2000;
+            this.nextEnemy = time + 500;
         }   
     }
 
@@ -464,10 +484,20 @@ function damageEnemy(enemy, bullet) {
     if (enemy.active === true && bullet.active === true) {
         // we remove the bullet right away
         createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);
+        let bounceangle = Phaser.Math.Angle.Between(bullet.x, bullet.y, enemy.x, enemy.y);
+        switch (bullet.type){
+            case 2: addBullet(bullet.x, bullet.y, bounceangle, 17);
+                    addBullet(bullet.x, bullet.y, bounceangle+0.5, 17);
+                    addBullet(bullet.x, bullet.y, bounceangle-0.5, 17);break;
+            case 3: let random = Math.random()*2;
+                    for(let i = 1; i<7; i++) addBullet(bullet.x, bullet.y, random+i*1, 18);break;
+        }
+
+
         bullet.destroy();
 
         // decrease the enemy hp with BULLET_DAMAGE
-        enemy.receiveDamage(BULLET_DAMAGE);
+        enemy.receiveDamage(TOWER_DAMAGE[bullet.type - 1]);
     }
 }
 
@@ -496,6 +526,6 @@ function updateTowerInfo(){
 }
 
 function getTowerInfo(type){
-    return   'Damage: '+TOWER_DAMAGE[type]+', Speed: '+TOWER_SPEED[type]+ ', Range: '+TOWER_RANGE[type]
-            +'\nUpgrade price: '+TOWER_PRICES[type]*4+'$';
+    return   'Damage: '+TOWER_DAMAGE[type]+', Delay: '+TOWER_SPEED[type]+ ', Range: '+TOWER_RANGE[type]+ ', Projectile speed: '+PROJECTILE_SPEED[type]+ ', Projectile lifespan: '+PROJECTILE_LIFESPAN[type]
+            +'\nUpgrade: '+TOWER_UPGRADE_DESCRIPTION[type]+' - '+TOWER_PRICES[type]*4+'$';
 }
