@@ -48,6 +48,8 @@ const HUD_ICON_SCALE = 0.5;
 
 const TOWER_PRICES = [100,200,300,400,500,600,700,1000];
 const TOWER_DAMAGE = [100,200,300,400,500,600,700,1000];
+const TOWER_SPEED = [700,1400,2000,1000,1000,1000,1000,1000];
+const TOWER_RANGE = [200,300,180,200,200,200,200,200]
 
 const ENEMY_HEALTH = [100,200,300,400,500,600,700,1000];
 const ENEMY_REWARD = [100,200,300,400,500,600,700,1000];
@@ -179,8 +181,8 @@ let AnimatedObject = new Phaser.Class({
         }
 });
 
-let Turret = new Phaser.Class({
-    /*turret IDs:
+let Tower = new Phaser.Class({
+    /*Tower IDs:
     1. laser
     2. electric
     3. canon
@@ -189,34 +191,39 @@ let Turret = new Phaser.Class({
 
     initialize:
 
-        function Turret (scene)
+        function Tower (scene)
         {
             Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 't'+SELECTED_TOWER);
             this.nextTic = 0;
-            this.turretType = SELECTED_TOWER;
-            this.setInteractive().on('pointerdown', e => changeSelectedTurret(this.turretType));
+            this.TowerType = SELECTED_TOWER;
+            //TODO: riadny spsob vyberu kliknutim
+            this.setInteractive().on('pointerdown', e => changeSelectedTower(this.TowerType));
         },
     place: function(i, j) {
+        //polozenie - pozicia a typ
         this.y = i * 100 + 100/2;
         this.x = j * 100 + 100/2;
-        level1[i][j] = this.turretType;
+        level1[i][j] = this.TowerType;
     },
     fire: function() {
         let enemy = getEnemy(this.x, this.y, 200);
         if(enemy) {
+            //vytvorime bullet
             let angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
-            addBullet(this.x, this.y, angle, this.turretType);
-            switch(this.turretType){
+            addBullet(this.x, this.y, angle, this.TowerType);
+            //otacanie podla druhu Towery
+            switch(this.TowerType){
                 case 1: case 3: this.angle = (((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG )-90); break;
             }
-            this.play('t'+this.turretType+'_fire');
+            //animacia vystrelu
+            this.play('t'+this.TowerType+'_fire');
         }
     },
     update: function (time, delta)
     {
         if(time > this.nextTic) {
             this.fire();
-            this.nextTic = time + 1000;
+            this.nextTic = time + TOWER_SPEED[this.TowerType - 1];
         }
     }
 });
@@ -283,17 +290,17 @@ function create(){
     this.add.image(200,50, 'button');
     selectedImg = this.add.image(200,50,'t1', SELECTED_TOWER-1);
     selectedImg.setScale(HUD_ICON_SCALE);
-    selectedInfo = this.add.text(250,10,getTurretInfo(SELECTED_TOWER-1),smallfont);
+    selectedInfo = this.add.text(250,10,getTowerInfo(SELECTED_TOWER-1),smallfont);
     this.add.image(290,70, 'button_small', 1);
     this.add.image(380,70, 'button_small', 2);
     this.add.image(290,70, 'button_icons', 0);
     this.add.image(380,70, 'button_icons', 1);
 
-    updateTurretInfo();
+    updateTowerInfo();
 
     //tlacidla nalavo
     for(let i=0; i<8; i++){
-        this.add.image(50,83*i+90, 'button').setInteractive().on('pointerdown', e => changeSelectedTurret(i+1));
+        this.add.image(50,83*i+90, 'button').setInteractive().on('pointerdown', e => changeSelectedTower(i+1));
         this.add.image(50,83*i+90, 't'+(i+1)).setScale(HUD_ICON_SCALE);
         this.add.text(20,83*i+56, i+1, smallfont);
         this.add.text(20,83*i+106, TOWER_PRICES[i]+'$', smallfont);
@@ -345,7 +352,7 @@ function create(){
     graphics.lineStyle(3, 0xaaaaaa);
     path.draw(graphics);
 
-    turrets = this.add.group({ classType: Turret, runChildUpdate: true });
+    Towers = this.add.group({ classType: Tower, runChildUpdate: true });
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
     enemies = this.physics.add.group({ classType: Enemy, runChildUpdate: true });
     AnimatedObjects = this.add.group({ classType: AnimatedObject, runChildUpdate: true });
@@ -353,7 +360,7 @@ function create(){
     this.physics.add.overlap(enemies, bullets, damageEnemy);
     this.nextEnemy = 0;
 
-    this.input.on('pointerdown', placeTurret);
+    this.input.on('pointerdown', placeTower);
 
     /*
     var particles = this.add.particles('particle');
@@ -375,18 +382,18 @@ function create(){
 
 function update(time, delta){
     //keyboard
-    //tlac 1-8 pre turrety
+    //tlac 1-8 pre Towery
     //for(let i=1; i<8; i++){
         //one day
     //}
-    if(key1.isDown){changeSelectedTurret(1)}
-    if(key2.isDown){changeSelectedTurret(2)}
-    if(key3.isDown){changeSelectedTurret(3)}
-    if(key4.isDown){changeSelectedTurret(4)}
-    if(key5.isDown){changeSelectedTurret(5)}
-    if(key6.isDown){changeSelectedTurret(6)}
-    if(key7.isDown){changeSelectedTurret(7)}
-    if(key8.isDown){changeSelectedTurret(8)}
+    if(key1.isDown){changeSelectedTower(1)}
+    if(key2.isDown){changeSelectedTower(2)}
+    if(key3.isDown){changeSelectedTower(3)}
+    if(key4.isDown){changeSelectedTower(4)}
+    if(key5.isDown){changeSelectedTower(5)}
+    if(key6.isDown){changeSelectedTower(6)}
+    if(key7.isDown){changeSelectedTower(7)}
+    if(key8.isDown){changeSelectedTower(8)}
 
     //tocime ukazovatelom
     selector.angle++;
@@ -408,16 +415,16 @@ function update(time, delta){
 
 }
 
-function placeTurret(pointer) {
+function placeTower(pointer) {
     if(pointer.x>100) {
         let i = Math.floor(pointer.y / 100);
         let j = Math.floor(pointer.x / 100);
-        if (canPlaceTurret(i, j)) {
-            let turret = turrets.get();
-            if (turret) {
-                turret.setActive(true);
-                turret.setVisible(true);
-                turret.place(i, j);
+        if (canPlaceTower(i, j)) {
+            let Tower = Towers.get();
+            if (Tower) {
+                Tower.setActive(true);
+                Tower.setVisible(true);
+                Tower.place(i, j);
             }
         } else {
             blinkAvailableSpaces();
@@ -425,7 +432,7 @@ function placeTurret(pointer) {
     }
 }
 
-function canPlaceTurret(i, j) {
+function canPlaceTower(i, j) {
     return level1[i][j] === 0;
 }
 
@@ -464,10 +471,10 @@ function damageEnemy(enemy, bullet) {
     }
 }
 
-function changeSelectedTurret(id){
+function changeSelectedTower(id){
     SELECTED_TOWER=id;
     moveSelector(SELECTED_TOWER-1);
-    updateTurretInfo();
+    updateTowerInfo();
 }
 
 function moveSelector(position){
@@ -483,12 +490,12 @@ function blinkAvailableSpaces(){
     }
 }
 
-function updateTurretInfo(){
+function updateTowerInfo(){
     selectedImg.setTexture('t'+(SELECTED_TOWER));
-    selectedInfo.setText(getTurretInfo(SELECTED_TOWER-1));
+    selectedInfo.setText(getTowerInfo(SELECTED_TOWER-1));
 }
 
-function getTurretInfo(type){
-    return   'Damage: '+TOWER_DAMAGE[type]
+function getTowerInfo(type){
+    return   'Damage: '+TOWER_DAMAGE[type]+', Speed: '+TOWER_SPEED[type]+ ', Range: '+TOWER_RANGE[type]
             +'\nUpgrade price: '+TOWER_PRICES[type]*4+'$';
 }
