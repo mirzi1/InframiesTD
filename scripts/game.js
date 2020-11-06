@@ -15,7 +15,6 @@ let config = {
 
 let game = new Phaser.Game(config);
 let graphics;
-let versionText;
 let infoText;
 let background_main;
 let background;
@@ -37,7 +36,6 @@ let LIVES = 100;
 let MONEY = 100;
 let SELECTED_TOWER = 1;
 
-const VERSION = "v0.1"
 const ENEMY_SPEED = 1/10000;
 const BULLET_DAMAGE = 30;
 
@@ -51,9 +49,9 @@ const TOWER_SPEED = [700,1400,2000,1000,1000,1000,1000,1000];
 const TOWER_RANGE = [400,400,200,200,200,200,200,200]
 const TOWER_UPGRADE_DESCRIPTION = ['Double damage, see hidden enemies', '3 electrical bolts on hit', 'faster reload, bigger explosions', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL']
 
-const TOWER_DAMAGE = [100,200,300,400,500,600,700,1000,
+const TOWER_DAMAGE = [100,200,500,400,500,600,700,1000,
                       150,250,350,450,550,650,750,1000,
-                      20, 100];
+                      30, 15];
 const PROJECTILE_SPEED = [500,600,450,400,500,600,700,1000,
                           500,600,300,400,500,600,700,1000,
                           200, 300];
@@ -64,7 +62,7 @@ const PROJECTILE_LIFESPAN = [500,500,1500,500,500,500,500,500,
 const ENEMY_HEALTH = [100,200,300,400,500,600,700,1000];
 const ENEMY_REWARD = [100,200,300,400,500,600,700,1000];
 
-const level1 =       [[ -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, -1],
+let level1 =       [[ -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, -1],
                     [ -1, 0, 0,-1,-1,-1, 0,-1, 0,-1,-1, 0, 0],
                     [ -1, 0, 0,-1,-1,-1, 0,-1, 0,-1,-1, 0, 0],
                     [ -1, 0, 0,-1,-1,-1, 0, 0, 0,-1,-1, 0, 0],
@@ -83,7 +81,7 @@ function preload(){
     //ui
     this.load.image('button', 'assets/graphics/ui/button.png');
     this.load.image('selector', 'assets/graphics/ui/selector.png');
-    this.load.spritesheet('button_small', 'assets/graphics/ui/button_small.png' ,{frameHeight: 40, frameWidth: 80});
+    this.load.spritesheet('button_small', 'assets/graphics/ui/button_small.png' ,{frameHeight: 40, frameWidth: 40});
     this.load.spritesheet('button_icons', 'assets/graphics/ui/button_icons.png' ,{frameHeight: 24, frameWidth: 16});
     this.load.spritesheet('freespace', 'assets/graphics/ui/freespace.png' ,{frameHeight: 100, frameWidth: 100});
 
@@ -211,13 +209,22 @@ let Tower = new Phaser.Class({
             this.nextTic = 0;
             this.TowerType = SELECTED_TOWER;
             //TODO: riadny spsob vyberu kliknutim
-            this.setInteractive().on('pointerdown', e => changeSelectedTower(this.TowerType));
+            this.setInteractive().on('pointerdown', e => {
+                if(SELECTED_TOWER == 0){
+                    this.i = Math.floor(this.y / 100);this.j = Math.floor(this.x / 100);
+                    level1[this.i][this.j] = 0;
+                    //changeSelectedTower(this.TowerType);
+                    this.destroy();
+                }
+            });
         },
     place: function(i, j) {
         //polozenie - pozicia a typ
-        this.y = i * 100 + 100/2;
-        this.x = j * 100 + 100/2;
-        level1[i][j] = this.TowerType;
+        if(SELECTED_TOWER != 0){
+            this.y = i * 100 + 100/2;
+            this.x = j * 100 + 100/2;
+            level1[i][j] = this.TowerType;
+        }
     },
     fire: function() {
         let enemy = getEnemy(this.x, this.y, 200);
@@ -298,7 +305,6 @@ let Bullet = new Phaser.Class({
 function create(){
     background_main = this.add.image(640, 360, 'bg');       //background bude vzdy naspodku
     background = this.add.image(715, 415, 'bg1');           //background bude vzdy naspodku
-    versionText = this.add.text(0, 0, 'inframiesTD ' + VERSION, smallfont);                //misc text
     infoText = this.add.text(800, 20, 'HP: ' + LIVES + '\nCASH: ' + MONEY, bigfont);      // -||-
     graphics = this.add.graphics();                         //cesty
 
@@ -306,19 +312,19 @@ function create(){
     selectedImg = this.add.image(200,50,'t1', SELECTED_TOWER-1);
     selectedImg.setScale(HUD_ICON_SCALE);
     selectedInfo = this.add.text(250,10,getTowerInfo(SELECTED_TOWER-1),smallfont);
-    this.add.image(290,70, 'button_small', 1);
-    this.add.image(380,70, 'button_small', 2);
-    this.add.image(290,70, 'button_icons', 0);
-    this.add.image(380,70, 'button_icons', 1);
+    this.add.image(30,693, 'button_small', 1).setInteractive().on('pointerdown', e => upgradeTool());
+    this.add.image(70,693, 'button_small', 2).setInteractive().on('pointerdown', e => sellTool());
+    this.add.image(30,693, 'button_icons', 0);
+    this.add.image(70,693, 'button_icons', 1);
 
     updateTowerInfo();
 
     //tlacidla nalavo
     for(let i=0; i<8; i++){
-        this.add.image(50,83*i+90, 'button').setInteractive().on('pointerdown', e => changeSelectedTower(i+1));
-        this.add.image(50,83*i+90, 't'+(i+1)).setScale(HUD_ICON_SCALE);
-        this.add.text(20,83*i+56, i+1, smallfont);
-        this.add.text(20,83*i+106, TOWER_PRICES[i]+'$', smallfont);
+        this.add.image(50,83*i+50, 'button').setInteractive().on('pointerdown', e => changeSelectedTower(i+1));
+        this.add.image(50,83*i+50, 't'+(i+1)).setScale(HUD_ICON_SCALE);
+        this.add.text(20,83*i+16, i+1, smallfont);
+        this.add.text(20,83*i+66, TOWER_PRICES[i]+'$', smallfont);
     }
 
     selector = this.add.image(0,0,'selector');
@@ -436,7 +442,7 @@ function update(time, delta){
 }
 
 function placeTower(pointer) {
-    if(pointer.x>100) {
+    if(pointer.x>100 && SELECTED_TOWER != 0) {
         let i = Math.floor(pointer.y / 100);
         let j = Math.floor(pointer.x / 100);
         if (canPlaceTower(i, j)) {
@@ -508,8 +514,9 @@ function changeSelectedTower(id){
 }
 
 function moveSelector(position){
+    selector.scale = 1;
     selector.x = 50;
-    selector.y = 83*position+90;
+    selector.y = 83*position+50;
 }
 
 function blinkAvailableSpaces(){
@@ -520,9 +527,32 @@ function blinkAvailableSpaces(){
     }
 }
 
+function sellTool(){
+    SELECTED_TOWER = 0;
+    selectedImg.setTexture('button_icons', 1).setScale(2);
+    selectedInfo.setText('Sell');
+    game.input.setDefaultCursor('url(assets/graphics/ui/cursor_delete.cur), pointer');
+
+    selector.scale = 0.5;
+    selector.x = 70;
+    selector.y = 693;
+}
+
+function upgradeTool(){
+    SELECTED_TOWER = -2;
+    selectedImg.setTexture('button_icons', 0).setScale(2);
+    selectedInfo.setText('Upgrade (WIP)');
+    game.input.setDefaultCursor('url(assets/graphics/ui/cursor_upgrade.cur), pointer');
+
+    selector.scale = 0.5;
+    selector.x = 30;
+    selector.y = 693;
+}
+
 function updateTowerInfo(){
-    selectedImg.setTexture('t'+(SELECTED_TOWER));
+    selectedImg.setTexture('t'+(SELECTED_TOWER)).setScale(0.5);
     selectedInfo.setText(getTowerInfo(SELECTED_TOWER-1));
+    game.input.setDefaultCursor('url(assets/graphics/ui/cursor.cur), pointer');
 }
 
 function getTowerInfo(type){
