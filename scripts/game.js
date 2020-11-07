@@ -6,6 +6,7 @@ let config = {
     physics: {
         default: 'arcade'
     },
+    antialias: false,
     scene: {
         preload: preload,
         create: create,
@@ -15,8 +16,9 @@ let config = {
 
 let game = new Phaser.Game(config);
 let graphics;
-let infoText;
-let background_main;
+let waveText;
+let hpText;
+let moneyText;
 let background;
 let path;
 let selector;
@@ -32,15 +34,18 @@ let key6;
 let key7;
 let key8;
 
-let LIVES = 100;
+let WAVE = 1;
+let HEALTH = 100;
 let MONEY = 100;
 let SELECTED_TOWER = 1;
 
 const ENEMY_SPEED = 1/10000;
 const BULLET_DAMAGE = 30;
 
-const bigfont = { font: "bold 32px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
-const smallfont = { font: "bold 14px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+const bigfont = { font: "bold 22px font1", fill: "#3CCEFF", boundsAlignH: "center", boundsAlignV: "middle" };
+const smallfont = { font: "12px font1", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+const smallfont_black = { font: "12px font1", fill: "#000", boundsAlignH: "center", boundsAlignV: "middle" };
+const textfont = { font: "bold 10px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 
 const HUD_ICON_SCALE = 0.5;
 
@@ -73,21 +78,21 @@ let level1 =       [[ -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, -1],
 
 function preload(){
     //nacitanie spritov
-    //misc
-    this.load.image('bg', 'assets/graphics/bg.png');
-    this.load.image('bg1', 'assets/graphics/bg1.png');
-    this.load.image('logo', 'assets/graphics/logo.png');
-
     //ui
+    this.load.image('ui_top', 'assets/graphics/ui/UI_top.png');
+    this.load.image('ui_left', 'assets/graphics/ui/UI_left.png');
     this.load.image('button', 'assets/graphics/ui/button.png');
     this.load.image('selector', 'assets/graphics/ui/selector.png');
-    this.load.spritesheet('button_small', 'assets/graphics/ui/button_small.png' ,{frameHeight: 40, frameWidth: 40});
+    this.load.spritesheet('button_small', 'assets/graphics/ui/button_small.png' ,{frameHeight: 35, frameWidth: 35});
     this.load.spritesheet('button_icons', 'assets/graphics/ui/button_icons.png' ,{frameHeight: 24, frameWidth: 16});
     this.load.spritesheet('freespace', 'assets/graphics/ui/freespace.png' ,{frameHeight: 100, frameWidth: 100});
 
+    //pozadia
+    this.load.image('bg1', 'assets/graphics/levels/bg1.png');
+
     //attackers
-    this.load.spritesheet('a2', 'assets/graphics/attackers/a2.png' ,{frameHeight: 97, frameWidth: 55});
-    this.load.spritesheet('a2_hurt', 'assets/graphics/attackers/a2_hurt.png' ,{frameHeight: 97, frameWidth: 54});
+    this.load.spritesheet('a2', 'assets/graphics/attackers/a2.png' ,{frameHeight: 96, frameWidth: 55});
+    this.load.spritesheet('a2_hurt', 'assets/graphics/attackers/a2_hurt.png' ,{frameHeight: 96, frameWidth: 54});
     this.load.spritesheet('a2_destroy', 'assets/graphics/attackers/a2_death.png' ,{frameHeight: 100, frameWidth: 100});
 
     //towers
@@ -144,8 +149,8 @@ let Enemy = new Phaser.Class({
         if (this.follower.t >= 1)
         {
             this.destroy();
-            LIVES--;
-            infoText.setText('HP: ' + LIVES + '\nCASH: ' + MONEY);
+            HEALTH--;
+            updateInfoText();
         }
     },
     startOnPath:
@@ -303,58 +308,48 @@ let Bullet = new Phaser.Class({
 });
 
 function create(){
-    background_main = this.add.image(640, 360, 'bg');       //background bude vzdy naspodku
+    //zaklad
     background = this.add.image(715, 415, 'bg1');           //background bude vzdy naspodku
-    infoText = this.add.text(800, 20, 'HP: ' + LIVES + '\nCASH: ' + MONEY, bigfont);      // -||-
     graphics = this.add.graphics();                         //cesty
+    this.add.image(50,380, 'ui_left');      //ui pozadie
+    this.add.image(640,20, 'ui_top');      //ui pozadie
+    waveText = this.add.text(100, 9, '1', bigfont);
+    hpText = this.add.text(200, 9, '', bigfont);
+    moneyText = this.add.text(300, 9, '', bigfont);
 
-    this.add.image(200,50, 'button');
-    selectedImg = this.add.image(200,50,'t1', SELECTED_TOWER-1);
+    updateInfoText();
+
+
+    //tower info
+    //this.add.image(200,50, 'button');
+    selectedImg = this.add.image(453,18,'t1', SELECTED_TOWER-1);
     selectedImg.setScale(HUD_ICON_SCALE);
-    selectedInfo = this.add.text(250,10,getTowerInfo(SELECTED_TOWER-1),smallfont);
-    this.add.image(30,693, 'button_small', 1).setInteractive().on('pointerdown', e => upgradeTool());
-    this.add.image(70,693, 'button_small', 2).setInteractive().on('pointerdown', e => sellTool());
-    this.add.image(30,693, 'button_icons', 0);
-    this.add.image(70,693, 'button_icons', 1);
-
+    selectedInfo = this.add.text(478,5,getTowerInfo(SELECTED_TOWER-1),textfont);
     updateTowerInfo();
+
+    //upgrade, sell
+    this.add.image(31,683, 'button_small', 1).setInteractive().on('pointerdown', e => upgradeTool());
+    this.add.image(66,683, 'button_small', 2).setInteractive().on('pointerdown', e => sellTool());
+    this.add.image(31,683, 'button_icons', 0);
+    this.add.image(66,683, 'button_icons', 1);
 
     //tlacidla nalavo
     for(let i=0; i<8; i++){
-        this.add.image(50,83*i+50, 'button').setInteractive().on('pointerdown', e => changeSelectedTower(i+1));
-        this.add.image(50,83*i+50, 't'+(i+1)).setScale(HUD_ICON_SCALE);
-        this.add.text(20,83*i+16, i+1, smallfont);
-        this.add.text(20,83*i+66, TOWER_PRICES[i]+'$', smallfont);
+        this.add.image(48,75*i+100, 'button').setInteractive().on('pointerdown', e => changeSelectedTower(i+1));
+        this.add.image(48,75*i+100, 't'+(i+1)).setScale(HUD_ICON_SCALE);
+        //this.add.text(20,73*i+16, i+1, smallfont);
+        this.add.text(19,75*i+117, TOWER_PRICES[i]+'$', smallfont_black).setStroke('#FFE000', 2);
     }
 
+    //selektor
     selector = this.add.image(0,0,'selector');
     moveSelector(SELECTED_TOWER-1);
 
+    //kurzor
     this.input.setDefaultCursor('url(assets/graphics/ui/cursor.cur), pointer');
 
     //generovanie animacii
-    //attackers
-    this.anims.create({key: "a2_normal", frameRate: 15, frames: this.anims.generateFrameNumbers("a2",{start:0, end:9}), repeat: -1});
-    this.anims.create({key: "a2_hurt", frameRate: 15, frames: this.anims.generateFrameNumbers("a2_hurt",{start:0, end:9}), repeat: 0});
-    this.anims.create({key: "a2_destroy", frameRate: 15, frames: this.anims.generateFrameNumbers("a2_destroy",{start:3, end:10}), repeat: 0});
-    //towers
-    this.anims.create({key: "t1_fire", frameRate: 15, frames: this.anims.generateFrameNumbers("t1",{start:8, end:0}), repeat: 0});
-    this.anims.create({key: "t2_fire", frameRate: 15, frames: this.anims.generateFrameNumbers("t2",{start:9, end:0}), repeat: 0});
-    this.anims.create({key: "t3_fire", frameRate: 15, frames: this.anims.generateFrameNumbers("t3",{start:0, end:10}), repeat: 0});
-    //projectiles
-    this.anims.create({key: "p1", frameRate: 15, frames: this.anims.generateFrameNumbers("p1",{start:0, end:6}), repeat: -1});
-    this.anims.create({key: "p1_destroy", frameRate: 15, frames: this.anims.generateFrameNumbers("p1_destroy",{start:0, end:4}), repeat: 0});
-    this.anims.create({key: "p2", frameRate: 15, frames: this.anims.generateFrameNumbers("p2",{start:0, end:4}), repeat: -1});
-    this.anims.create({key: "p2_destroy", frameRate: 15, frames: this.anims.generateFrameNumbers("p2_destroy",{start:0, end:3}), repeat: 0});
-    this.anims.create({key: "p3", frameRate: 15, frames: this.anims.generateFrameNumbers("p3",{start:0, end:6}), repeat: -1});
-    this.anims.create({key: "p3_destroy", frameRate: 10, frames: this.anims.generateFrameNumbers("p3_destroy",{start:3, end:6}), repeat: 0});
-
-    this.anims.create({key: "p17", frameRate: 15, frames: this.anims.generateFrameNumbers("p17_destroy",{start:1, end:4}), repeat: -1});         //blue electric
-    this.anims.create({key: "p17_destroy", frameRate: 15, frames: this.anims.generateFrameNumbers("p17_destroy",{start:2, end:3}), repeat: 0});
-    this.anims.create({key: "p18", frameRate: 1, frames: this.anims.generateFrameNumbers("p3_destroy",{start:4, end:5}), repeat: -1});  //explosion
-    this.anims.create({key: "p18_destroy", frameRate: 45, frames: this.anims.generateFrameNumbers("p3_destroy",{start:3, end:6}), repeat: 0});  //explosion
-    //ui
-    this.anims.create({key: "freespace_destroy", frameRate: 10, frames: this.anims.generateFrameNumbers("freespace",{start:0, end:1}), repeat: 3});
+    generateAnims();
 
     //tlacitka
     key1 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE);
@@ -420,9 +415,6 @@ function update(time, delta){
     if(key6.isDown){changeSelectedTower(6)}
     if(key7.isDown){changeSelectedTower(7)}
     if(key8.isDown){changeSelectedTower(8)}
-
-    //tocime ukazovatelom
-    selector.angle++;
 
     // spawn utocnika podla arrayu kazdych n milisekund
     if (time > this.nextEnemy){        
@@ -515,8 +507,8 @@ function changeSelectedTower(id){
 
 function moveSelector(position){
     selector.scale = 1;
-    selector.x = 50;
-    selector.y = 83*position+50;
+    selector.x = 48;
+    selector.y = 75*position+100;
 }
 
 function blinkAvailableSpaces(){
@@ -529,28 +521,28 @@ function blinkAvailableSpaces(){
 
 function sellTool(){
     SELECTED_TOWER = 0;
-    selectedImg.setTexture('button_icons', 1).setScale(2);
+    selectedImg.setTexture('button_icons', 1).setScale(1);
     selectedInfo.setText('Sell');
     game.input.setDefaultCursor('url(assets/graphics/ui/cursor_delete.cur), pointer');
 
     selector.scale = 0.5;
-    selector.x = 70;
-    selector.y = 693;
+    selector.x = 66;
+    selector.y = 683;
 }
 
 function upgradeTool(){
     SELECTED_TOWER = -2;
-    selectedImg.setTexture('button_icons', 0).setScale(2);
+    selectedImg.setTexture('button_icons', 0).setScale(1);
     selectedInfo.setText('Upgrade (WIP)');
     game.input.setDefaultCursor('url(assets/graphics/ui/cursor_upgrade.cur), pointer');
 
     selector.scale = 0.5;
-    selector.x = 30;
-    selector.y = 693;
+    selector.x = 31;
+    selector.y = 683;
 }
 
 function updateTowerInfo(){
-    selectedImg.setTexture('t'+(SELECTED_TOWER)).setScale(0.5);
+    selectedImg.setTexture('t'+(SELECTED_TOWER)).setScale(0.3);
     selectedInfo.setText(getTowerInfo(SELECTED_TOWER-1));
     game.input.setDefaultCursor('url(assets/graphics/ui/cursor.cur), pointer');
 }
@@ -558,4 +550,34 @@ function updateTowerInfo(){
 function getTowerInfo(type){
     return   'Damage: '+TOWER_DAMAGE[type]+', Delay: '+TOWER_SPEED[type]+ ', Range: '+TOWER_RANGE[type]+ ', Projectile speed: '+PROJECTILE_SPEED[type]+ ', Projectile lifespan: '+PROJECTILE_LIFESPAN[type]
             +'\nUpgrade: '+TOWER_UPGRADE_DESCRIPTION[type]+' - '+TOWER_PRICES[type]*4+'$';
+}
+
+function updateInfoText(){
+    hpText.setText(HEALTH);
+    moneyText.setText(MONEY);
+}
+
+function generateAnims(){
+    //attackers
+    game.anims.create({key: "a2_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a2",{start:0, end:9}), repeat: -1});
+    game.anims.create({key: "a2_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a2_hurt",{start:0, end:9}), repeat: 0});
+    game.anims.create({key: "a2_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a2_destroy",{start:3, end:10}), repeat: 0});
+    //towers
+    game.anims.create({key: "t1_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t1",{start:8, end:0}), repeat: 0});
+    game.anims.create({key: "t2_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t2",{start:9, end:0}), repeat: 0});
+    game.anims.create({key: "t3_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t3",{start:0, end:10}), repeat: 0});
+    //projectiles
+    game.anims.create({key: "p1", frameRate: 15, frames: game.anims.generateFrameNumbers("p1",{start:0, end:6}), repeat: -1});
+    game.anims.create({key: "p1_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("p1_destroy",{start:0, end:4}), repeat: 0});
+    game.anims.create({key: "p2", frameRate: 15, frames: game.anims.generateFrameNumbers("p2",{start:0, end:4}), repeat: -1});
+    game.anims.create({key: "p2_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("p2_destroy",{start:0, end:3}), repeat: 0});
+    game.anims.create({key: "p3", frameRate: 15, frames: game.anims.generateFrameNumbers("p3",{start:0, end:6}), repeat: -1});
+    game.anims.create({key: "p3_destroy", frameRate: 10, frames: game.anims.generateFrameNumbers("p3_destroy",{start:3, end:6}), repeat: 0});
+
+    game.anims.create({key: "p17", frameRate: 15, frames: game.anims.generateFrameNumbers("p17_destroy",{start:1, end:4}), repeat: -1});         //blue electric
+    game.anims.create({key: "p17_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("p17_destroy",{start:2, end:3}), repeat: 0});
+    game.anims.create({key: "p18", frameRate: 1, frames: game.anims.generateFrameNumbers("p3_destroy",{start:4, end:5}), repeat: -1});  //explosion
+    game.anims.create({key: "p18_destroy", frameRate: 45, frames: game.anims.generateFrameNumbers("p3_destroy",{start:3, end:6}), repeat: 0});  //explosion
+    //ui
+    game.anims.create({key: "freespace_destroy", frameRate: 10, frames: game.anims.generateFrameNumbers("freespace",{start:0, end:1}), repeat: 3});
 }
