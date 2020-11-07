@@ -88,7 +88,7 @@ function preload(){
     this.load.spritesheet('freespace', 'assets/graphics/ui/freespace.png' ,{frameHeight: 100, frameWidth: 100});
 
     //pozadia
-    this.load.image('bg1', 'assets/graphics/levels/bg1.png');
+    this.load.image('bg1', 'assets/graphics/levels/bg1.jpeg');
 
     //attackers
     this.load.spritesheet('a2', 'assets/graphics/attackers/a2.png' ,{frameHeight: 96, frameWidth: 55});
@@ -309,9 +309,9 @@ let Bullet = new Phaser.Class({
 
 function create(){
     //zaklad
-    background = this.add.image(715, 415, 'bg1');           //background bude vzdy naspodku
+    background = this.add.image(695, 380, 'bg1');           //background bude vzdy naspodku
     graphics = this.add.graphics();                         //cesty
-    this.add.image(50,380, 'ui_left');      //ui pozadie
+    this.add.image(55,380, 'ui_left');      //ui pozadie
     this.add.image(640,20, 'ui_top');      //ui pozadie
     waveText = this.add.text(100, 9, '1', bigfont);
     hpText = this.add.text(200, 9, '', bigfont);
@@ -328,17 +328,17 @@ function create(){
     updateTowerInfo();
 
     //upgrade, sell
-    this.add.image(31,683, 'button_small', 1).setInteractive().on('pointerdown', e => upgradeTool());
-    this.add.image(66,683, 'button_small', 2).setInteractive().on('pointerdown', e => sellTool());
-    this.add.image(31,683, 'button_icons', 0);
-    this.add.image(66,683, 'button_icons', 1);
+    this.add.image(36,683, 'button_small', 1).setInteractive().on('pointerdown', e => upgradeTool());
+    this.add.image(72,683, 'button_small', 2).setInteractive().on('pointerdown', e => sellTool());
+    this.add.image(36,683, 'button_icons', 0);
+    this.add.image(72,683, 'button_icons', 1);
 
     //tlacidla nalavo
     for(let i=0; i<8; i++){
-        this.add.image(48,75*i+100, 'button').setInteractive().on('pointerdown', e => changeSelectedTower(i+1));
-        this.add.image(48,75*i+100, 't'+(i+1)).setScale(HUD_ICON_SCALE);
+        this.add.image(53,75*i+100, 'button').setInteractive().on('pointerdown', e => changeSelectedTower(i+1));
+        this.add.image(53,75*i+100, 't'+(i+1)).setScale(HUD_ICON_SCALE);
         //this.add.text(20,73*i+16, i+1, smallfont);
-        this.add.text(19,75*i+117, TOWER_PRICES[i]+'$', smallfont_black).setStroke('#FFE000', 2);
+        this.add.text(24,75*i+117, TOWER_PRICES[i]+'$', smallfont_black).setStroke('#FFE000', 2);
     }
 
     //selektor
@@ -366,8 +366,8 @@ function create(){
     path.lineTo(320, 200);
     path.lineTo(520, 200);
     path.lineTo(520, 300);
-    path.lineTo(330, 500);
-    path.lineTo(1000, 500);
+    path.lineTo(330, 450);
+    path.lineTo(1000, 450);
     path.lineTo(1000, 110);
 
     graphics.lineStyle(3, 0xaaaaaa);
@@ -507,7 +507,7 @@ function changeSelectedTower(id){
 
 function moveSelector(position){
     selector.scale = 1;
-    selector.x = 48;
+    selector.x = 53;
     selector.y = 75*position+100;
 }
 
@@ -526,7 +526,7 @@ function sellTool(){
     game.input.setDefaultCursor('url(assets/graphics/ui/cursor_delete.cur), pointer');
 
     selector.scale = 0.5;
-    selector.x = 66;
+    selector.x = 72;
     selector.y = 683;
 }
 
@@ -537,7 +537,7 @@ function upgradeTool(){
     game.input.setDefaultCursor('url(assets/graphics/ui/cursor_upgrade.cur), pointer');
 
     selector.scale = 0.5;
-    selector.x = 31;
+    selector.x = 36;
     selector.y = 683;
 }
 
