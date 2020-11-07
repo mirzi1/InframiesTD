@@ -1,12 +1,14 @@
 let config = {
     type: Phaser.AUTO,
-    width: 1280,
-    height: 720,
-    parent: 'main-game',
+    scale:{
+        mode: Phaser.Scale.FIT,
+        parent: 'main-game',
+        width: 1280,
+        height: 720,
+    },
     physics: {
         default: 'arcade'
     },
-    antialias: false,
     scene: {
         preload: preload,
         create: create,
@@ -24,15 +26,6 @@ let path;
 let selector;
 let selectedImg;
 let selectedInfo;
-
-let key1;
-let key2;
-let key3;
-let key4;
-let key5;
-let key6;
-let key7;
-let key8;
 
 let WAVE = 1;
 let HEALTH = 100;
@@ -319,7 +312,6 @@ function create(){
 
     updateInfoText();
 
-
     //tower info
     //this.add.image(200,50, 'button');
     selectedImg = this.add.image(453,18,'t1', SELECTED_TOWER-1);
@@ -351,15 +343,26 @@ function create(){
     //generovanie animacii
     generateAnims();
 
-    //tlacitka
-    key1 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE);
-    key2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
-    key3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
-    key4 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR);
-    key5 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE);
-    key6 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SIX);
-    key7 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SEVEN);
-    key8 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.EIGHT);
+    //keyboard
+    let key1 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE);
+    let key2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
+    let key3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
+    let key4 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR);
+    let key5 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE);
+    let key6 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SIX);
+    let key7 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SEVEN);
+    let key8 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.EIGHT);
+    let keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
+
+    key1.on('down', function () {changeSelectedTower(1)}, this);
+    key2.on('down', function () {changeSelectedTower(2)}, this);
+    key3.on('down', function () {changeSelectedTower(3)}, this);
+    key4.on('down', function () {changeSelectedTower(4)}, this);
+    key5.on('down', function () {changeSelectedTower(5)}, this);
+    key6.on('down', function () {changeSelectedTower(6)}, this);
+    key7.on('down', function () {changeSelectedTower(7)}, this);
+    key8.on('down', function () {changeSelectedTower(8)}, this);
+    keyF.on('down', function () {this.scale.startFullscreen();}, this);
 
     //path 1
     path = this.add.path(320, 110);
@@ -379,6 +382,7 @@ function create(){
     AnimatedObjects = this.add.group({ classType: AnimatedObject, runChildUpdate: true });
 
     this.physics.add.overlap(enemies, bullets, damageEnemy);
+
     this.nextEnemy = 0;
 
     this.input.on('pointerdown', placeTower);
@@ -402,20 +406,6 @@ function create(){
 }
 
 function update(time, delta){
-    //keyboard
-    //tlac 1-8 pre Towery
-    //for(let i=1; i<8; i++){
-        //one day
-    //}
-    if(key1.isDown){changeSelectedTower(1)}
-    if(key2.isDown){changeSelectedTower(2)}
-    if(key3.isDown){changeSelectedTower(3)}
-    if(key4.isDown){changeSelectedTower(4)}
-    if(key5.isDown){changeSelectedTower(5)}
-    if(key6.isDown){changeSelectedTower(6)}
-    if(key7.isDown){changeSelectedTower(7)}
-    if(key8.isDown){changeSelectedTower(8)}
-
     // spawn utocnika podla arrayu kazdych n milisekund
     if (time > this.nextEnemy){        
         let enemy = enemies.get();
