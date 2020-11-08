@@ -21,19 +21,20 @@ let graphics;
 let waveText;
 let hpText;
 let moneyText;
+let nextWaveButton;
 let background;
 let path;
 let selector;
 let selectedImg;
 let selectedInfo;
+let blinkSpaces = true;
 
-let WAVE = 1;
+let WAVE = 0;
 let HEALTH = 100;
 let MONEY = 100;
 let SELECTED_TOWER = 1;
 
-const ENEMY_SPEED = 1/10000;
-const BULLET_DAMAGE = 30;
+const WAVE_SPEED = 500;
 
 const bigfont = { font: "bold 22px font1", fill: "#3CCEFF", boundsAlignH: "center", boundsAlignV: "middle" };
 const smallfont = { font: "12px font1", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
@@ -41,6 +42,14 @@ const smallfont_black = { font: "12px font1", fill: "#000", boundsAlignH: "cente
 const textfont = { font: "bold 10px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 
 const HUD_ICON_SCALE = 0.5;
+
+const ENEMY_HEALTH = [100,200,300,400,500,600,700,1000];
+//const ENEMY_SPEED = [1/5000,1/10000,1/10000,1/10000,1/10000,1/10000,1/10000,1/10000];
+const ENEMY_SPEED = 1/10000
+const ENEMY_REWARD = [10,20,30,40,50,100,200,1000];
+let waveInProgress = false;
+let nextEnemy = 0;
+let waveIndex = 0;
 
 const TOWER_PRICES = [100,200,300,400,500,600,700,1000];
 const TOWER_SPEED = [700,1400,2000,1000,1000,1000,1000,1000];
@@ -56,9 +65,6 @@ const PROJECTILE_SPEED = [500,600,450,400,500,600,700,1000,
 const PROJECTILE_LIFESPAN = [500,500,1500,500,500,500,500,500,
                              500,500,500,500,500,500,500,500,
                              700, 200];
-
-const ENEMY_HEALTH = [100,200,300,400,500,600,700,1000];
-const ENEMY_REWARD = [100,200,300,400,500,600,700,1000];
 
 const GRID_W = 50;
 const GRID_H = 50;
@@ -79,12 +85,17 @@ let level1 =       [[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
                     [-1,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1,-1,-1, 0, 0, 0,-1],
                     [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]];
 
+const waves = [ [1,0,1,0,1,0,1],
+                [1,1,0,0,1,1,1,0,0,1,1,1,1,1]
+              ];
+
 function preload(){
     //nacitanie spritov
     //ui
     this.load.image('ui_top', 'assets/graphics/ui/UI_top.png');
     this.load.image('ui_left', 'assets/graphics/ui/UI_left.png');
     this.load.image('button', 'assets/graphics/ui/button.png');
+    this.load.image('button_nextwave', 'assets/graphics/ui/button_nextwave.png');
     this.load.image('selector', 'assets/graphics/ui/selector.png');
     this.load.spritesheet('button_small', 'assets/graphics/ui/button_small.png' ,{frameHeight: 35, frameWidth: 35});
     this.load.spritesheet('button_icons', 'assets/graphics/ui/button_icons.png' ,{frameHeight: 24, frameWidth: 16});
@@ -94,6 +105,9 @@ function preload(){
     this.load.image('bg1', 'assets/graphics/levels/bg1.jpeg');
 
     //attackers
+    this.load.spritesheet('a1', 'assets/graphics/attackers/a1.png' ,{frameHeight: 50, frameWidth: 50});
+    this.load.spritesheet('a1_hurt', 'assets/graphics/attackers/a1_hurt.png' ,{frameHeight: 50, frameWidth: 50});
+    this.load.spritesheet('a1_destroy', 'assets/graphics/attackers/a1_death.png' ,{frameHeight:50, frameWidth: 50});
     this.load.spritesheet('a2', 'assets/graphics/attackers/a2.png' ,{frameHeight: 96, frameWidth: 55});
     this.load.spritesheet('a2_hurt', 'assets/graphics/attackers/a2_hurt.png' ,{frameHeight: 96, frameWidth: 54});
     this.load.spritesheet('a2_destroy', 'assets/graphics/attackers/a2_death.png' ,{frameHeight: 100, frameWidth: 100});
@@ -145,9 +159,6 @@ let Enemy = new Phaser.Class({
         this.prevx = this.x;
         this.prevy = this.y;
 
-        //trash
-        //this.setFrame(animFrame);
-
         // akcie po dokonceni cesty
         if (this.follower.t >= 1)
         {
@@ -193,11 +204,9 @@ let AnimatedObject = new Phaser.Class({
             if(direction){this.setFlip(true)}
             switch(sprite){
                 case 'p3': this.play('p3_destroy');this.setScale(4);break;
-                default: this.play(sprite+'_destroy');break;
+                case 'freespace': this.play('freespace_destroy');this.once('animationcomplete', ()=>{this.destroy(); blinkSpaces = true;});break;
+                default: this.play(sprite+'_destroy');this.once('animationcomplete', ()=>{this.destroy()});break;
             }
-            this.once('animationcomplete', ()=>{
-                this.destroy();
-            });
         }
 });
 
@@ -335,6 +344,9 @@ function create(){
     this.add.image(36,683, 'button_icons', 0);
     this.add.image(72,683, 'button_icons', 1);
 
+    //nextwave
+    nextWaveButton = this.add.image(1140,20, 'button_nextwave').setInteractive().on('pointerdown', e => nextWave());
+
     //tlacidla nalavo
     for(let i=0; i<8; i++){
         this.add.image(53,75*i+100, 'button').setInteractive().on('pointerdown', e => changeSelectedTower(i+1));
@@ -400,20 +412,23 @@ function create(){
 
 function update(time, delta){
     // spawn utocnika podla arrayu kazdych n milisekund
-    if (time > this.nextEnemy){        
-        let enemy = enemies.get();
-        if (enemy)
-        {
-            enemy.setActive(true);
-            enemy.setVisible(true);
-            
-            // ulozenie utocnika na zaciatok
-            enemy.startOnPath();
-            
-            this.nextEnemy = time + 500;
-        }   
-    }
+    if (waveInProgress && time > this.nextEnemy){
+        if(waveIndex<waves[WAVE-1].length){
+            nextEnemy=waves[WAVE-1][waveIndex];
+            if(nextEnemy != 0){
+                let enemy = enemies.get();
+                if (enemy){
+                    enemy.setActive(true);
+                    enemy.setVisible(true);
 
+                    // ulozenie utocnika na zaciatok
+                    enemy.startOnPath();
+                }
+            }
+            waveIndex++;
+        }else{console.log('end of wave '+WAVE+' reached');waveInProgress=false;nextWaveButton.visible = true;}
+        this.nextEnemy = time + WAVE_SPEED;
+    }
 }
 
 function placeTower(pointer) {
@@ -477,7 +492,6 @@ function damageEnemy(enemy, bullet) {
 
         bullet.destroy();
 
-        // decrease the enemy hp with BULLET_DAMAGE
         enemy.receiveDamage(TOWER_DAMAGE[bullet.type - 1]);
     }
 }
@@ -495,9 +509,12 @@ function moveSelector(position){
 }
 
 function blinkAvailableSpaces(){
-    for(let i = 0; i<level1.length; i++){
-        for(let j = 0; j<level1[i].length; j++){
-            if(level1[i][j]==0){createAnimated(25+GRID_H*j,25+GRID_W*i,'freespace', false);}
+    if(blinkSpaces){
+        blinkSpaces=false;
+        for(let i = 0; i<level1.length; i++){
+            for(let j = 0; j<level1[i].length; j++){
+                if(level1[i][j]==0){createAnimated(25+GRID_H*j,25+GRID_W*i,'freespace', false);}
+            }
         }
     }
 }
@@ -540,8 +557,22 @@ function updateInfoText(){
     moneyText.setText(MONEY);
 }
 
+function nextWave(){
+    if(WAVE+1<waves.length+1){
+        WAVE++;
+        console.log('starting wave '+ WAVE);
+        waveInProgress=true;
+        waveIndex = 0;
+        waveText.setText(WAVE);
+        nextWaveButton.visible = false;
+    }else{console.log('no more waves in array!')}
+}
+
 function generateAnims(){
     //attackers
+    game.anims.create({key: "a1_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a2",{start:0, end:6}), repeat: -1});
+    game.anims.create({key: "a1_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a2_hurt",{start:0, end:10}), repeat: 0});
+    game.anims.create({key: "a1_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a2_destroy",{start:0, end:10}), repeat: 0});
     game.anims.create({key: "a2_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a2",{start:0, end:9}), repeat: -1});
     game.anims.create({key: "a2_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a2_hurt",{start:0, end:9}), repeat: 0});
     game.anims.create({key: "a2_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a2_destroy",{start:3, end:10}), repeat: 0});
