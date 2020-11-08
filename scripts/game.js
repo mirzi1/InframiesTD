@@ -53,7 +53,7 @@ let waveIndex = 0;
 
 const TOWER_PRICES = [100,200,300,400,500,600,700,1000];
 const TOWER_SPEED = [700,1400,2000,1000,1000,1000,1000,1000];
-const TOWER_RANGE = [400,400,200,200,200,200,200,200]
+const TOWER_RANGE = [400,400,350,200,200,200,200,200]
 const TOWER_UPGRADE_DESCRIPTION = ['Double damage, see hidden enemies', '3 electrical bolts on hit', 'faster reload, bigger explosions', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL']
 
 const TOWER_DAMAGE = [100,200,500,400,500,600,700,1000,
@@ -85,8 +85,8 @@ let level1 =       [[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
                     [-1,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1,-1,-1, 0, 0, 0,-1],
                     [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]];
 
-const waves = [ [1,0,1,0,1,0,1],
-                [1,1,0,0,1,1,1,0,0,1,1,1,1,1]
+const waves = [ [1,0,1,0,1,0,2],
+                [1,1,0,0,1,1,1,0,0,1,1,1,1,2]
               ];
 
 function preload(){
@@ -203,7 +203,7 @@ let AnimatedObject = new Phaser.Class({
             this.y = y;
             if(direction){this.setFlip(true)}
             switch(sprite){
-                case 'p3': this.play('p3_destroy');this.setScale(4);break;
+                case 'p3': this.play('p3_destroy');this.setScale(4);this.once('animationcomplete', ()=>{this.destroy()});break;
                 case 'freespace': this.play('freespace_destroy');this.once('animationcomplete', ()=>{this.destroy(); blinkSpaces = true;});break;
                 default: this.play(sprite+'_destroy');this.once('animationcomplete', ()=>{this.destroy()});break;
             }
@@ -412,22 +412,28 @@ function create(){
 
 function update(time, delta){
     // spawn utocnika podla arrayu kazdych n milisekund
-    if (waveInProgress && time > this.nextEnemy){
-        if(waveIndex<waves[WAVE-1].length){
-            nextEnemy=waves[WAVE-1][waveIndex];
-            if(nextEnemy != 0){
-                let enemy = enemies.get();
-                if (enemy){
-                    enemy.setActive(true);
-                    enemy.setVisible(true);
+    if(waveInProgress){
+        if (time > this.nextEnemy){
+            if(waveIndex<waves[WAVE-1].length){
+                nextEnemy=waves[WAVE-1][waveIndex];
+                if(nextEnemy != 0){
+                    let enemy = enemies.get();
+                    if (enemy){
+                        enemy.setActive(true);
+                        enemy.setVisible(true);
 
-                    // ulozenie utocnika na zaciatok
-                    enemy.startOnPath();
+                        // ulozenie utocnika na zaciatok
+                        enemy.startOnPath();
+                    }
                 }
+                waveIndex++;
+            }else if(enemies.countActive() == 0){
+                console.log('end of wave '+WAVE+' reached');waveInProgress=false;
+                if(WAVE<waves.length){nextWaveButton.visible = true;}
+                else{this.add.text(500, 400, 'LEVEL COMPLETE!', bigfont);}
             }
-            waveIndex++;
-        }else{console.log('end of wave '+WAVE+' reached');waveInProgress=false;nextWaveButton.visible = true;}
-        this.nextEnemy = time + WAVE_SPEED;
+            this.nextEnemy = time + WAVE_SPEED;
+        }
     }
 }
 
@@ -558,7 +564,7 @@ function updateInfoText(){
 }
 
 function nextWave(){
-    if(WAVE+1<waves.length+1){
+    if(WAVE<waves.length){
         WAVE++;
         console.log('starting wave '+ WAVE);
         waveInProgress=true;
