@@ -60,14 +60,24 @@ const PROJECTILE_LIFESPAN = [500,500,1500,500,500,500,500,500,
 const ENEMY_HEALTH = [100,200,300,400,500,600,700,1000];
 const ENEMY_REWARD = [100,200,300,400,500,600,700,1000];
 
-let level1 =       [[ -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, -1],
-                    [ -1, 0, 0,-1,-1,-1, 0,-1, 0,-1,-1, 0, 0],
-                    [ -1, 0, 0,-1,-1,-1, 0,-1, 0,-1,-1, 0, 0],
-                    [ -1, 0, 0,-1,-1,-1, 0, 0, 0,-1,-1, 0, 0],
-                    [ -1, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0],
-                    [ -1, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0],
-                    [ -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [ -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]];
+const GRID_W = 50;
+const GRID_H = 50;
+
+let level1 =       [[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
+                    [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
+                    [-1,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1,-1,-1, 0, 0, 0,-1],
+                    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]];
 
 function preload(){
     //nacitanie spritov
@@ -78,7 +88,7 @@ function preload(){
     this.load.image('selector', 'assets/graphics/ui/selector.png');
     this.load.spritesheet('button_small', 'assets/graphics/ui/button_small.png' ,{frameHeight: 35, frameWidth: 35});
     this.load.spritesheet('button_icons', 'assets/graphics/ui/button_icons.png' ,{frameHeight: 24, frameWidth: 16});
-    this.load.spritesheet('freespace', 'assets/graphics/ui/freespace.png' ,{frameHeight: 100, frameWidth: 100});
+    this.load.spritesheet('freespace', 'assets/graphics/ui/freespace.png' ,{frameHeight: 50, frameWidth: 50});
 
     //pozadia
     this.load.image('bg1', 'assets/graphics/levels/bg1.jpeg');
@@ -91,7 +101,7 @@ function preload(){
     //towers
     this.load.spritesheet('t1', 'assets/graphics/towers/t1.png' ,{frameHeight: 100, frameWidth: 100});
     this.load.spritesheet('t2', 'assets/graphics/towers/t2.png' ,{frameHeight: 100, frameWidth: 100});
-    this.load.spritesheet('t3', 'assets/graphics/towers/t3.png' ,{frameHeight: 80, frameWidth: 120});
+    this.load.spritesheet('t3', 'assets/graphics/towers/t3.png' ,{frameHeight: 120, frameWidth: 80});
 
     //projectiles
     this.load.spritesheet('p1', 'assets/graphics/projectiles/p1.png' ,{frameHeight: 20, frameWidth: 20});
@@ -209,7 +219,7 @@ let Tower = new Phaser.Class({
             //TODO: riadny spsob vyberu kliknutim
             this.setInteractive().on('pointerdown', e => {
                 if(SELECTED_TOWER == 0){
-                    this.i = Math.floor(this.y / 100);this.j = Math.floor(this.x / 100);
+                    this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
                     level1[this.i][this.j] = 0;
                     //changeSelectedTower(this.TowerType);
                     this.destroy();
@@ -219,8 +229,8 @@ let Tower = new Phaser.Class({
     place: function(i, j) {
         //polozenie - pozicia a typ
         if(SELECTED_TOWER != 0){
-            this.y = i * 100 + 100/2;
-            this.x = j * 100 + 100/2;
+            this.y = i * GRID_H + GRID_H/2;
+            this.x = j * GRID_W + GRID_W/2;
             level1[i][j] = this.TowerType;
         }
     },
@@ -232,7 +242,7 @@ let Tower = new Phaser.Class({
             addBullet(this.x, this.y, angle, this.TowerType);
             //otacanie podla druhu Towery
             switch(this.TowerType){
-                case 1: case 3: this.angle = (((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG )-90); break;
+                case 1: case 3: this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG ); break;
             }
             //animacia vystrelu
             this.play('t'+this.TowerType+'_fire');
@@ -386,23 +396,6 @@ function create(){
     this.nextEnemy = 0;
 
     this.input.on('pointerdown', placeTower);
-
-    /*
-    var particles = this.add.particles('particle');
-
-    var emitter = particles.createEmitter({
-        speed: 100,
-        scale: { start: 1, end: 0 },
-        blendMode: 'ADD'
-    });
-
-    logo = this.physics.add.image(400, 100, 'logo');
-
-    logo.setVelocity(100, 200);
-    logo.setBounce(1, 1);
-    logo.setCollideWorldBounds(true);
-
-    emitter.startFollow(logo);*/
 }
 
 function update(time, delta){
@@ -424,9 +417,9 @@ function update(time, delta){
 }
 
 function placeTower(pointer) {
-    if(pointer.x>100 && SELECTED_TOWER != 0) {
-        let i = Math.floor(pointer.y / 100);
-        let j = Math.floor(pointer.x / 100);
+    if(pointer.x>100 && pointer.y>40 && SELECTED_TOWER != 0) {
+        let i = Math.floor(pointer.y / GRID_H);
+        let j = Math.floor(pointer.x / GRID_W);
         if (canPlaceTower(i, j)) {
             let Tower = Towers.get();
             if (Tower) {
@@ -504,7 +497,7 @@ function moveSelector(position){
 function blinkAvailableSpaces(){
     for(let i = 0; i<level1.length; i++){
         for(let j = 0; j<level1[i].length; j++){
-            if(level1[i][j]==0){createAnimated(50+100*j,50+100*i,'freespace', false);}
+            if(level1[i][j]==0){createAnimated(25+GRID_H*j,25+GRID_W*i,'freespace', false);}
         }
     }
 }
@@ -569,5 +562,5 @@ function generateAnims(){
     game.anims.create({key: "p18", frameRate: 1, frames: game.anims.generateFrameNumbers("p3_destroy",{start:4, end:5}), repeat: -1});  //explosion
     game.anims.create({key: "p18_destroy", frameRate: 45, frames: game.anims.generateFrameNumbers("p3_destroy",{start:3, end:6}), repeat: 0});  //explosion
     //ui
-    game.anims.create({key: "freespace_destroy", frameRate: 10, frames: game.anims.generateFrameNumbers("freespace",{start:0, end:1}), repeat: 3});
+    game.anims.create({key: "freespace_destroy", frameRate: 10, frames: game.anims.generateFrameNumbers("freespace",{start:0, end:3}), repeat: 0});
 }
