@@ -7,6 +7,13 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -19,7 +26,21 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="settings.editor.selected.configurable" value="discord-project" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="preferences.editor" />
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -48,6 +69,7 @@
       <workItem from="1604738856876" duration="7966000" />
       <workItem from="1604754902790" duration="1425000" />
       <workItem from="1604827952494" duration="8568000" />
+      <workItem from="1604919903156" duration="4966000" />
     </task>
     <servers />
   </component>
@@ -55,9 +77,10 @@
     <option name="version" value="3" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="2381" y="421" key="SettingsEditor" timestamp="1603636572709">
-      <screen x="1920" y="252" width="1920" height="1050" />
+    <state x="461" y="167" key="SettingsEditor" timestamp="1604920161275">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
+    <state x="461" y="167" key="SettingsEditor/0.0.1920.1040/-1920.-121.1920.1160@0.0.1920.1040" timestamp="1604920161275" />
     <state x="2381" y="421" key="SettingsEditor/1920.252.1920.1050/0.0.1920.1050@1920.252.1920.1050" timestamp="1603636572709" />
     <state x="616" y="243" key="run.anything.popup" timestamp="1604745790985">
       <screen x="0" y="0" width="1920" height="1050" />
