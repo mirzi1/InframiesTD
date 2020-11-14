@@ -29,6 +29,7 @@ let selectedImg;
 let selectedInfo;
 let blinkSpaces = true;
 
+let LEVEL = 1;
 let WAVE = 0;
 let HEALTH = 100;
 let MONEY = 100;
@@ -46,6 +47,8 @@ const HUD_ICON_SCALE = 0.5;
 const ENEMY_HEALTH = [100,200,300,400,500,600,700,1000];
 const ENEMY_SPEED = [1/8000,1/10000,1/10000,1/10000,1/10000,1/10000,1/10000,1/10000];
 const ENEMY_REWARD = [10,20,30,40,50,100,200,1000];
+const LEVEL_SPEED_MODIFIER = [0.7, 1, 1];
+
 let waveInProgress = false;
 let nextEnemy = 0;
 let waveIndex = 0;
@@ -144,7 +147,7 @@ let Enemy = new Phaser.Class({
     function(time, delta){
 
         // move the t point along the path, 0 is the start and 0 is the end
-        this.follower.t += ENEMY_SPEED[this.id-1] * delta;
+        this.follower.t += ENEMY_SPEED[this.id-1] * delta * LEVEL_SPEED_MODIFIER[LEVEL-1];
         // get the new x and y coordinates in vec
         path.getPoint(this.follower.t, this.follower.vec);
         // update enemy x and y to the newly obtained x and y
@@ -383,15 +386,18 @@ function create(){
     let keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)    .on('down', function () {this.scale.startFullscreen();}, this);
 
     //path 1
-    path = this.add.path(280, 110);
-    path.lineTo(280, 200);
-    path.lineTo(520, 200);
-    path.lineTo(520, 300);
-    path.lineTo(280, 450);
+    path = this.add.path(250, 100);
+    path.lineTo(510, 150);
+    path.lineTo(250, 200);
+    path.lineTo(510, 250);
+    path.lineTo(250, 300);
+    path.lineTo(510, 350);
+    path.lineTo(250, 400);
+    path.lineTo(510, 450);
     path.lineTo(1000, 450);
     path.lineTo(1000, 110);
 
-    graphics.lineStyle(3, 0xaaaaaa);
+    graphics.lineStyle(3, 0xaaaaaa).alpha = 0.8;
     path.draw(graphics);
 
     Towers = this.add.group({ classType: Tower, runChildUpdate: true });
@@ -425,7 +431,7 @@ function update(time, delta){
                 waveIndex++;
             }else if(enemies.countActive() == 0){
                 console.log('end of wave '+WAVE+' reached');waveInProgress=false;
-                if(WAVE<waves.length){nextWaveButton.visible = true;}
+                if(WAVE<waves.length){nextWaveButton.visible = true;graphics.alpha = 0.8;}
                 else{this.add.text(500, 400, 'LEVEL COMPLETE!', bigfont);}
             }
             this.nextEnemy = time + WAVE_SPEED;
@@ -567,6 +573,7 @@ function nextWave(){
         waveIndex = 0;
         waveText.setText(WAVE);
         nextWaveButton.visible = false;
+        graphics.alpha = 0.3;
     }else{console.log('no more waves in array!')}
 }
 
