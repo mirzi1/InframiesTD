@@ -57,7 +57,8 @@
       <workItem from="1604754902790" duration="1425000" />
       <workItem from="1604827952494" duration="8568000" />
       <workItem from="1604919903156" duration="4966000" />
-      <workItem from="1605365651819" duration="1937000" />
+      <workItem from="1605365651819" duration="2080000" />
+      <workItem from="1605367800776" duration="4347000" />
     </task>
     <servers />
   </component>
@@ -65,14 +66,18 @@
     <option name="version" value="3" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="540" y="259" key="IDE.errors.dialog" timestamp="1605367781718">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="540" y="259" key="IDE.errors.dialog/1920.252.1920.1050/0.0.1920.1050@0.0.1920.1050" timestamp="1605367781718" />
     <state x="461" y="167" key="SettingsEditor" timestamp="1604920161275">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="461" y="167" key="SettingsEditor/0.0.1920.1040/-1920.-121.1920.1160@0.0.1920.1040" timestamp="1604920161275" />
     <state x="2381" y="421" key="SettingsEditor/1920.252.1920.1050/0.0.1920.1050@1920.252.1920.1050" timestamp="1603636572709" />
-    <state x="616" y="243" key="run.anything.popup" timestamp="1604745790985">
+    <state x="616" y="243" key="run.anything.popup" timestamp="1605369126968">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state x="616" y="243" key="run.anything.popup/1920.252.1920.1050/0.0.1920.1050@0.0.1920.1050" timestamp="1604745790985" />
+    <state x="616" y="243" key="run.anything.popup/1920.252.1920.1050/0.0.1920.1050@0.0.1920.1050" timestamp="1605369126968" />
   </component>
 </project>

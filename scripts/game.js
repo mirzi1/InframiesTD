@@ -27,9 +27,11 @@ let path;
 let selector;
 let selectedImg;
 let selectedInfo;
+let uitop;
+let uileft
 let blinkSpaces = true;
 
-let LEVEL = 1;
+let LEVEL = 0;
 let WAVE = 0;
 let HEALTH = 100;
 let MONEY = 100;
@@ -98,6 +100,7 @@ function preload(){
     this.load.image('ui_left', 'assets/graphics/ui/UI_left.png');
     this.load.image('button', 'assets/graphics/ui/button.png');
     this.load.image('button_nextwave', 'assets/graphics/ui/button_nextwave.png');
+    this.load.image('button_nextLevel', 'assets/graphics/ui/button_nextlevel.png');
     this.load.image('selector', 'assets/graphics/ui/selector.png');
     this.load.spritesheet('button_small', 'assets/graphics/ui/button_small.png' ,{frameHeight: 35, frameWidth: 35});
     this.load.spritesheet('button_icons', 'assets/graphics/ui/button_icons.png' ,{frameHeight: 24, frameWidth: 16});
@@ -105,6 +108,8 @@ function preload(){
 
     //pozadia
     this.load.image('bg1', 'assets/graphics/levels/bg1.jpeg');
+    this.load.image('bg2', 'assets/graphics/levels/bg2.jpeg');
+    this.load.image('bg3', 'assets/graphics/levels/bg3.jpeg');
 
     //attackers
     this.load.spritesheet('a1', 'assets/graphics/attackers/a1.png' ,{frameHeight: 50, frameWidth: 50});
@@ -330,14 +335,19 @@ let Bullet = new Phaser.Class({
 
 function create(){
     //zaklad
-    background = this.add.image(695, 380, 'bg1');           //background bude vzdy naspodku
+    background = this.add.image(695, 380);           //background bude vzdy naspodku
     graphics = this.add.graphics();                         //cesty
-    this.add.image(55,380, 'ui_left');      //ui pozadie
-    this.add.image(640,20, 'ui_top');      //ui pozadie
+    uileft = this.add.image(55,380, 'ui_left');
+    uitop = this.add.image(640,20, 'ui_top');
     waveText = this.add.text(100, 9, '1', bigfont);
     hpText = this.add.text(200, 9, '', bigfont);
     moneyText = this.add.text(300, 9, '', bigfont);
+    graphics.lineStyle(3, 0xaaaaaa).alpha = 0.8;
 
+    //nextwave
+    nextWaveButton = this.add.image(1140,20, 'button_nextwave').setInteractive().on('pointerdown', e => nextWave());
+
+    nextLevel();
     updateInfoText();
 
     //tower info
@@ -353,8 +363,6 @@ function create(){
     this.add.image(36,683, 'button_icons', 0);
     this.add.image(72,683, 'button_icons', 1);
 
-    //nextwave
-    nextWaveButton = this.add.image(1140,20, 'button_nextwave').setInteractive().on('pointerdown', e => nextWave());
 
     //tlacidla nalavo
     for(let i=0; i<8; i++){
@@ -375,30 +383,15 @@ function create(){
     generateAnims();
 
     //keyboard
-    let key1 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE)  .on('down', function () {changeSelectedTower(1)}, this);
-    let key2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO)  .on('down', function () {changeSelectedTower(2)}, this);
-    let key3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE).on('down', function () {changeSelectedTower(3)}, this);
-    let key4 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR) .on('down', function () {changeSelectedTower(4)}, this);
-    let key5 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE) .on('down', function () {changeSelectedTower(5)}, this);
-    let key6 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SIX)  .on('down', function () {changeSelectedTower(6)}, this);
-    let key7 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SEVEN).on('down', function () {changeSelectedTower(7)}, this);
-    let key8 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.EIGHT).on('down', function () {changeSelectedTower(8)}, this);
-    let keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)    .on('down', function () {this.scale.startFullscreen();}, this);
-
-    //path 1
-    path = this.add.path(250, 100);
-    path.lineTo(510, 150);
-    path.lineTo(250, 200);
-    path.lineTo(510, 250);
-    path.lineTo(250, 300);
-    path.lineTo(510, 350);
-    path.lineTo(250, 400);
-    path.lineTo(510, 450);
-    path.lineTo(1000, 450);
-    path.lineTo(1000, 110);
-
-    graphics.lineStyle(3, 0xaaaaaa).alpha = 0.8;
-    path.draw(graphics);
+    let key1 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE)  .on('down', function() {changeSelectedTower(1)}, this);
+    let key2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO)  .on('down', function() {changeSelectedTower(2)}, this);
+    let key3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE).on('down', function() {changeSelectedTower(3)}, this);
+    let key4 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR) .on('down', function() {changeSelectedTower(4)}, this);
+    let key5 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE) .on('down', function() {changeSelectedTower(5)}, this);
+    let key6 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SIX)  .on('down', function() {changeSelectedTower(6)}, this);
+    let key7 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SEVEN).on('down', function() {changeSelectedTower(7)}, this);
+    let key8 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.EIGHT).on('down', function() {changeSelectedTower(8)}, this);
+    let keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)    .on('down', function() {this.scale.startFullscreen();}, this);
 
     Towers = this.add.group({ classType: Tower, runChildUpdate: true });
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
@@ -430,9 +423,9 @@ function update(time, delta){
                 }
                 waveIndex++;
             }else if(enemies.countActive() == 0){
-                console.log('end of wave '+WAVE+' reached');waveInProgress=false;
-                if(WAVE<waves.length){nextWaveButton.visible = true;graphics.alpha = 0.8;}
-                else{this.add.text(500, 400, 'LEVEL COMPLETE!', bigfont);}
+                console.log('end of wave '+WAVE+' reached');waveInProgress=false;nextWaveButton.visible = true;graphics.alpha = 0.8;
+                if(WAVE<waves.length){/*hmmmmm*/}
+                else{nextWaveButton.setTexture("button_nextLevel");}
             }
             this.nextEnemy = time + WAVE_SPEED;
         }
@@ -574,7 +567,31 @@ function nextWave(){
         waveText.setText(WAVE);
         nextWaveButton.visible = false;
         graphics.alpha = 0.3;
-    }else{console.log('no more waves in array!')}
+    }else{nextLevel();console.log('no more waves in array!')}
+}
+
+function nextLevel(){
+    LEVEL++;
+    WAVE = 0;
+    background.setTexture('bg'+LEVEL);
+    nextWaveButton.setTexture("button_nextwave");
+    switch(LEVEL){
+        case 1: uileft.setTint(0x3cceff);uitop.setTint(0x3cceff);nextWaveButton.setTint(0x3cceff);
+                path = new Phaser.Curves.Path(250, 100);
+                path.lineTo(510, 150);
+                path.lineTo(250, 200);
+                path.lineTo(510, 250);
+                path.lineTo(250, 300);
+                path.lineTo(510, 350);
+                path.lineTo(250, 400);
+                path.lineTo(510, 450);
+                path.lineTo(1000, 450);
+                path.lineTo(1000, 110);
+                break;
+        case 2: uileft.setTint(0xff0054);uitop.setTint(0xff0054);waveText.setColor("#ff0054");hpText.setColor("#ff0054");moneyText.setColor("#ff0054");nextWaveButton.setTint(0xff0054);break;
+        case 3: uileft.setTint(0x00ff00);uitop.setTint(0x00ff00);waveText.setColor("#00ff00");hpText.setColor("#00ff00");moneyText.setColor("#00ff00");nextWaveButton.setTint(0x00ff00);break;
+    }
+    path.draw(graphics);
 }
 
 function generateAnims(){
