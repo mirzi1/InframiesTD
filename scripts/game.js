@@ -44,8 +44,7 @@ const textfont = { font: "bold 10px Arial", fill: "#fff", boundsAlignH: "center"
 const HUD_ICON_SCALE = 0.5;
 
 const ENEMY_HEALTH = [100,200,300,400,500,600,700,1000];
-//const ENEMY_SPEED = [1/5000,1/10000,1/10000,1/10000,1/10000,1/10000,1/10000,1/10000];
-const ENEMY_SPEED = 1/10000
+const ENEMY_SPEED = [1/8000,1/10000,1/10000,1/10000,1/10000,1/10000,1/10000,1/10000];
 const ENEMY_REWARD = [10,20,30,40,50,100,200,1000];
 let waveInProgress = false;
 let nextEnemy = 0;
@@ -132,8 +131,10 @@ let Enemy = new Phaser.Class({
     Extends: Phaser.GameObjects.Sprite,
     initialize:
     function Enemy(game){
-        Phaser.GameObjects.Sprite.call(this,game,0,0,'a2');
-        this.play('a2_normal');
+        this.id = nextEnemy;
+        //console.log("spawning "+nextEnemy);
+        Phaser.GameObjects.Sprite.call(this,game,0,0,'a'+this.id);
+        this.play('a'+this.id+'_normal');
         this.follower = {t: 0, vec: new Phaser.Math.Vector2()};
         this.hp = 0;
         this.prevx = 0;
@@ -143,7 +144,7 @@ let Enemy = new Phaser.Class({
     function(time, delta){
 
         // move the t point along the path, 0 is the start and 0 is the end
-        this.follower.t += ENEMY_SPEED * delta;
+        this.follower.t += ENEMY_SPEED[this.id-1] * delta;
         // get the new x and y coordinates in vec
         path.getPoint(this.follower.t, this.follower.vec);
         // update enemy x and y to the newly obtained x and y
@@ -162,6 +163,7 @@ let Enemy = new Phaser.Class({
         // akcie po dokonceni cesty
         if (this.follower.t >= 1)
         {
+            this.setActive(false);
             this.destroy();
             HEALTH--;
             updateInfoText();
@@ -169,7 +171,7 @@ let Enemy = new Phaser.Class({
     },
     startOnPath:
     function(){
-        this.hp = 100;
+        this.hp = ENEMY_HEALTH[this.id-1];
         this.follower.t = 0;
         path.getPoint(this.follower.t, this.follower.vec);
         this.setPosition(this.follower.vec.x, this.follower.vec.y);
@@ -178,14 +180,17 @@ let Enemy = new Phaser.Class({
     function(damage) {
         this.hp -= damage;
 
-        this.play('a2_hurt');
+        this.play('a'+this.id+'_hurt');
         this.once('animationcomplete', ()=>{
-            this.play('a2_normal');
+            this.play('a'+this.id+'_normal');
         });
 
         // if hp drops below 0 we deactivate this enemy
         if(this.hp <= 0) {
-            createAnimated(this.x,this.y,'a2', this.flipX);
+            MONEY+=ENEMY_REWARD[this.id-1];
+            updateInfoText();
+            createAnimated(this.x,this.y,'a'+this.id, this.flipX);
+            this.setActive(false);
             this.destroy();
         }
     }
@@ -203,9 +208,9 @@ let AnimatedObject = new Phaser.Class({
             this.y = y;
             if(direction){this.setFlip(true)}
             switch(sprite){
-                case 'p3': this.play('p3_destroy');this.setScale(4);this.once('animationcomplete', ()=>{this.destroy()});break;
-                case 'freespace': this.play('freespace_destroy');this.once('animationcomplete', ()=>{this.destroy(); blinkSpaces = true;});break;
-                default: this.play(sprite+'_destroy');this.once('animationcomplete', ()=>{this.destroy()});break;
+                case 'p3': this.play('p3_destroy');this.setScale(4);this.once('animationcomplete', ()=>{this.setActive(false);this.destroy()});break;
+                case 'freespace': this.play('freespace_destroy');this.once('animationcomplete', ()=>{this.setActive(false);this.destroy(); blinkSpaces = true;});break;
+                default: this.play(sprite+'_destroy');this.once('animationcomplete', ()=>{this.setActive(false);this.destroy()});break;
             }
         }
 });
@@ -230,7 +235,7 @@ let Tower = new Phaser.Class({
                 if(SELECTED_TOWER == 0){
                     this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
                     level1[this.i][this.j] = 0;
-                    //changeSelectedTower(this.TowerType);
+                    this.setActive(false);
                     this.destroy();
                 }
             });
@@ -313,6 +318,7 @@ let Bullet = new Phaser.Class({
         if (this.lifespan <= 0)
         {
             createAnimated(this.x,this.y,'p'+this.type, false);
+            this.setActive(false);
             this.destroy();
         }
     }
@@ -366,32 +372,22 @@ function create(){
     generateAnims();
 
     //keyboard
-    let key1 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE);
-    let key2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
-    let key3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
-    let key4 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR);
-    let key5 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE);
-    let key6 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SIX);
-    let key7 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SEVEN);
-    let key8 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.EIGHT);
-    let keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
-
-    key1.on('down', function () {changeSelectedTower(1)}, this);
-    key2.on('down', function () {changeSelectedTower(2)}, this);
-    key3.on('down', function () {changeSelectedTower(3)}, this);
-    key4.on('down', function () {changeSelectedTower(4)}, this);
-    key5.on('down', function () {changeSelectedTower(5)}, this);
-    key6.on('down', function () {changeSelectedTower(6)}, this);
-    key7.on('down', function () {changeSelectedTower(7)}, this);
-    key8.on('down', function () {changeSelectedTower(8)}, this);
-    keyF.on('down', function () {this.scale.startFullscreen();}, this);
+    let key1 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE)  .on('down', function () {changeSelectedTower(1)}, this);
+    let key2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO)  .on('down', function () {changeSelectedTower(2)}, this);
+    let key3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE).on('down', function () {changeSelectedTower(3)}, this);
+    let key4 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR) .on('down', function () {changeSelectedTower(4)}, this);
+    let key5 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE) .on('down', function () {changeSelectedTower(5)}, this);
+    let key6 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SIX)  .on('down', function () {changeSelectedTower(6)}, this);
+    let key7 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SEVEN).on('down', function () {changeSelectedTower(7)}, this);
+    let key8 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.EIGHT).on('down', function () {changeSelectedTower(8)}, this);
+    let keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)    .on('down', function () {this.scale.startFullscreen();}, this);
 
     //path 1
-    path = this.add.path(320, 110);
-    path.lineTo(320, 200);
+    path = this.add.path(280, 110);
+    path.lineTo(280, 200);
     path.lineTo(520, 200);
     path.lineTo(520, 300);
-    path.lineTo(330, 450);
+    path.lineTo(280, 450);
     path.lineTo(1000, 450);
     path.lineTo(1000, 110);
 
@@ -495,7 +491,7 @@ function damageEnemy(enemy, bullet) {
                     for(let i = 1; i<7; i++) addBullet(bullet.x, bullet.y, random+i*1, 18);break;
         }
 
-
+        bullet.setActive(false);
         bullet.destroy();
 
         enemy.receiveDamage(TOWER_DAMAGE[bullet.type - 1]);
@@ -576,9 +572,9 @@ function nextWave(){
 
 function generateAnims(){
     //attackers
-    game.anims.create({key: "a1_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a2",{start:0, end:6}), repeat: -1});
-    game.anims.create({key: "a1_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a2_hurt",{start:0, end:10}), repeat: 0});
-    game.anims.create({key: "a1_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a2_destroy",{start:0, end:10}), repeat: 0});
+    game.anims.create({key: "a1_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a1",{start:0, end:6}), repeat: -1});
+    game.anims.create({key: "a1_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a1_hurt",{start:1, end:10}), repeat: 0});
+    game.anims.create({key: "a1_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a1_destroy",{start:4, end:10}), repeat: 0});
     game.anims.create({key: "a2_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a2",{start:0, end:9}), repeat: -1});
     game.anims.create({key: "a2_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a2_hurt",{start:0, end:9}), repeat: 0});
     game.anims.create({key: "a2_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a2_destroy",{start:3, end:10}), repeat: 0});
