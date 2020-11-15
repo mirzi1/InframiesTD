@@ -30,6 +30,7 @@ let selectedInfo;
 let uitop;
 let uileft
 let blinkSpaces = true;
+let tw;
 
 let LEVEL = 0;
 let WAVE = 0;
@@ -46,7 +47,7 @@ const textfont = { font: "bold 10px Arial", fill: "#fff", boundsAlignH: "center"
 
 const HUD_ICON_SCALE = 0.5;
 
-const ENEMY_HEALTH = [100,200,300,400,500,600,700,1000];
+const ENEMY_HEALTH = [50,200,300,400,500,600,700,1000];
 const ENEMY_SPEED = [1/8000,1/10000,1/10000,1/10000,1/10000,1/10000,1/10000,1/10000];
 const ENEMY_REWARD = [10,20,30,40,50,100,200,1000];
 const LEVEL_SPEED_MODIFIER = [0.7, 1, 1];
@@ -76,7 +77,7 @@ const TOWER_UPGRADE_DESCRIPTION = ['+range, +firerate, see hidden enemies',
                                     'none'];
 
 //TODO: tower balancing
-const TOWER_DAMAGE = [100,200,500,400,500,600,700,1000,
+const TOWER_DAMAGE = [50,10,300,500,30,100,50,1000,
                       150,250,350,450,550,650,750,1000,
                       30, 15];
 const PROJECTILE_SPEED = [500,600,450,4000,300,600,700,1000,
@@ -105,6 +106,7 @@ let level1 =       [[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
                     [-1,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1,-1,-1, 0, 0, 0,-1],
                     [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]];
 
+//TODO: waves
 const waves = [ [1,0,1,0,1,0,2],
                 [1,1,0,0,1,1,1,0,0,1,1,1,1,2]
               ];
@@ -163,12 +165,23 @@ let Enemy = new Phaser.Class({
         this.hp = 0;
         this.prevx = 0;
         this.prevy = 0;
+        this.speed = ENEMY_SPEED[this.id-1];
+        this.alpha = 0;
+        this.scale = 0;
+        tw.add({
+            targets: this,
+            duration: 200,
+            alpha: 1,
+            scale: 1,
+            ease: 'Sine.easeOut',
+            repeat: 0
+        });
     },
     update:
     function(time, delta){
 
         // move the t point along the path, 0 is the start and 0 is the end
-        this.follower.t += ENEMY_SPEED[this.id-1] * delta * LEVEL_SPEED_MODIFIER[LEVEL-1];
+        this.follower.t += this.speed * delta * LEVEL_SPEED_MODIFIER[LEVEL-1];
         // get the new x and y coordinates in vec
         path.getPoint(this.follower.t, this.follower.vec);
         // update enemy x and y to the newly obtained x and y
@@ -217,6 +230,11 @@ let Enemy = new Phaser.Class({
             this.setActive(false);
             this.destroy();
         }
+    },
+    slow:
+    function(){
+        if(this.speed == ENEMY_SPEED[this.id-1]){this.speed /=2;}
+        //TODO: pridaj timer
     }
 });
 
@@ -254,7 +272,6 @@ let Tower = new Phaser.Class({
             Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 't'+SELECTED_TOWER);
             this.nextTic = 0;
             this.TowerType = SELECTED_TOWER;
-            //TODO: riadny spsob vyberu kliknutim
             this.setInteractive().on('pointerdown', e => {
                 if(SELECTED_TOWER == 0){
                     this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
@@ -270,6 +287,18 @@ let Tower = new Phaser.Class({
             this.y = i * GRID_H + GRID_H/2;
             this.x = j * GRID_W + GRID_W/2;
             level1[i][j] = this.TowerType;
+            this.scaleX = 2;
+            this.scaleY = 2;
+            this.alpha = 0;
+            tw.add({
+                targets: this,
+                duration: 200,
+                alpha: 1,
+                scaleX: 1,
+                scaleY: 1,
+                ease: 'Sine.easeOut',
+                repeat: 0
+            });
         }
     },
     fire: function() {
@@ -365,6 +394,9 @@ function create(){
     hpText = this.add.text(200, 9, '', bigfont);
     moneyText = this.add.text(300, 9, '', bigfont);
     graphics.lineStyle(3, 0xaaaaaa).alpha = 0.8;
+
+    tw = this.tweens;       //tween manager
+
 
     //nextwave
     nextWaveButton = this.add.image(1140,20, 'button_nextwave').setInteractive().on('pointerdown', e => nextWave());
@@ -505,9 +537,7 @@ function damageEnemy(enemy, bullet) {
         createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);
         let bounceangle = Phaser.Math.Angle.Between(bullet.x, bullet.y, enemy.x, enemy.y);
         switch (bullet.type){
-            case 2: addBullet(bullet.x, bullet.y, bounceangle, 17);
-                    addBullet(bullet.x, bullet.y, bounceangle+0.5, 17);
-                    addBullet(bullet.x, bullet.y, bounceangle-0.5, 17);break;
+            case 2: enemy.slow();break;
             case 3: let random = Math.random()*2;
                     for(let i = 1; i<7; i++) addBullet(bullet.x, bullet.y, random+i*1, 18);break;
         }
@@ -526,9 +556,16 @@ function changeSelectedTower(id){
 }
 
 function moveSelector(position){
-    selector.scale = 1;
-    selector.x = 53;
-    selector.y = 75*position+100;
+
+    tw.add({
+        targets: selector,
+        duration: 200,
+        scale: 1,
+        x: 53,
+        y: 75*position+100,
+        ease: 'Sine.easeOut',
+        repeat: 0
+    });
 }
 
 function blinkAvailableSpaces(){
@@ -548,9 +585,15 @@ function sellTool(){
     selectedInfo.setText('Sell');
     game.input.setDefaultCursor('url(assets/graphics/ui/cursor_delete.cur), pointer');
 
-    selector.scale = 0.5;
-    selector.x = 72;
-    selector.y = 683;
+    tw.add({
+        targets: selector,
+        duration: 200,
+        scale: 0.5,
+        x: 72,
+        y: 683,
+        ease: 'Sine.easeOut',
+        repeat: 0
+    });
 }
 
 function upgradeTool(){
@@ -559,9 +602,15 @@ function upgradeTool(){
     selectedInfo.setText('Upgrade (WIP)');
     game.input.setDefaultCursor('url(assets/graphics/ui/cursor_upgrade.cur), pointer');
 
-    selector.scale = 0.5;
-    selector.x = 36;
-    selector.y = 683;
+    tw.add({
+        targets: selector,
+        duration: 200,
+        scale: 0.5,
+        x: 36,
+        y: 683,
+        ease: 'Sine.easeOut',
+        repeat: 0
+    });
 }
 
 function updateTowerInfo(){
@@ -596,6 +645,7 @@ function nextLevel(){
     LEVEL++;
     WAVE = 0;
     background.setTexture('bg'+LEVEL);
+    background.alpha = 0;
     nextWaveButton.setTexture("button_nextwave");
     switch(LEVEL){
         case 1: uileft.setTint(0x3cceff);uitop.setTint(0x3cceff);nextWaveButton.setTint(0x3cceff);
@@ -615,6 +665,12 @@ function nextLevel(){
                 break;
         case 3: uileft.setTint(0x00ff00);uitop.setTint(0x00ff00);waveText.setColor("#00ff00");hpText.setColor("#00ff00");moneyText.setColor("#00ff00");nextWaveButton.setTint(0x00ff00);break;
     }
+    tw.add({
+        targets: background,
+        duration: 500,
+        alpha: 1,
+        repeat: 0
+    });
     path.draw(graphics);
 }
 
