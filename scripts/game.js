@@ -413,7 +413,7 @@ function create(){
     waveText = this.add.text(100, 9, '1', bigfont);
     hpText = this.add.text(200, 9, '', bigfont);
     moneyText = this.add.text(300, 9, '', bigfont);
-    graphics.lineStyle(3, 0xaaaaaa).alpha = 0.8;
+    graphics.lineStyle(3, 0xaaaaaa).alpha = 0;
 
     tw = this.tweens;       //tween manager
 
@@ -448,7 +448,8 @@ function create(){
 
     //selektor
     selector = this.add.image(0,0,'selector');
-    moveSelector(SELECTED_TOWER-1);
+    selector.x = 53;
+    selector.y = 75*(SELECTED_TOWER-1)+100;
 
     //kurzor
     this.input.setDefaultCursor('url(assets/graphics/ui/cursor.cur), pointer');
@@ -663,8 +664,31 @@ function nextWave(){
 function nextLevel(){
     LEVEL++;
     WAVE = 0;
-    background.setTexture('bg'+LEVEL);
-    background.alpha = 0;
+    graphics.alpha = 0;
+    tw.add({
+        targets: background,
+        duration: 500,
+        alpha: 0,
+        scaleX: 2,
+        scaleY: 0.1,
+        ease: 'Sine.easeIn',
+        onComplete: e=> {
+            background.setTexture('bg'+LEVEL);
+            background.scaleX = 0.8;
+            background.scaleY = 0.5;
+            tw.add({
+                targets: background,
+                duration: 500,
+                alpha: 1,
+                scaleX: 1,
+                scaleY: 1,
+                ease: 'Sine.easeOut',
+                onComplete: e=> graphics.alpha = 0.8,
+                repeat: 0
+            });
+            },
+        repeat: 0
+    });
     nextWaveButton.setTexture("button_nextwave");
     switch(LEVEL){
         case 1: uileft.setTint(0x3cceff);uitop.setTint(0x3cceff);nextWaveButton.setTint(0x3cceff);
@@ -684,12 +708,7 @@ function nextLevel(){
                 break;
         case 3: uileft.setTint(0x00ff00);uitop.setTint(0x00ff00);waveText.setColor("#00ff00");hpText.setColor("#00ff00");moneyText.setColor("#00ff00");nextWaveButton.setTint(0x00ff00);break;
     }
-    tw.add({
-        targets: background,
-        duration: 500,
-        alpha: 1,
-        repeat: 0
-    });
+
     path.draw(graphics);
 }
 
