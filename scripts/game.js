@@ -57,8 +57,23 @@ let waveIndex = 0;
 
 const TOWER_PRICES = [100,200,300,400,500,600,700,1000];
 const TOWER_SPEED = [700,1400,2000,1000,1000,1000,1000,1000];
-const TOWER_RANGE = [400,400,350,200,200,200,200,200]
-const TOWER_UPGRADE_DESCRIPTION = ['Double damage, see hidden enemies', '3 electrical bolts on hit', 'faster reload, bigger explosions', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL']
+const TOWER_RANGE = [400,400,350,200,200,200,200,200];
+const TOWER_DESCRIPTION = ['Laser - Basic turret',
+                            'Electric - Slows enemies on hit',
+                            'Canon - Slow but lethal, instantly destroy barriers',
+                            'Sniper - Sees the entire map and hidden enemies',
+                            'Multishot - Fires 5 projectiles at once',
+                            'Thermal - Sees hidden enemies',
+                            'Rapid - Massive firing rate',
+                            'Nuke - Vaporizes everything except bosses'];
+const TOWER_UPGRADE_DESCRIPTION = ['+range, +firerate, see hidden enemies',
+                                    '+firerate, Stun enemies on hit',
+                                    '+firerate, bigger explosions',
+                                    '+firerate, instantly destroy barriers',
+                                    '+range, +damage, 7 projectiles at once',
+                                    '+firerate, projectile divides into 3 on hit',
+                                    '+damage, see hidden enemies',
+                                    'none'];
 
 const TOWER_DAMAGE = [100,200,500,400,500,600,700,1000,
                       150,250,350,450,550,650,750,1000,
@@ -549,7 +564,7 @@ function updateTowerInfo(){
 }
 
 function getTowerInfo(type){
-    return   'Damage: '+TOWER_DAMAGE[type]+', Delay: '+TOWER_SPEED[type]+ ', Range: '+TOWER_RANGE[type]+ ', Projectile speed: '+PROJECTILE_SPEED[type]+ ', Projectile lifespan: '+PROJECTILE_LIFESPAN[type]
+    return   TOWER_DESCRIPTION[type]+', dmg: '+TOWER_DAMAGE[type]+', fir: '+TOWER_SPEED[type]+ ', ran: '+TOWER_RANGE[type]+ ', spd: '+PROJECTILE_SPEED[type]+ ', pls: '+PROJECTILE_LIFESPAN[type]
             +'\nUpgrade: '+TOWER_UPGRADE_DESCRIPTION[type]+' - '+TOWER_PRICES[type]*4+'$';
 }
 
@@ -588,7 +603,9 @@ function nextLevel(){
                 path.lineTo(1000, 450);
                 path.lineTo(1000, 110);
                 break;
-        case 2: uileft.setTint(0xff0054);uitop.setTint(0xff0054);waveText.setColor("#ff0054");hpText.setColor("#ff0054");moneyText.setColor("#ff0054");nextWaveButton.setTint(0xff0054);break;
+        case 2: uileft.setTint(0xff0054);uitop.setTint(0xff0054);waveText.setColor("#ff0054");hpText.setColor("#ff0054");moneyText.setColor("#ff0054");nextWaveButton.setTint(0xff0054);
+                Towers.setActive(false);
+                Towers.destroy();break;
         case 3: uileft.setTint(0x00ff00);uitop.setTint(0x00ff00);waveText.setColor("#00ff00");hpText.setColor("#00ff00");moneyText.setColor("#00ff00");nextWaveButton.setTint(0x00ff00);break;
     }
     path.draw(graphics);
