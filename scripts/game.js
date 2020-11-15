@@ -36,6 +36,8 @@ let LEVEL = 0;
 let WAVE = 0;
 let HEALTH = 100;
 let MONEY = 100;
+const STARTHEALTH = 100;
+const STARTMONEY = 100;
 let SELECTED_TOWER = 1;
 
 const WAVE_SPEED = 500;
@@ -91,6 +93,38 @@ const GRID_W = 50;
 const GRID_H = 50;
 
 let level1 =       [[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
+                    [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
+                    [-1,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1,-1,-1, 0, 0, 0,-1],
+                    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]];
+
+let level2 =       [[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
+                    [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
+                    [-1,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1,-1,-1, 0, 0, 0,-1],
+                    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]];
+
+let level3 =       [[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                     [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                     [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1],
                     [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1],
@@ -203,7 +237,7 @@ let Enemy = new Phaser.Class({
             this.setActive(false);
             this.destroy();
             HEALTH--;
-            updateInfoText();
+            updateHpText();
         }
     },
     startOnPath:
@@ -225,7 +259,7 @@ let Enemy = new Phaser.Class({
         // if hp drops below 0 we deactivate this enemy
         if(this.hp <= 0) {
             MONEY+=ENEMY_REWARD[this.id-1];
-            updateInfoText();
+            updateMoneyText();
             createAnimated(this.x,this.y,'a'+this.id, this.flipX);
             this.setActive(false);
             this.destroy();
@@ -295,7 +329,12 @@ let Tower = new Phaser.Class({
                         scale: 2,
                         repeat: 0,
                         ease: 'Sine.easeOut',
-                        onComplete: e=>{level1[this.i][this.j] = 0;this.setActive(false);this.destroy();},
+                        onComplete: e=>{switch(LEVEL){
+                            case 1: level1[this.i][this.j] = 0;
+                            case 2: level2[this.i][this.j] = 0;
+                            case 3: level3[this.i][this.j] = 0;
+                        }
+                        this.setActive(false);this.destroy();},
                         repeat: 0
                     });
                 }
@@ -306,7 +345,11 @@ let Tower = new Phaser.Class({
         if(SELECTED_TOWER != 0){
             this.y = i * GRID_H + GRID_H/2;
             this.x = j * GRID_W + GRID_W/2;
-            level1[i][j] = this.TowerType;
+            switch(LEVEL){
+                case 1: level1[i][j] = this.TowerType;break
+                case 2: level2[i][j] = this.TowerType;break
+                case 3: level3[i][j] = this.TowerType;break
+            }
             this.scaleX = 2;
             this.scaleY = 2;
             this.alpha = 0;
@@ -410,7 +453,7 @@ function create(){
     graphics = this.add.graphics();                         //cesty
     uileft = this.add.image(55,380, 'ui_left');
     uitop = this.add.image(640,20, 'ui_top');
-    waveText = this.add.text(100, 9, '1', bigfont);
+    waveText = this.add.text(100, 9, '', bigfont);
     hpText = this.add.text(200, 9, '', bigfont);
     moneyText = this.add.text(300, 9, '', bigfont);
     graphics.lineStyle(3, 0xaaaaaa).alpha = 0;
@@ -422,7 +465,8 @@ function create(){
     nextWaveButton = this.add.image(1140,20, 'button_nextwave').setInteractive().on('pointerdown', e => nextWave());
 
     nextLevel();
-    updateInfoText();
+    updateHpText();
+    updateMoneyText();
 
     //tower info
     //this.add.image(200,50, 'button');
@@ -525,7 +569,12 @@ function placeTower(pointer) {
 }
 
 function canPlaceTower(i, j) {
-    return level1[i][j] === 0;
+    switch(LEVEL){
+        case 1: return level1[i][j] === 0;break;
+        case 2: return level2[i][j] === 0;break;
+        case 3: return level3[i][j] === 0;break;
+    }
+
 }
 
 function getEnemy(x, y, distance) {
@@ -591,11 +640,27 @@ function moveSelector(position){
 function blinkAvailableSpaces(){
     if(blinkSpaces){
         blinkSpaces=false;
-        for(let i = 0; i<level1.length; i++){
-            for(let j = 0; j<level1[i].length; j++){
-                if(level1[i][j]==0){createAnimated(25+GRID_H*j,25+GRID_W*i,'freespace', false);}
-            }
+        switch(LEVEL){
+            case 1:
+                for(let i = 0; i<level1.length; i++){
+                    for(let j = 0; j<level1[i].length; j++){
+                        if(level1[i][j]==0){createAnimated(25+GRID_H*j,25+GRID_W*i,'freespace', false);}
+                    }
+                }break;
+            case 2:
+                for(let i = 0; i<level2.length; i++){
+                    for(let j = 0; j<level2[i].length; j++){
+                        if(level2[i][j]==0){createAnimated(25+GRID_H*j,25+GRID_W*i,'freespace', false);}
+                    }
+                }break;
+            case 3:
+                for(let i = 0; i<level3.length; i++){
+                    for(let j = 0; j<level3[i].length; j++){
+                        if(level3[i][j]==0){createAnimated(25+GRID_H*j,25+GRID_W*i,'freespace', false);}
+                    }
+                }break;
         }
+
     }
 }
 
@@ -644,9 +709,28 @@ function getTowerInfo(type){
             +'\nUpgrade: '+TOWER_UPGRADE_DESCRIPTION[type]+' - '+TOWER_PRICES[type]*4+'$';
 }
 
-function updateInfoText(){
+function updateHpText(){
     hpText.setText(HEALTH);
+    hpText.y = 4;
+    tw.add({
+        targets: hpText,
+        duration: 100,
+        y: 9,
+        ease: 'Sine.easeOut',
+        repeat: 0
+    });
+}
+
+function updateMoneyText(){
     moneyText.setText(MONEY);
+    moneyText.y = 4;
+    tw.add({
+        targets: moneyText,
+        duration: 100,
+        y: 9,
+        ease: 'Sine.easeOut',
+        repeat: 0
+    });
 }
 
 function nextWave(){
@@ -655,61 +739,111 @@ function nextWave(){
         console.log('starting wave '+ WAVE);
         waveInProgress=true;
         waveIndex = 0;
-        waveText.setText(WAVE);
+
+        tw.add({
+            targets: waveText,
+            duration: 200,
+            scaleX: 0,
+            ease: 'Sine.easeIn',
+            onComplete: e=> {
+                waveText.setText(WAVE);
+                tw.add({
+                    targets: waveText,
+                    duration: 200,
+                    scaleX: 1,
+                    ease: 'Sine.easeOut',
+                    repeat: 0
+            });},
+            repeat: 0
+        });
         nextWaveButton.visible = false;
         graphics.alpha = 0.3;
     }else{nextLevel();console.log('no more waves in array!')}
 }
 
 function nextLevel(){
-    LEVEL++;
-    WAVE = 0;
-    graphics.alpha = 0;
-    tw.add({
-        targets: background,
-        duration: 500,
-        alpha: 0,
-        scaleX: 2,
-        scaleY: 0.1,
-        ease: 'Sine.easeIn',
-        onComplete: e=> {
-            background.setTexture('bg'+LEVEL);
-            background.scaleX = 0.8;
-            background.scaleY = 0.5;
-            tw.add({
-                targets: background,
-                duration: 500,
-                alpha: 1,
-                scaleX: 1,
-                scaleY: 1,
-                ease: 'Sine.easeOut',
-                onComplete: e=> graphics.alpha = 0.8,
-                repeat: 0
-            });
-            },
-        repeat: 0
-    });
-    nextWaveButton.setTexture("button_nextwave");
-    switch(LEVEL){
-        case 1: uileft.setTint(0x3cceff);uitop.setTint(0x3cceff);nextWaveButton.setTint(0x3cceff);
-                path = new Phaser.Curves.Path(250, 100);
-                path.lineTo(510, 150);
-                path.lineTo(250, 200);
-                path.lineTo(510, 250);
-                path.lineTo(250, 300);
-                path.lineTo(510, 350);
-                path.lineTo(250, 400);
-                path.lineTo(510, 450);
-                path.lineTo(1000, 450);
-                path.lineTo(1000, 110);
-                break;
-        case 2: uileft.setTint(0xff0054);uitop.setTint(0xff0054);waveText.setColor("#ff0054");hpText.setColor("#ff0054");moneyText.setColor("#ff0054");nextWaveButton.setTint(0xff0054);
-                //TODO: Kod na odstranenie towers, zmenu pathu
-                break;
-        case 3: uileft.setTint(0x00ff00);uitop.setTint(0x00ff00);waveText.setColor("#00ff00");hpText.setColor("#00ff00");moneyText.setColor("#00ff00");nextWaveButton.setTint(0x00ff00);break;
-    }
+    if(LEVEL<3){
+        LEVEL++;
+        WAVE = 0;
+        MONEY = STARTMONEY;
+        HEALTH = STARTHEALTH;
+        graphics.alpha = 0;
+        //background anim
+        tw.add({
+            targets: background,
+            duration: 500,
+            alpha: 0,
+            scaleX: 2,
+            scaleY: 2,
+            ease: 'Sine.easeIn',
+            onComplete: e=> {
+                background.setTexture('bg'+LEVEL);
+                background.scaleX = 0.8;
+                background.scaleY = 0.8;
+                tw.add({
+                    targets: background,
+                    duration: 500,
+                    alpha: 1,
+                    scaleX: 1,
+                    scaleY: 1,
+                    ease: 'Sine.easeOut',
+                    onComplete: e=> graphics.alpha = 0.8,
+                    repeat: 0
+                });
+                },
+            repeat: 0
+        });
+        //update values
+        tw.add({
+            targets: waveText,
+            duration: 200,
+            scaleX: 0,
+            ease: 'Sine.easeIn',
+            onComplete: e=> {
+                waveText.setText(WAVE);
+                tw.add({
+                    targets: waveText,
+                    duration: 200,
+                    scaleX: 1,
+                    ease: 'Sine.easeOut',
+                    repeat: 0
+                });},
+            repeat: 0
+        });
+        updateMoneyText();
+        updateHpText();
+        //delete towers
+        if(LEVEL>1){
+            let towers_placed = Towers.getChildren();
+            while(towers_placed.length>0){
+                console.log("phaser pls");
+                for(let i = 0; i < towers_placed.length; i++) {
+                    towers_placed[i].destroy();
+                }
+            }
+        }
+        nextWaveButton.setTexture("button_nextwave");
+        switch(LEVEL){
+            case 1: uileft.setTint(0x3cceff);uitop.setTint(0x3cceff);nextWaveButton.setTint(0x3cceff);
+                    path = new Phaser.Curves.Path(250, 100);
+                    path.lineTo(510, 150);
+                    path.lineTo(250, 200);
+                    path.lineTo(510, 250);
+                    path.lineTo(250, 300);
+                    path.lineTo(510, 350);
+                    path.lineTo(250, 400);
+                    path.lineTo(510, 450);
+                    path.lineTo(1000, 450);
+                    path.lineTo(1000, 110);
+                    break;
+            case 2: uileft.setTint(0xff0054);uitop.setTint(0xff0054);waveText.setColor("#ff0054");hpText.setColor("#ff0054");moneyText.setColor("#ff0054");nextWaveButton.setTint(0xff0054);
+                    //TODO: Kod na odstranenie towers, zmenu pathu
+                    break;
+            case 3: uileft.setTint(0x00ff00);uitop.setTint(0x00ff00);waveText.setColor("#00ff00");hpText.setColor("#00ff00");moneyText.setColor("#00ff00");nextWaveButton.setTint(0x00ff00);break;
+        }
 
-    path.draw(graphics);
+        path.draw(graphics);
+    }
 }
 
 function generateAnims(){
