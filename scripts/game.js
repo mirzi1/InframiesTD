@@ -31,6 +31,8 @@ let uitop;
 let uileft
 let blinkSpaces = true;
 let tw;
+let start;
+let finish;
 
 let LEVEL = 0;
 let WAVE = 0;
@@ -154,6 +156,7 @@ function preload(){
     this.load.image('button_nextwave', 'assets/graphics/ui/button_nextwave.png');
     this.load.image('button_nextLevel', 'assets/graphics/ui/button_nextlevel.png');
     this.load.image('selector', 'assets/graphics/ui/selector.png');
+    this.load.spritesheet('start_finish', 'assets/graphics/ui/start_finish.png' ,{frameHeight: 50, frameWidth: 50});
     this.load.spritesheet('button_small', 'assets/graphics/ui/button_small.png' ,{frameHeight: 35, frameWidth: 35});
     this.load.spritesheet('button_icons', 'assets/graphics/ui/button_icons.png' ,{frameHeight: 24, frameWidth: 16});
     this.load.spritesheet('freespace', 'assets/graphics/ui/freespace.png' ,{frameHeight: 50, frameWidth: 50});
@@ -453,6 +456,8 @@ function create(){
     graphics = this.add.graphics();                         //cesty
     uileft = this.add.image(55,380, 'ui_left');
     uitop = this.add.image(640,20, 'ui_top');
+    start = this.add.image(250,105, 'start_finish', 0);
+    finish = this.add.image(1000,110, 'start_finish', 1);
     waveText = this.add.text(100, 9, '', bigfont);
     hpText = this.add.text(200, 9, '', bigfont);
     moneyText = this.add.text(300, 9, '', bigfont);
@@ -541,7 +546,7 @@ function update(time, delta){
                 }
                 waveIndex++;
             }else if(enemies.countActive() == 0){
-                console.log('end of wave '+WAVE+' reached');waveInProgress=false;nextWaveButton.visible = true;graphics.alpha = 0.8;
+                console.log('end of wave '+WAVE+' reached');waveInProgress=false;nextWaveButton.visible = true;graphics.alpha = 0.8;start.alpha = 1;finish.alpha =1;
                 if(WAVE<waves.length){/*hmmmmm*/}
                 else{nextWaveButton.setTexture("button_nextLevel");}
             }
@@ -757,6 +762,8 @@ function nextWave(){
         });
         nextWaveButton.visible = false;
         graphics.alpha = 0.3;
+        start.alpha = 0;
+        finish.alpha = 0;
     }else{nextLevel();console.log('no more waves in array!')}
 }
 
@@ -767,6 +774,8 @@ function nextLevel(){
         MONEY = STARTMONEY;
         HEALTH = STARTHEALTH;
         graphics.alpha = 0;
+        start.alpha = 0;
+        finish.alpha = 0;
         //background anim
         tw.add({
             targets: background,
@@ -786,7 +795,7 @@ function nextLevel(){
                     scaleX: 1,
                     scaleY: 1,
                     ease: 'Sine.easeOut',
-                    onComplete: e=> graphics.alpha = 0.8,
+                    onComplete: e=> {graphics.alpha = 0.8,start.alpha = 1;finish.alpha = 1},
                     repeat: 0
                 });
                 },
@@ -834,6 +843,10 @@ function nextLevel(){
                     path.lineTo(510, 450);
                     path.lineTo(1000, 450);
                     path.lineTo(1000, 110);
+                    start.x = 250;
+                    start.y = 100;
+                    finish.x = 1000;
+                    finish.y = 110;
                     break;
             case 2: uileft.setTint(0xff0054);uitop.setTint(0xff0054);waveText.setColor("#ff0054");hpText.setColor("#ff0054");moneyText.setColor("#ff0054");nextWaveButton.setTint(0xff0054);
                     graphics.clear();
@@ -848,6 +861,10 @@ function nextLevel(){
                     path.lineTo(868, 380);
                     path.lineTo(850, 597);
                     path.lineTo(1224, 579);
+                    start.x = 300;
+                    start.y = 100;
+                    finish.x = 1224;
+                    finish.y = 579;
                     break;
             case 3: uileft.setTint(0x00ff00);uitop.setTint(0x00ff00);waveText.setColor("#00ff00");hpText.setColor("#00ff00");moneyText.setColor("#00ff00");nextWaveButton.setTint(0x00ff00);
                     graphics.clear();
@@ -861,6 +878,10 @@ function nextLevel(){
                     path.lineTo(810, 200);
                     path.lineTo(615, 200);
                     path.lineTo(524, 290);
+                    start.x = 300;
+                    start.y = 100;
+                    finish.x = 524;
+                    finish.y = 290;
                     break;
         }
 
