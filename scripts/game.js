@@ -233,7 +233,19 @@ let Enemy = new Phaser.Class({
     },
     slow:
     function(){
-        if(this.speed == ENEMY_SPEED[this.id-1]){this.speed /=2;}
+        if(this.speed == ENEMY_SPEED[this.id-1]){
+            this.speed /=2;
+            this.tint = 0x00ffff;
+            this.blendMode = 'ADD';
+        }
+        tw.add({
+            targets: this,
+            duration: 2000,
+            scale: 1,
+            ease: 'Sine.easeOut',
+            onComplete: e=>{this.speed = ENEMY_SPEED[this.id-1];this.tint = 0xffffff;this.blendMode = 'NORMAL';},
+            repeat: 0
+        });
         //TODO: pridaj timer
     }
 });
@@ -275,9 +287,17 @@ let Tower = new Phaser.Class({
             this.setInteractive().on('pointerdown', e => {
                 if(SELECTED_TOWER == 0){
                     this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
-                    level1[this.i][this.j] = 0;
-                    this.setActive(false);
-                    this.destroy();
+
+                    tw.add({
+                        targets: this,
+                        duration: 200,
+                        alpha: 0,
+                        scale: 2,
+                        repeat: 0,
+                        ease: 'Sine.easeOut',
+                        onComplete: e=>{level1[this.i][this.j] = 0;this.setActive(false);this.destroy();},
+                        repeat: 0
+                    });
                 }
             });
         },
@@ -556,7 +576,6 @@ function changeSelectedTower(id){
 }
 
 function moveSelector(position){
-
     tw.add({
         targets: selector,
         duration: 200,
