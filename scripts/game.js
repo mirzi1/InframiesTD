@@ -55,9 +55,9 @@ let waveInProgress = false;
 let nextEnemy = 0;
 let waveIndex = 0;
 
-const TOWER_PRICES = [100,200,300,400,500,600,700,1000];
-const TOWER_SPEED = [700,1400,2000,1000,1000,1000,1000,1000];
-const TOWER_RANGE = [400,400,350,200,200,200,200,200];
+const TOWER_PRICES = [150,400,300,400,500,600,700,1000];
+const TOWER_SPEED = [700,1300,2000,1300,2200,1000,100,1000];
+const TOWER_RANGE = [350,300,250,2000,300,550,500,2000];
 const TOWER_DESCRIPTION = ['Laser - Basic turret',
                             'Electric - Slows enemies on hit',
                             'Canon - Slow but lethal, instantly destroy barriers',
@@ -75,13 +75,14 @@ const TOWER_UPGRADE_DESCRIPTION = ['+range, +firerate, see hidden enemies',
                                     '+damage, see hidden enemies',
                                     'none'];
 
+//TODO: tower balancing
 const TOWER_DAMAGE = [100,200,500,400,500,600,700,1000,
                       150,250,350,450,550,650,750,1000,
                       30, 15];
-const PROJECTILE_SPEED = [500,600,450,400,500,600,700,1000,
+const PROJECTILE_SPEED = [500,600,450,4000,300,600,700,1000,
                           500,600,300,400,500,600,700,1000,
                           200, 300];
-const PROJECTILE_LIFESPAN = [500,500,1500,500,500,500,500,500,
+const PROJECTILE_LIFESPAN = [500,500,1500,1000,1200,500,500,500,
                              500,500,500,500,500,500,500,500,
                              700, 200];
 
@@ -223,7 +224,7 @@ let AnimatedObject = new Phaser.Class({
     Extends: Phaser.GameObjects.Sprite,
     initialize:
         function AnimatedObject(game){
-            Phaser.GameObjects.Sprite.call(this,game,0,0,'a2');
+            Phaser.GameObjects.Sprite.call(this,game,0,0);
         },
     doYourThing:
         function(x,y,sprite,direction){
@@ -272,11 +273,17 @@ let Tower = new Phaser.Class({
         }
     },
     fire: function() {
-        let enemy = getEnemy(this.x, this.y, 200);
+        let enemy = getEnemy(this.x, this.y, TOWER_RANGE[this.TowerType-1]);
         if(enemy) {
             //vytvorime bullet
             let angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
             addBullet(this.x, this.y, angle, this.TowerType);
+            if(this.TowerType == 5){
+                addBullet(this.x, this.y, angle-0.1, this.TowerType);
+                addBullet(this.x, this.y, angle-0.2, this.TowerType);
+                addBullet(this.x, this.y, angle+0.1, this.TowerType);
+                addBullet(this.x, this.y, angle+0.2, this.TowerType);
+            }
             //otacanie podla druhu Towery
             switch(this.TowerType){
                 case 1: case 3: this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG ); break;
@@ -604,8 +611,8 @@ function nextLevel(){
                 path.lineTo(1000, 110);
                 break;
         case 2: uileft.setTint(0xff0054);uitop.setTint(0xff0054);waveText.setColor("#ff0054");hpText.setColor("#ff0054");moneyText.setColor("#ff0054");nextWaveButton.setTint(0xff0054);
-                Towers.setActive(false);
-                Towers.destroy();break;
+                //TODO: Kod na odstranenie towers, zmenu pathu
+                break;
         case 3: uileft.setTint(0x00ff00);uitop.setTint(0x00ff00);waveText.setColor("#00ff00");hpText.setColor("#00ff00");moneyText.setColor("#00ff00");nextWaveButton.setTint(0x00ff00);break;
     }
     path.draw(graphics);
