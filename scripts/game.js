@@ -201,7 +201,6 @@ let Enemy = new Phaser.Class({
         this.follower = {t: 0, vec: new Phaser.Math.Vector2()};
         this.hp = 0;
         this.prevx = 0;
-        this.prevy = 0;
         this.speed = ENEMY_SPEED[this.id-1];
         this.alpha = 0;
         this.scale = 0;
@@ -232,7 +231,6 @@ let Enemy = new Phaser.Class({
         }
 
         this.prevx = this.x;
-        this.prevy = this.y;
 
         // akcie po dokonceni cesty
         if (this.follower.t >= 1)
@@ -280,7 +278,7 @@ let Enemy = new Phaser.Class({
             duration: 2000,
             scale: 1,
             ease: 'Sine.easeOut',
-            onComplete: e=>{this.speed = ENEMY_SPEED[this.id-1];this.tint = 0xffffff;this.blendMode = 'NORMAL';},
+            onComplete: ()=>{this.speed = ENEMY_SPEED[this.id-1];this.tint = 0xffffff;this.blendMode = 'NORMAL';},
             repeat: 0
         });
         //TODO: pridaj timer
@@ -321,7 +319,7 @@ let Tower = new Phaser.Class({
             Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 't'+SELECTED_TOWER);
             this.nextTic = 0;
             this.TowerType = SELECTED_TOWER;
-            this.setInteractive().on('pointerdown', e => {
+            this.setInteractive().on('pointerdown', () => {
                 if(SELECTED_TOWER == 0){
                     this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
 
@@ -332,13 +330,12 @@ let Tower = new Phaser.Class({
                         scale: 2,
                         repeat: 0,
                         ease: 'Sine.easeOut',
-                        onComplete: e=>{switch(LEVEL){
-                            case 1: level1[this.i][this.j] = 0;
-                            case 2: level2[this.i][this.j] = 0;
-                            case 3: level3[this.i][this.j] = 0;
+                        onComplete: ()=>{switch(LEVEL){
+                            case 1: level1[this.i][this.j] = 0;break;
+                            case 2: level2[this.i][this.j] = 0;break;
+                            case 3: level3[this.i][this.j] = 0;break;
                         }
                         this.setActive(false);this.destroy();},
-                        repeat: 0
                     });
                 }
             });
@@ -349,9 +346,9 @@ let Tower = new Phaser.Class({
             this.y = i * GRID_H + GRID_H/2;
             this.x = j * GRID_W + GRID_W/2;
             switch(LEVEL){
-                case 1: level1[i][j] = this.TowerType;break
-                case 2: level2[i][j] = this.TowerType;break
-                case 3: level3[i][j] = this.TowerType;break
+                case 1: level1[i][j] = this.TowerType;break;
+                case 2: level2[i][j] = this.TowerType;break;
+                case 3: level3[i][j] = this.TowerType;break;
             }
             this.scaleX = 2;
             this.scaleY = 2;
@@ -406,8 +403,6 @@ let Bullet = new Phaser.Class({
         {
             Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'p1');
 
-            this.incX = 0;
-            this.incY = 0;
             this.lifespan = 0;
 
             this.speed = 0;
@@ -466,7 +461,7 @@ function create(){
     tw = this.tweens;       //tween manager
 
     //nextwave
-    nextWaveButton = this.add.image(1140,20, 'button_nextwave').setInteractive().on('pointerdown', e => nextWave());
+    nextWaveButton = this.add.image(1140,20, 'button_nextwave').setInteractive().on('pointerdown', () => nextWave());
 
     nextLevel();
     updateHpText();
@@ -480,15 +475,15 @@ function create(){
     updateTowerInfo();
 
     //upgrade, sell
-    this.add.image(36,683, 'button_small', 1).setInteractive().on('pointerdown', e => upgradeTool());
-    this.add.image(72,683, 'button_small', 2).setInteractive().on('pointerdown', e => sellTool());
+    this.add.image(36,683, 'button_small', 1).setInteractive().on('pointerdown', () => upgradeTool());
+    this.add.image(72,683, 'button_small', 2).setInteractive().on('pointerdown', () => sellTool());
     this.add.image(36,683, 'button_icons', 0);
     this.add.image(72,683, 'button_icons', 1);
 
 
     //tlacidla nalavo
     for(let i=0; i<8; i++){
-        this.add.image(53,75*i+100, 'button').setInteractive().on('pointerdown', e => changeSelectedTower(i+1));
+        this.add.image(53,75*i+100, 'button').setInteractive().on('pointerdown', () => changeSelectedTower(i+1));
         this.add.image(53,75*i+100, 't'+(i+1)).setScale(HUD_ICON_SCALE);
         //this.add.text(20,73*i+16, i+1, smallfont);
         this.add.text(24,75*i+117, TOWER_PRICES[i]+'$', smallfont_black).setStroke('#FFE000', 2);
@@ -506,15 +501,15 @@ function create(){
     generateAnims();
 
     //keyboard
-    let key1 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE)  .on('down', function() {changeSelectedTower(1)}, this);
-    let key2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO)  .on('down', function() {changeSelectedTower(2)}, this);
-    let key3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE).on('down', function() {changeSelectedTower(3)}, this);
-    let key4 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR) .on('down', function() {changeSelectedTower(4)}, this);
-    let key5 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE) .on('down', function() {changeSelectedTower(5)}, this);
-    let key6 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SIX)  .on('down', function() {changeSelectedTower(6)}, this);
-    let key7 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SEVEN).on('down', function() {changeSelectedTower(7)}, this);
-    let key8 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.EIGHT).on('down', function() {changeSelectedTower(8)}, this);
-    let keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)    .on('down', function() {this.scale.startFullscreen();}, this);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE)  .on('down', function() {changeSelectedTower(1)}, this);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO)  .on('down', function() {changeSelectedTower(2)}, this);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE).on('down', function() {changeSelectedTower(3)}, this);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR) .on('down', function() {changeSelectedTower(4)}, this);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE) .on('down', function() {changeSelectedTower(5)}, this);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SIX)  .on('down', function() {changeSelectedTower(6)}, this);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SEVEN).on('down', function() {changeSelectedTower(7)}, this);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.EIGHT).on('down', function() {changeSelectedTower(8)}, this);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)    .on('down', function() {this.scale.startFullscreen();}, this);
 
     Towers = this.add.group({ classType: Tower, runChildUpdate: true });
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
@@ -609,11 +604,11 @@ function damageEnemy(enemy, bullet) {
     if (enemy.active === true && bullet.active === true) {
         // we remove the bullet right away
         createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);
-        let bounceangle = Phaser.Math.Angle.Between(bullet.x, bullet.y, enemy.x, enemy.y);
+        //let bounceangle = Phaser.Math.Angle.Between(bullet.x, bullet.y, enemy.x, enemy.y);
         switch (bullet.type){
             case 2: enemy.slow();break;
             case 3: let random = Math.random()*2;
-                    for(let i = 1; i<7; i++) addBullet(bullet.x, bullet.y, random+i*1, 18);break;
+                    for(let i = 1; i<7; i++) addBullet(bullet.x, bullet.y, random+i, 18);break;
         }
 
         bullet.setActive(false);
@@ -749,7 +744,7 @@ function nextWave(){
             duration: 200,
             scaleX: 0,
             ease: 'Sine.easeIn',
-            onComplete: e=> {
+            onComplete: ()=> {
                 waveText.setText(WAVE);
                 tw.add({
                     targets: waveText,
@@ -784,7 +779,7 @@ function nextLevel(){
             scaleX: 2,
             scaleY: 2,
             ease: 'Sine.easeIn',
-            onComplete: e=> {
+            onComplete: ()=> {
                 background.setTexture('bg'+LEVEL);
                 background.scaleX = 0.8;
                 background.scaleY = 0.8;
@@ -795,7 +790,7 @@ function nextLevel(){
                     scaleX: 1,
                     scaleY: 1,
                     ease: 'Sine.easeOut',
-                    onComplete: e=> {graphics.alpha = 0.8,start.alpha = 1;finish.alpha = 1},
+                    onComplete: ()=> {graphics.alpha = 0.8;start.alpha = 1;finish.alpha = 1},
                     repeat: 0
                 });
                 },
@@ -807,7 +802,7 @@ function nextLevel(){
             duration: 200,
             scaleX: 0,
             ease: 'Sine.easeIn',
-            onComplete: e=> {
+            onComplete: ()=> {
                 waveText.setText(WAVE);
                 tw.add({
                     targets: waveText,
