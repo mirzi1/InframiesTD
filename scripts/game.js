@@ -63,7 +63,7 @@ let waveIndex = 0;
 
 const TOWER_PRICES = [150,400,300,400,500,600,700,1000];
 const TOWER_SPEED = [700,1300,2000,1300,2200,1000,100,1000];
-const TOWER_RANGE = [350,300,250,2000,300,550,500,2000];
+const TOWER_RANGE = [400,350,300,2000,300,550,500,2000];
 const TOWER_DESCRIPTION = ['Laser - Basic turret',
                             'Electric - Slows enemies on hit',
                             'Canon - Slow but lethal, instantly destroy barriers',
@@ -408,6 +408,7 @@ let Bullet = new Phaser.Class({
             this.lifespan = 0;
 
             this.speed = 0;
+            this.scale = 2;
         },
 
     fire: function (x, y, angle,type)
