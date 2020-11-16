@@ -33,6 +33,7 @@ let blinkSpaces = true;
 let tw;
 let start;
 let finish;
+let globalTime;
 
 let LEVEL = 0;
 let WAVE = 0;
@@ -90,6 +91,7 @@ const PROJECTILE_SPEED = [500,600,450,4000,300,600,700,1000,
 const PROJECTILE_LIFESPAN = [500,500,1500,1000,1200,500,500,500,
                              500,500,500,500,500,500,500,500,
                              700, 200];
+const TOWER_FREEZETIME = 2000;
 
 const GRID_W = 50;
 const GRID_H = 50;
@@ -204,6 +206,8 @@ let Enemy = new Phaser.Class({
         this.speed = ENEMY_SPEED[this.id-1];
         this.alpha = 0;
         this.scale = 0;
+        this.slowed = false;
+        this.unfreeze = 0;
         tw.add({
             targets: this,
             duration: 200,
@@ -228,6 +232,14 @@ let Enemy = new Phaser.Class({
             this.setFlip(false);
         }else{
             this.setFlip(true);
+        }
+
+        if(this.slowed){
+            if(time > this.unfreeze) {
+                this.speed = ENEMY_SPEED[this.id-1];
+                this.tint = 0xffffff;
+                this.slowed = false;
+            }
         }
 
         this.prevx = this.x;
@@ -268,20 +280,10 @@ let Enemy = new Phaser.Class({
     },
     slow:
     function(){
-        if(this.speed == ENEMY_SPEED[this.id-1]){
-            this.speed /=2;
-            this.tint = 0x00ffff;
-            this.blendMode = 'ADD';
-        }
-        tw.add({
-            targets: this,
-            duration: 2000,
-            scale: 1,
-            ease: 'Sine.easeOut',
-            onComplete: ()=>{this.speed = ENEMY_SPEED[this.id-1];this.tint = 0xffffff;this.blendMode = 'NORMAL';},
-            repeat: 0
-        });
-        //TODO: pridaj timer
+        this.speed = ENEMY_SPEED[this.id-1]/2;
+        this.tint = 0xff99ff;
+        this.slowed = true;
+        this.unfreeze = globalTime + TOWER_FREEZETIME;
     }
 });
 
@@ -548,6 +550,7 @@ function update(time, delta){
             this.nextEnemy = time + WAVE_SPEED;
         }
     }
+    globalTime = time; //sorry
 }
 
 function placeTower(pointer) {
