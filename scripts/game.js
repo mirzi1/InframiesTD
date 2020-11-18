@@ -325,6 +325,22 @@ let AnimatedObject = new Phaser.Class({
         }
 });
 
+let Explosion = new Phaser.Class({
+    Extends: Phaser.GameObjects.Sprite,
+    initialize:
+        function AnimatedObject(game){
+            Phaser.GameObjects.Sprite.call(this,game,0,0);
+        },
+    doYourThing:
+        function(x,y,sprite){
+            this.x = x;
+            this.y = y;
+            switch(sprite){
+                case 'p3': this.play('p3_destroy');this.setScale(4);this.once('animationcomplete', ()=>{this.setActive(false);this.destroy()});break;
+            }
+        }
+});
+
 let Tower = new Phaser.Class({
     Extends: Phaser.GameObjects.Sprite,
 
@@ -471,8 +487,8 @@ let Bullet = new Phaser.Class({
         this.play('p'+type);
 
         //  we don't need to rotate the bullets as they are round
-        if(this.type == 4 || this.type == 7){
-            this.setRotation(angle);
+        switch(this.type){
+            case 3: case 4: case 7: this.setRotation(angle);
         }
 
         this.dx = Math.cos(angle);
@@ -577,10 +593,12 @@ function create(){
 
     Towers = this.add.group({ classType: Tower, runChildUpdate: true });
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+    Explosions = this.physics.add.group({ classType: Explosion, runChildUpdate: true });
     enemies = this.physics.add.group({ classType: Enemy, runChildUpdate: true });
     AnimatedObjects = this.add.group({ classType: AnimatedObject, runChildUpdate: true });
 
     this.physics.add.overlap(enemies, bullets, damageEnemy);
+    this.physics.add.overlap(Explosions, enemies, damageEnemyExplosion);
 
     this.nextEnemy = 0;
 
@@ -668,22 +686,43 @@ function createAnimated(x, y, sprite, direction){
     }
 }
 
+function createExplosion(x, y, sprite){
+    let explosion = Explosions.get();
+    if(explosion){
+        explosion.doYourThing(x,y,sprite);
+    }
+}
+
 function damageEnemy(enemy, bullet) {
     // only if both enemy and bullet are alive
     if (enemy.active === true && bullet.active === true) {
         // we remove the bullet right away
-        createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);
         //let bounceangle = Phaser.Math.Angle.Between(bullet.x, bullet.y, enemy.x, enemy.y);
         switch (bullet.type){
-            case 2: enemy.slow();break;
+            case 2: enemy.slow(); createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
             case 3: let random = Math.random()*2;
-                    for(let i = 1; i<7; i++) addBullet(bullet.x, bullet.y, random+i, 18);break;
+                    for(let i = 1; i<7; i++) addBullet(bullet.x, bullet.y, random+i, 18);
+                    createExplosion(bullet.x,bullet.y,'p'+bullet.type, false);break;
+            default: createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
         }
 
         bullet.setActive(false);
         bullet.destroy();
 
         enemy.receiveDamage(TOWER_DAMAGE[bullet.type - 1]);
+    }
+}
+
+function damageEnemyExplosion(enemy, explosion) {
+    // only if both enemy and bullet are alive
+    if (enemy.active === true && explosion.active === true) {
+        try{
+            enemy.receiveDamage(100);
+        }catch(err) {
+            //a try catch block is a sign of me giving up
+            //this is literally my first thing in javascript were you really expecting some kind of miracle nah here have some spaghetti
+            //the fact that this works is enough for me
+        }
     }
 }
 
@@ -792,6 +831,7 @@ function updateHpText(){
 
 function updateMoneyText(){
     moneyText.setText(MONEY);
+    //if(MONEY>)
     moneyText.y = 4;
 
     if(MONEY >= TOWER_PRICES[0]){cross1.visible = false;}else{cross1.visible = true;}
@@ -969,8 +1009,8 @@ function nextLevel(){
 }
 
 function motherlode(){
-    MONEY = 13371337;
-    HEALTH = 13371337;
+    MONEY = 999999;
+    HEALTH = 999;
     updateMoneyText();
     updateHpText();
 }
