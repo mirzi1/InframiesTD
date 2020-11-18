@@ -49,7 +49,7 @@ let WAVE = 0;
 let HEALTH;
 let MONEY;
 const STARTHEALTH = 5;
-const STARTMONEY = 1000;
+const STARTMONEY = 300;
 let SELECTED_TOWER = 1;
 
 const WAVE_SPEED = 500;
@@ -966,6 +966,13 @@ function nextLevel(){
 
         path.draw(graphics);
     }
+}
+
+function motherlode(){
+    MONEY = 13371337;
+    HEALTH = 13371337;
+    updateMoneyText();
+    updateHpText();
 }
 
 function generateAnims(){
