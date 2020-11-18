@@ -32,6 +32,19 @@
     <property name="project.structure.side.proportion" value="0.0" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
+  <component name="RunManager">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -70,7 +83,8 @@
       <workItem from="1605551078918" duration="3877000" />
       <workItem from="1605555252025" duration="1027000" />
       <workItem from="1605607553398" duration="69000" />
-      <workItem from="1605708251843" duration="10522000" />
+      <workItem from="1605708251843" duration="10569000" />
+      <workItem from="1605719385474" duration="2239000" />
     </task>
     <servers />
   </component>

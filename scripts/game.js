@@ -34,14 +34,22 @@ let tw;
 let start;
 let finish;
 let globalTime;
-let casingEmitter;
+
+let cross1;
+let cross2;
+let cross3;
+let cross4;
+let cross5;
+let cross6;
+let cross7;
+let cross8;
 
 let LEVEL = 0;
 let WAVE = 0;
-let HEALTH = 100;
-let MONEY = 100;
-const STARTHEALTH = 100;
-const STARTMONEY = 100;
+let HEALTH;
+let MONEY;
+const STARTHEALTH = 5;
+const STARTMONEY = 1000;
 let SELECTED_TOWER = 1;
 
 const WAVE_SPEED = 500;
@@ -159,6 +167,8 @@ function preload(){
     this.load.image('button_nextwave', 'assets/graphics/ui/button_nextwave.png');
     this.load.image('button_nextLevel', 'assets/graphics/ui/button_nextlevel.png');
     this.load.image('selector', 'assets/graphics/ui/selector.png');
+    this.load.image('cross', 'assets/graphics/ui/disabled.png');
+    this.load.image('itdMenu', 'assets/graphics/ui/menu.jpg');
     this.load.spritesheet('start_finish', 'assets/graphics/ui/start_finish.png' ,{frameHeight: 50, frameWidth: 50});
     this.load.spritesheet('button_small', 'assets/graphics/ui/button_small.png' ,{frameHeight: 35, frameWidth: 35});
     this.load.spritesheet('button_icons', 'assets/graphics/ui/button_icons.png' ,{frameHeight: 24, frameWidth: 16});
@@ -421,7 +431,6 @@ let Tower = new Phaser.Class({
                     this.play('t7_idle');
                 });
             }
-            //animacia vystrelu
 
         }
     },
@@ -491,7 +500,7 @@ let Bullet = new Phaser.Class({
 
 function create(){
     //zaklad
-    background = this.add.image(695, 380);           //background bude vzdy naspodku
+    background = this.add.image(695, 380, 'itdMenu');           //background bude vzdy naspodku
     graphics = this.add.graphics();                         //cesty
     uileft = this.add.image(55,380, 'ui_left');
     uitop = this.add.image(640,20, 'ui_top');
@@ -506,10 +515,6 @@ function create(){
 
     //nextwave
     nextWaveButton = this.add.image(1140,20, 'button_nextwave').setInteractive().on('pointerdown', () => nextWave());
-
-    nextLevel();
-    updateHpText();
-    updateMoneyText();
 
     //tower info
     //this.add.image(200,50, 'button');
@@ -535,9 +540,17 @@ function create(){
         }else{
             this.add.image(53,75*i+100, 't'+(i+1)).setScale(HUD_ICON_SCALE);
         }
-        //this.add.text(20,73*i+16, i+1, smallfont);
         this.add.text(24,75*i+117, TOWER_PRICES[i]+'$', smallfont_black).setStroke('#FFE000', 2);
     }
+
+    cross1 = this.add.image(53,100,'cross');
+    cross2 = this.add.image(53,75+100, 'cross');
+    cross3 = this.add.image(53,75*2+100, 'cross');
+    cross4 = this.add.image(53,75*3+100, 'cross');
+    cross5 = this.add.image(53,75*4+100, 'cross');
+    cross6 = this.add.image(53,75*5+100, 'cross');
+    cross7 = this.add.image(53,75*6+100, 'cross');
+    cross8 = this.add.image(53,75*7+100, 'cross');
 
     //selektor
     selector = this.add.image(0,0,'selector');
@@ -549,6 +562,7 @@ function create(){
 
     //generovanie animacii
     generateAnims();
+    nextLevel();
 
     //keyboard
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE)  .on('down', function() {changeSelectedTower(1)}, this);
@@ -603,19 +617,23 @@ function update(time, delta){
 
 function placeTower(pointer) {
     if(pointer.x>100 && pointer.y>40 && SELECTED_TOWER != 0) {
-        let i = Math.floor(pointer.y / GRID_H);
-        let j = Math.floor(pointer.x / GRID_W);
-        if (canPlaceTower(i, j)) {
-            let Tower = Towers.get();
-            if (Tower) {
-                Tower.setActive(true);
-                Tower.setVisible(true);
-                Tower.place(i, j);
+            let i = Math.floor(pointer.y / GRID_H);
+            let j = Math.floor(pointer.x / GRID_W);
+            if (canPlaceTower(i, j)) {
+                if(MONEY-TOWER_PRICES[SELECTED_TOWER-1]>=0) {
+                    MONEY -= TOWER_PRICES[SELECTED_TOWER - 1];
+                    updateMoneyText();
+                    let Tower = Towers.get();
+                    if (Tower) {
+                        Tower.setActive(true);
+                        Tower.setVisible(true);
+                        Tower.place(i, j);
+                    }
+                }
+            } else {
+                blinkAvailableSpaces();
             }
-        } else {
-            blinkAvailableSpaces();
         }
-    }
 }
 
 function canPlaceTower(i, j) {
@@ -775,6 +793,15 @@ function updateHpText(){
 function updateMoneyText(){
     moneyText.setText(MONEY);
     moneyText.y = 4;
+
+    if(MONEY >= TOWER_PRICES[0]){cross1.visible = false;}else{cross1.visible = true;}
+    if(MONEY >= TOWER_PRICES[1]){cross2.visible = false;}else{cross2.visible = true;}
+    if(MONEY >= TOWER_PRICES[2]){cross3.visible = false;}else{cross3.visible = true;}
+    if(MONEY >= TOWER_PRICES[3]){cross4.visible = false;}else{cross4.visible = true;}
+    if(MONEY >= TOWER_PRICES[4]){cross5.visible = false;}else{cross5.visible = true;}
+    if(MONEY >= TOWER_PRICES[5]){cross6.visible = false;}else{cross6.visible = true;}
+    if(MONEY >= TOWER_PRICES[6]){cross7.visible = false;}else{cross7.visible = true;}
+    if(MONEY >= TOWER_PRICES[7]){cross8.visible = false;}else{cross8.visible = true;}
     tw.add({
         targets: moneyText,
         duration: 100,
@@ -976,5 +1003,5 @@ function generateAnims(){
     game.anims.create({key: "p18", frameRate: 1, frames: game.anims.generateFrameNumbers("p3_destroy",{start:4, end:5}), repeat: -1});  //explosion
     game.anims.create({key: "p18_destroy", frameRate: 45, frames: game.anims.generateFrameNumbers("p3_destroy",{start:3, end:6}), repeat: 0});  //explosion
     //ui
-    game.anims.create({key: "freespace_destroy", frameRate: 10, frames: game.anims.generateFrameNumbers("freespace",{start:0, end:3}), repeat: 0});
+    game.anims.create({key: "freespace_destroy", frameRate: 2, frames: game.anims.generateFrameNumbers("freespace",{start:0, end:1}), repeat: 0});
 }
