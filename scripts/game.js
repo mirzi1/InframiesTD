@@ -189,6 +189,8 @@ function preload(){
     this.load.spritesheet('p2_destroy', 'assets/graphics/projectiles/p2_destroy.png' ,{frameHeight: 40, frameWidth: 40});
     this.load.spritesheet('p3', 'assets/graphics/projectiles/p3.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p3_destroy', 'assets/graphics/projectiles/p3_destroy.png' ,{frameHeight: 20, frameWidth: 20});
+    this.load.spritesheet('p4', 'assets/graphics/projectiles/p4.png' ,{frameHeight: 20, frameWidth: 20});
+    this.load.spritesheet('p4_destroy', 'assets/graphics/projectiles/p4_destroy.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p17_destroy', 'assets/graphics/projectiles/p17_destroy.png' ,{frameHeight: 40, frameWidth: 40});
 
 }
@@ -450,7 +452,10 @@ let Bullet = new Phaser.Class({
         this.play('p'+type);
 
         //  we don't need to rotate the bullets as they are round
-        this.setRotation(angle);
+        if(this.type == 4){
+            this.setRotation(angle);
+            console.log("cc");
+        }
 
         this.dx = Math.cos(angle);
         this.dy = Math.sin(angle);
@@ -941,6 +946,9 @@ function generateAnims(){
     game.anims.create({key: "p2_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("p2_destroy",{start:0, end:3}), repeat: 0});
     game.anims.create({key: "p3", frameRate: 15, frames: game.anims.generateFrameNumbers("p3",{start:0, end:6}), repeat: -1});
     game.anims.create({key: "p3_destroy", frameRate: 10, frames: game.anims.generateFrameNumbers("p3_destroy",{start:3, end:6}), repeat: 0});
+    game.anims.create({key: "p4", frameRate: 60, frames: game.anims.generateFrameNumbers("p4",{start:0, end:4}), repeat: -1});
+    game.anims.create({key: "p4_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p4_destroy",{start:0, end:3}), repeat: 0});
+
 
     game.anims.create({key: "p17", frameRate: 15, frames: game.anims.generateFrameNumbers("p17_destroy",{start:1, end:4}), repeat: -1});         //blue electric
     game.anims.create({key: "p17_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("p17_destroy",{start:2, end:3}), repeat: 0});
