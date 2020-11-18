@@ -61,13 +61,13 @@ let waveInProgress = false;
 let nextEnemy = 0;
 let waveIndex = 0;
 
-const TOWER_PRICES = [150,400,300,400,500,600,700,1000];
-const TOWER_SPEED = [700,1300,2000,1300,2200,1000,100,1000];
+const TOWER_PRICES = [150,400,500,500,750,600,2500,3000];
+const TOWER_SPEED = [700,1300,2000,1700,2200,1000,100,1000];
 const TOWER_RANGE = [400,350,300,2000,300,550,500,2000];
 const TOWER_DESCRIPTION = ['Laser - Basic turret',
                             'Electric - Slows enemies on hit',
                             'Canon - Slow but lethal, instantly destroy barriers',
-                            'Sniper - Sees the entire map and hidden enemies',
+                            'Rail - Huge damage, sees the entire map and hidden enemies',
                             'Multishot - Fires 5 projectiles at once',
                             'Thermal - Sees hidden enemies',
                             'Rapid - Massive firing rate',
@@ -82,7 +82,7 @@ const TOWER_UPGRADE_DESCRIPTION = ['+range, +firerate, see hidden enemies',
                                     'none'];
 
 //TODO: tower balancing
-const TOWER_DAMAGE = [50,10,300,500,30,100,50,1000,
+const TOWER_DAMAGE = [50,10,500,200,50,100,40,1000,
                       150,250,350,450,550,650,750,1000,
                       30, 15];
 const PROJECTILE_SPEED = [500,600,450,4000,300,600,700,1000,
@@ -180,6 +180,7 @@ function preload(){
     this.load.spritesheet('t1', 'assets/graphics/towers/t1.png' ,{frameHeight: 100, frameWidth: 100});
     this.load.spritesheet('t2', 'assets/graphics/towers/t2.png' ,{frameHeight: 100, frameWidth: 100});
     this.load.spritesheet('t3', 'assets/graphics/towers/t3.png' ,{frameHeight: 120, frameWidth: 80});
+    this.load.spritesheet('t4', 'assets/graphics/towers/t4.png' ,{frameHeight: 250, frameWidth: 150});
 
     //projectiles
     this.load.spritesheet('p1', 'assets/graphics/projectiles/p1.png' ,{frameHeight: 20, frameWidth: 20});
@@ -352,18 +353,32 @@ let Tower = new Phaser.Class({
                 case 2: level2[i][j] = this.TowerType;break;
                 case 3: level3[i][j] = this.TowerType;break;
             }
-            this.scaleX = 2;
-            this.scaleY = 2;
             this.alpha = 0;
-            tw.add({
-                targets: this,
-                duration: 200,
-                alpha: 1,
-                scaleX: 1,
-                scaleY: 1,
-                ease: 'Sine.easeOut',
-                repeat: 0
-            });
+            if(this.TowerType != 4){
+                this.scaleX = 2;
+                this.scaleY = 2;
+                tw.add({
+                    targets: this,
+                    duration: 200,
+                    alpha: 1,
+                    scaleX: 1,
+                    scaleY: 1,
+                    ease: 'Sine.easeOut',
+                    repeat: 0
+                });
+            }else{
+                this.scaleX = 1;
+                this.scaleY = 1;
+                tw.add({
+                    targets: this,
+                    duration: 200,
+                    alpha: 1,
+                    scaleX: 0.5,
+                    scaleY: 0.5,
+                    ease: 'Sine.easeOut',
+                    repeat: 0
+                });
+            }
         }
     },
     fire: function() {
@@ -371,7 +386,19 @@ let Tower = new Phaser.Class({
         if(enemy) {
             //vytvorime bullet
             let angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
-            addBullet(this.x, this.y, angle, this.TowerType);
+            //default a podobne
+            if(this.TowerType != 4){addBullet(this.x, this.y, angle, this.TowerType);this.play('t'+this.TowerType+'_fire');}
+            //iba t4
+            else {
+                this.play('t4_charge');
+                this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG );
+                this.once('animationcomplete', ()=> {
+                    angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
+                    this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG );
+                    this.play('t4_fire');
+                    addBullet(this.x, this.y, angle, this.TowerType)});
+            }
+            //t5 multishot
             if(this.TowerType == 5){
                 addBullet(this.x, this.y, angle-0.1, this.TowerType);
                 addBullet(this.x, this.y, angle-0.2, this.TowerType);
@@ -380,10 +407,10 @@ let Tower = new Phaser.Class({
             }
             //otacanie podla druhu Towery
             switch(this.TowerType){
-                case 1: case 3: this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG ); break;
+                case 1: case 3: case 5: case 6: case 7: this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG ); this.play('t'+this.TowerType+'_fire');break;
             }
             //animacia vystrelu
-            this.play('t'+this.TowerType+'_fire');
+
         }
     },
     update: function (time, delta)
@@ -487,7 +514,11 @@ function create(){
     //tlacidla nalavo
     for(let i=0; i<8; i++){
         this.add.image(53,75*i+100, 'button').setInteractive().on('pointerdown', () => changeSelectedTower(i+1));
-        this.add.image(53,75*i+100, 't'+(i+1)).setScale(HUD_ICON_SCALE);
+        if(i!=3){
+            this.add.image(53,75*i+100, 't'+(i+1)).setScale(HUD_ICON_SCALE);
+        }else{
+            this.add.image(53,75*i+100, 't'+(i+1)).setScale(HUD_ICON_SCALE*0.5);
+        }
         //this.add.text(20,73*i+16, i+1, smallfont);
         this.add.text(24,75*i+117, TOWER_PRICES[i]+'$', smallfont_black).setStroke('#FFE000', 2);
     }
@@ -702,7 +733,8 @@ function upgradeTool(){
 }
 
 function updateTowerInfo(){
-    selectedImg.setTexture('t'+(SELECTED_TOWER)).setScale(0.3);
+    selectedImg.setTexture('t'+(SELECTED_TOWER)).setScale(0.25);
+    if(SELECTED_TOWER == 4){selectedImg.setScale(0.10)};
     selectedInfo.setText(getTowerInfo(SELECTED_TOWER-1));
     game.input.setDefaultCursor('url(assets/graphics/ui/cursor.cur), pointer');
 }
@@ -900,6 +932,8 @@ function generateAnims(){
     game.anims.create({key: "t1_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t1",{start:8, end:0}), repeat: 0});
     game.anims.create({key: "t2_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t2",{start:9, end:0}), repeat: 0});
     game.anims.create({key: "t3_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t3",{start:0, end:10}), repeat: 0});
+    game.anims.create({key: "t4_charge", frameRate: 15, frames: game.anims.generateFrameNumbers("t4",{start:0, end:13}), repeat: 0});
+    game.anims.create({key: "t4_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t4",{start:14, end:22}), repeat: 0});
     //projectiles
     game.anims.create({key: "p1", frameRate: 15, frames: game.anims.generateFrameNumbers("p1",{start:0, end:6}), repeat: -1});
     game.anims.create({key: "p1_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("p1_destroy",{start:0, end:4}), repeat: 0});
