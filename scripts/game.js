@@ -34,6 +34,7 @@ let tw;
 let start;
 let finish;
 let globalTime;
+let casingEmitter;
 
 let LEVEL = 0;
 let WAVE = 0;
@@ -62,12 +63,12 @@ let nextEnemy = 0;
 let waveIndex = 0;
 
 const TOWER_PRICES = [150,400,500,500,750,600,2500,3000];
-const TOWER_SPEED = [700,1300,2000,1700,2200,1000,100,1000];
+const TOWER_SPEED = [700,1300,2000,2300,2200,1000,100,1000];
 const TOWER_RANGE = [400,350,300,2000,300,550,500,2000];
 const TOWER_DESCRIPTION = ['Laser - Basic turret',
                             'Electric - Slows enemies on hit',
                             'Canon - Slow but lethal, instantly destroy barriers',
-                            'Rail - Huge damage, sees the entire map and hidden enemies',
+                            'Rail - Massive damage, sees the entire map and hidden enemies',
                             'Multishot - Fires 5 projectiles at once',
                             'Thermal - Sees hidden enemies',
                             'Rapid - Massive firing rate',
@@ -75,7 +76,7 @@ const TOWER_DESCRIPTION = ['Laser - Basic turret',
 const TOWER_UPGRADE_DESCRIPTION = ['+range, +firerate, see hidden enemies',
                                     '+firerate, Stun enemies on hit',
                                     '+firerate, bigger explosions',
-                                    '+firerate, instantly destroy barriers',
+                                    '+firerate, +damage',
                                     '+range, +damage, 7 projectiles at once',
                                     '+firerate, projectile divides into 3 on hit',
                                     '+damage, see hidden enemies',
@@ -88,7 +89,7 @@ const TOWER_DAMAGE = [50,10,500,200,50,100,40,1000,
 const PROJECTILE_SPEED = [500,600,450,4000,300,600,700,1000,
                           500,600,300,400,500,600,700,1000,
                           200, 300];
-const PROJECTILE_LIFESPAN = [500,500,1500,1000,1200,500,500,500,
+const PROJECTILE_LIFESPAN = [500,500,1500,1000,1200,500,600,500,
                              500,500,500,500,500,500,500,500,
                              700, 200];
 const TOWER_FREEZETIME = 2000;
@@ -182,6 +183,9 @@ function preload(){
     this.load.spritesheet('t3', 'assets/graphics/towers/t3.png' ,{frameHeight: 120, frameWidth: 80});
     this.load.spritesheet('t4', 'assets/graphics/towers/t4.png' ,{frameHeight: 250, frameWidth: 150});
 
+    this.load.spritesheet('t7', 'assets/graphics/towers/t7.png' ,{frameHeight: 100, frameWidth: 100});
+    this.load.spritesheet('t7_idle', 'assets/graphics/towers/t7_idle.png' ,{frameHeight: 100, frameWidth: 100});
+
     //projectiles
     this.load.spritesheet('p1', 'assets/graphics/projectiles/p1.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p1_destroy', 'assets/graphics/projectiles/p1_destroy.png' ,{frameHeight: 20, frameWidth: 20});
@@ -191,6 +195,8 @@ function preload(){
     this.load.spritesheet('p3_destroy', 'assets/graphics/projectiles/p3_destroy.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p4', 'assets/graphics/projectiles/p4.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p4_destroy', 'assets/graphics/projectiles/p4_destroy.png' ,{frameHeight: 20, frameWidth: 20});
+    this.load.spritesheet('p7', 'assets/graphics/projectiles/p7.png' ,{frameHeight: 4, frameWidth: 20});
+    this.load.spritesheet('p7_destroy', 'assets/graphics/projectiles/p7_destroy.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p17_destroy', 'assets/graphics/projectiles/p17_destroy.png' ,{frameHeight: 40, frameWidth: 40});
 
 }
@@ -310,11 +316,6 @@ let AnimatedObject = new Phaser.Class({
 });
 
 let Tower = new Phaser.Class({
-    /*Tower IDs:
-    1. laser
-    2. electric
-    3. canon
-     */
     Extends: Phaser.GameObjects.Sprite,
 
     initialize:
@@ -356,6 +357,9 @@ let Tower = new Phaser.Class({
                 case 3: level3[i][j] = this.TowerType;break;
             }
             this.alpha = 0;
+            if(this.TowerType == 7){
+                this.play('t7_idle');
+            }
             if(this.TowerType != 4){
                 this.scaleX = 2;
                 this.scaleY = 2;
@@ -369,6 +373,7 @@ let Tower = new Phaser.Class({
                     repeat: 0
                 });
             }else{
+                this.setTexture('t4', 22);
                 this.scaleX = 1;
                 this.scaleY = 1;
                 tw.add({
@@ -411,6 +416,11 @@ let Tower = new Phaser.Class({
             switch(this.TowerType){
                 case 1: case 3: case 5: case 6: case 7: this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG ); this.play('t'+this.TowerType+'_fire');break;
             }
+            if(this.TowerType == 7){
+                this.once('animationcomplete', ()=>{
+                    this.play('t7_idle');
+                });
+            }
             //animacia vystrelu
 
         }
@@ -452,9 +462,8 @@ let Bullet = new Phaser.Class({
         this.play('p'+type);
 
         //  we don't need to rotate the bullets as they are round
-        if(this.type == 4){
+        if(this.type == 4 || this.type == 7){
             this.setRotation(angle);
-            console.log("cc");
         }
 
         this.dx = Math.cos(angle);
@@ -519,10 +528,12 @@ function create(){
     //tlacidla nalavo
     for(let i=0; i<8; i++){
         this.add.image(53,75*i+100, 'button').setInteractive().on('pointerdown', () => changeSelectedTower(i+1));
-        if(i!=3){
-            this.add.image(53,75*i+100, 't'+(i+1)).setScale(HUD_ICON_SCALE);
-        }else{
+        if(i==3){
             this.add.image(53,75*i+100, 't'+(i+1)).setScale(HUD_ICON_SCALE*0.5);
+        }else if(i==6){
+            this.add.image(53,75*i+100, 't7_idle').setScale(HUD_ICON_SCALE);
+        }else{
+            this.add.image(53,75*i+100, 't'+(i+1)).setScale(HUD_ICON_SCALE);
         }
         //this.add.text(20,73*i+16, i+1, smallfont);
         this.add.text(24,75*i+117, TOWER_PRICES[i]+'$', smallfont_black).setStroke('#FFE000', 2);
@@ -800,6 +811,11 @@ function nextWave(){
         graphics.alpha = 0.3;
         start.alpha = 0;
         finish.alpha = 0;
+
+        let towers_placed = Towers.getChildren();
+        for(let i = 0; i < towers_placed.length; i++) {
+            towers_placed[i].nextTic = globalTime+500*Math.random();
+        }
     }else{nextLevel();console.log('no more waves in array!')}
 }
 
@@ -939,6 +955,9 @@ function generateAnims(){
     game.anims.create({key: "t3_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t3",{start:0, end:10}), repeat: 0});
     game.anims.create({key: "t4_charge", frameRate: 15, frames: game.anims.generateFrameNumbers("t4",{start:0, end:13}), repeat: 0});
     game.anims.create({key: "t4_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t4",{start:14, end:22}), repeat: 0});
+
+    game.anims.create({key: "t7_idle", frameRate: 7, frames: game.anims.generateFrameNumbers("t7_idle",{start:0, end:1}), repeat: -1});
+    game.anims.create({key: "t7_fire", frameRate: 24, frames: game.anims.generateFrameNumbers("t7",{start:0, end:2}), repeat: 0});
     //projectiles
     game.anims.create({key: "p1", frameRate: 15, frames: game.anims.generateFrameNumbers("p1",{start:0, end:6}), repeat: -1});
     game.anims.create({key: "p1_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("p1_destroy",{start:0, end:4}), repeat: 0});
@@ -948,6 +967,8 @@ function generateAnims(){
     game.anims.create({key: "p3_destroy", frameRate: 10, frames: game.anims.generateFrameNumbers("p3_destroy",{start:3, end:6}), repeat: 0});
     game.anims.create({key: "p4", frameRate: 60, frames: game.anims.generateFrameNumbers("p4",{start:0, end:4}), repeat: -1});
     game.anims.create({key: "p4_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p4_destroy",{start:0, end:3}), repeat: 0});
+    game.anims.create({key: "p7", frameRate: 15, frames: game.anims.generateFrameNumbers("p7",{start:0, end:1}), repeat: -1});
+    game.anims.create({key: "p7_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p7_destroy",{start:0, end:1}), repeat: 0});
 
 
     game.anims.create({key: "p17", frameRate: 15, frames: game.anims.generateFrameNumbers("p17_destroy",{start:1, end:4}), repeat: -1});         //blue electric
