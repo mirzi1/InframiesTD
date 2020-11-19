@@ -72,8 +72,10 @@ let nextEnemy = 0;
 let waveIndex = 0;
 
 const TOWER_PRICES = [150,400,500,500,750,600,2500,3000];
-const TOWER_SPEED = [700,1300,2000,2300,2200,1000,100,1000];
-const TOWER_RANGE = [400,350,300,2000,300,550,500,2000];
+const TOWER_SPEED = [700,1300,2000,2300,2200,1000,100,1000,
+                    500,1000,1500,1800,2200,1000,100,1000];
+const TOWER_RANGE = [400,350,300,2000,300,550,500,2000,
+                    600,350,400,2000,400,700,550,2000];
 const TOWER_DESCRIPTION = ['Laser - Basic turret',
                             'Electric - Slows enemies on hit',
                             'Canon - Slow but lethal, instantly destroy barriers',
@@ -93,13 +95,13 @@ const TOWER_UPGRADE_DESCRIPTION = ['+range, +firerate, see hidden enemies',
 
 //TODO: tower balancing
 const TOWER_DAMAGE = [50,10,500,200,50,100,40,1000,
-                      150,250,350,450,550,650,750,1000,
+                      50,10,1000,400,80,150,70,1000,
                       30, 15];
 const PROJECTILE_SPEED = [500,600,450,4000,300,600,700,1000,
-                          500,600,300,400,500,600,700,1000,
+                          600,600,500,5000,300,600,700,1000,
                           200, 300];
 const PROJECTILE_LIFESPAN = [500,500,1500,1000,1200,500,600,500,
-                             500,500,500,500,500,500,500,500,
+                             500,500,1500,1000,1200,500,600,500,
                              700, 200];
 const TOWER_FREEZETIME = 2000;
 
@@ -388,11 +390,22 @@ let Tower = new Phaser.Class({
                         });
                     }
                 }
+                if(SELECTED_TOWER == -2){
+                    this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
+                    this.TowerType+=8;
+                    switch(LEVEL){
+                        case 1: level1[this.i][this.j] = this.TowerType;break;
+                        case 2: level2[this.i][this.j] = this.TowerType;break;
+                        case 3: level3[this.i][this.j] = this.TowerType;break;
+                    }
+                    this.setTint(0xff0000);
+                    this.nextTic = globalTime + TOWER_SPEED[this.TowerType - 1];
+                }
             });
         },
     place: function(i, j) {
         //polozenie - pozicia a typ
-        if(SELECTED_TOWER != 0){
+        if(SELECTED_TOWER != 0 && SELECTED_TOWER != -2){
             this.y = i * GRID_H + GRID_H/2;
             this.x = j * GRID_W + GRID_W/2;
             switch(LEVEL){
@@ -438,9 +451,8 @@ let Tower = new Phaser.Class({
             //vytvorime bullet
             let angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
             //default a podobne
-            if(this.TowerType != 4){addBullet(this.x, this.y, angle, this.TowerType);this.play('t'+this.TowerType+'_fire');}
             //iba t4
-            else {
+            if(this.TowerType == 4){
                 this.play('t4_charge');
                 this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG );
                 this.once('animationcomplete', ()=> {
@@ -449,6 +461,7 @@ let Tower = new Phaser.Class({
                     this.play('t4_fire');
                     addBullet(this.x, this.y, angle, this.TowerType)});
             }
+            else{addBullet(this.x, this.y, angle, this.TowerType);this.play('t'+this.TowerType%8+'_fire');}
             //t5 multishot
             if(this.TowerType == 5){
                 addBullet(this.x, this.y, angle-0.1, this.TowerType);
@@ -458,7 +471,7 @@ let Tower = new Phaser.Class({
             }
             //otacanie podla druhu Towery
             switch(this.TowerType){
-                case 1: case 3: case 5: case 6: case 7: this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG ); this.play('t'+this.TowerType+'_fire');break;
+                case 1: case 3: case 5: case 6: case 7: case 9: case 11: case 13: case 15: this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG );break;
             }
             if(this.TowerType == 7){
                 this.once('animationcomplete', ()=>{
@@ -663,7 +676,7 @@ function update(time, delta){
 }
 
 function placeTower(pointer) {
-    if(pointer.x>100 && pointer.y>40 && SELECTED_TOWER != 0) {
+    if(pointer.x>100 && pointer.y>40 && SELECTED_TOWER != 0 && SELECTED_TOWER != -2) {
             let i = Math.floor(pointer.y / GRID_H);
             let j = Math.floor(pointer.x / GRID_W);
             if (canPlaceTower(i, j)) {
