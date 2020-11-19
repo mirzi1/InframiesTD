@@ -32,6 +32,19 @@
     <property name="project.structure.side.proportion" value="0.0" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
+  <component name="RunManager">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -72,7 +85,8 @@
       <workItem from="1605607553398" duration="69000" />
       <workItem from="1605708251843" duration="10569000" />
       <workItem from="1605719385474" duration="2289000" />
-      <workItem from="1605722046323" duration="1719000" />
+      <workItem from="1605722046323" duration="2039000" />
+      <workItem from="1605798816767" duration="286000" />
     </task>
     <servers />
   </component>
@@ -80,9 +94,10 @@
     <option name="version" value="3" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="690" y="271" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1605551328346">
+    <state x="690" y="271" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1605798831426">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
+    <state x="690" y="271" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1050/1920.252.1920.1050@0.0.1920.1050" timestamp="1605798831426" />
     <state x="690" y="271" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1605551328346" />
     <state x="540" y="259" key="IDE.errors.dialog" timestamp="1605367781718">
       <screen x="0" y="0" width="1920" height="1050" />
