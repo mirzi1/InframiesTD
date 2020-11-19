@@ -55,9 +55,10 @@ let SELECTED_TOWER = 1;
 const WAVE_SPEED = 500;
 
 const bigfont = { font: "bold 22px font1", fill: "#3CCEFF", boundsAlignH: "center", boundsAlignV: "middle" };
-const smallfont = { font: "12px font1", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
-const smallfont_black = { font: "12px font1", fill: "#000", boundsAlignH: "center", boundsAlignV: "middle" };
+const smallfont = { font: "15px font1", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+const smallfont_black = { font: "15px font1", fill: "#000", boundsAlignH: "center", boundsAlignV: "middle" };
 const textfont = { font: "bold 10px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+const textfont_big = { font: "bold 18px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 
 const HUD_ICON_SCALE = 0.5;
 
@@ -550,14 +551,18 @@ function create(){
     for(let i=0; i<8; i++){
         this.add.image(53,75*i+100, 'button').setInteractive().on('pointerdown', () => changeSelectedTower(i+1));
         if(i==3){
-            this.add.image(53,75*i+100, 't'+(i+1)).setScale(HUD_ICON_SCALE*0.5);
+            this.add.image(53,75*i+98, 't'+(i+1)).setScale(HUD_ICON_SCALE*0.5);
         }else if(i==6){
-            this.add.image(53,75*i+100, 't7_idle').setScale(HUD_ICON_SCALE);
+            this.add.image(53,75*i+98, 't7_idle').setScale(HUD_ICON_SCALE);
         }else{
-            this.add.image(53,75*i+100, 't'+(i+1)).setScale(HUD_ICON_SCALE);
+            this.add.image(53,75*i+98, 't'+(i+1)).setScale(HUD_ICON_SCALE);
         }
-        this.add.text(24,75*i+117, TOWER_PRICES[i]+'$', smallfont_black).setStroke('#FFE000', 2);
     }
+
+    //selektor
+    selector = this.add.image(0,0,'selector');
+    selector.x = 53;
+    selector.y = 75*(SELECTED_TOWER-1)+100;
 
     cross1 = this.add.image(53,100,'cross');
     cross2 = this.add.image(53,75+100, 'cross');
@@ -568,10 +573,17 @@ function create(){
     cross7 = this.add.image(53,75*6+100, 'cross');
     cross8 = this.add.image(53,75*7+100, 'cross');
 
-    //selektor
-    selector = this.add.image(0,0,'selector');
-    selector.x = 53;
-    selector.y = 75*(SELECTED_TOWER-1)+100;
+    //cenovky
+    for(let i=0; i<8; i++){
+        switch(i){
+            case 0: this.add.text(25,75*i+117, TOWER_PRICES[i]+'$', smallfont).setStroke('#000000', 3);break;
+            case 6: case 7: this.add.text(15,75*i+117, TOWER_PRICES[i]+'$', smallfont).setStroke('#000000', 3);break;
+            default: this.add.text(22,75*i+117, TOWER_PRICES[i]+'$', smallfont).setStroke('#000000', 3);break;
+        }
+
+    }
+
+    this.add.text(120,690, 'EARLY ALPHA BUILD, type motherlode() in console for goodies', textfont_big).setStroke('#000000', 5);
 
     //kurzor
     this.input.setDefaultCursor('url(assets/graphics/ui/cursor.cur), pointer');
