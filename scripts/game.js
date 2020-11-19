@@ -355,21 +355,38 @@ let Tower = new Phaser.Class({
             this.setInteractive().on('pointerdown', () => {
                 if(SELECTED_TOWER == 0){
                     this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
-
-                    tw.add({
-                        targets: this,
-                        duration: 200,
-                        alpha: 0,
-                        scale: 2,
-                        repeat: 0,
-                        ease: 'Sine.easeOut',
-                        onComplete: ()=>{switch(LEVEL){
-                            case 1: level1[this.i][this.j] = 0;break;
-                            case 2: level2[this.i][this.j] = 0;break;
-                            case 3: level3[this.i][this.j] = 0;break;
-                        }
-                        this.setActive(false);this.destroy();},
-                    });
+                    if(this.TowerType != 4){
+                        tw.add({
+                            targets: this,
+                            duration: 200,
+                            alpha: 0,
+                            scale: 2,
+                            repeat: 0,
+                            ease: 'Sine.easeOut',
+                            onComplete: ()=>{switch(LEVEL){
+                                case 1: level1[this.i][this.j] = 0;break;
+                                case 2: level2[this.i][this.j] = 0;break;
+                                case 3: level3[this.i][this.j] = 0;break;
+                            }
+                            this.setActive(false);this.destroy();},
+                        });
+                    }
+                    else{
+                        tw.add({
+                            targets: this,
+                            duration: 200,
+                            alpha: 0,
+                            scale: 1,
+                            repeat: 0,
+                            ease: 'Sine.easeOut',
+                            onComplete: ()=>{switch(LEVEL){
+                                case 1: level1[this.i][this.j] = 0;break;
+                                case 2: level2[this.i][this.j] = 0;break;
+                                case 3: level3[this.i][this.j] = 0;break;
+                            }
+                                this.setActive(false);this.destroy();},
+                        });
+                    }
                 }
             });
         },
@@ -394,8 +411,8 @@ let Tower = new Phaser.Class({
                     targets: this,
                     duration: 200,
                     alpha: 1,
-                    scaleX: 1,
-                    scaleY: 1,
+                    scaleX: 0.8,
+                    scaleY: 0.8,
                     ease: 'Sine.easeOut',
                     repeat: 0
                 });
@@ -407,8 +424,8 @@ let Tower = new Phaser.Class({
                     targets: this,
                     duration: 200,
                     alpha: 1,
-                    scaleX: 0.5,
-                    scaleY: 0.5,
+                    scaleX: 0.4,
+                    scaleY: 0.4,
                     ease: 'Sine.easeOut',
                     repeat: 0
                 });
