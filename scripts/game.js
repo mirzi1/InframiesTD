@@ -27,6 +27,7 @@ let path;
 let selector;
 let selectedImg;
 let selectedInfo;
+let waveInfo;
 let uitop;
 let uileft
 let blinkSpaces = true;
@@ -52,7 +53,7 @@ const STARTHEALTH = 5;
 const STARTMONEY = 300;
 let SELECTED_TOWER = 1;
 
-const WAVE_SPEED = 500;
+const WAVE_SPEED = 100;
 
 const bigfont = { font: "bold 22px font1", fill: "#3CCEFF", boundsAlignH: "center", boundsAlignV: "middle" };
 const smallfont = { font: "15px font1", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
@@ -71,9 +72,17 @@ let waveInProgress = false;
 let nextEnemy = 0;
 let waveIndex = 0;
 
+const WAVE_DESCRIPTION = ['Welcome to InframiesTD! Select a tower from the menu on the left and click on any valid spots to place it.',
+    'Killing enemies gives you money for better towers and upgrades.',
+    'wave3',
+    'wave4',
+    'wave5',
+    'wave6',
+                            ];
+
 const TOWER_PRICES = [150,400,500,500,750,600,2500,3000];
 const TOWER_SPEED = [700,1300,2000,2300,2200,1000,100,1000,
-                    500,1000,1500,1800,2200,1000,100,1000];
+                    500,1000,1500,1800,2200,1000,70,1000];
 const TOWER_RANGE = [400,350,300,2000,300,550,500,2000,
                     600,350,400,2000,400,700,550,2000];
 const TOWER_DESCRIPTION = ['Laser - Basic turret',
@@ -85,24 +94,24 @@ const TOWER_DESCRIPTION = ['Laser - Basic turret',
                             'Rapid - Massive firing rate',
                             'Nuke - Vaporizes everything except bosses'];
 const TOWER_UPGRADE_DESCRIPTION = ['+range, +firerate, see hidden enemies',
-                                    '+firerate, Stun enemies on hit',
+                                    '+firerate, enemies become even slower',
                                     '+firerate, bigger explosions',
-                                    '+firerate, +damage',
+                                    '+firerate, piercing',
                                     '+range, +damage, 7 projectiles at once',
-                                    '+firerate, projectile divides into 3 on hit',
+                                    '+firerate, piercing',
                                     '+damage, see hidden enemies',
                                     'none'];
 
 //TODO: tower balancing
-const TOWER_DAMAGE = [50,10,500,200,50,100,40,1000,
-                      50,10,1000,400,80,150,70,1000,
-                      30, 15];
+const TOWER_DAMAGE = [50,10,100,200,50,100,40,1000,
+                      50,10,200,400,80,150,70,1000,
+                      10, 20];
 const PROJECTILE_SPEED = [500,600,450,4000,300,600,700,1000,
                           600,600,500,5000,300,600,700,1000,
-                          200, 300];
+                          1, 1];
 const PROJECTILE_LIFESPAN = [500,500,1500,1000,1200,500,600,500,
                              500,500,1500,1000,1200,500,600,500,
-                             700, 200];
+                             250, 250];
 const TOWER_FREEZETIME = 2000;
 
 const GRID_W = 50;
@@ -205,12 +214,24 @@ function preload(){
     this.load.spritesheet('p2', 'assets/graphics/projectiles/p2.png' ,{frameHeight: 40, frameWidth: 40});
     this.load.spritesheet('p2_destroy', 'assets/graphics/projectiles/p2_destroy.png' ,{frameHeight: 40, frameWidth: 40});
     this.load.spritesheet('p3', 'assets/graphics/projectiles/p3.png' ,{frameHeight: 20, frameWidth: 20});
-    this.load.spritesheet('p3_destroy', 'assets/graphics/projectiles/p3_destroy.png' ,{frameHeight: 20, frameWidth: 20});
+    this.load.spritesheet('p3_destroy', 'assets/graphics/projectiles/p3_destroy.png' ,{frameHeight: 80, frameWidth: 80});
     this.load.spritesheet('p4', 'assets/graphics/projectiles/p4.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p4_destroy', 'assets/graphics/projectiles/p4_destroy.png' ,{frameHeight: 20, frameWidth: 20});
+
     this.load.spritesheet('p7', 'assets/graphics/projectiles/p7.png' ,{frameHeight: 4, frameWidth: 20});
     this.load.spritesheet('p7_destroy', 'assets/graphics/projectiles/p7_destroy.png' ,{frameHeight: 20, frameWidth: 20});
-    this.load.spritesheet('p17_destroy', 'assets/graphics/projectiles/p17_destroy.png' ,{frameHeight: 40, frameWidth: 40});
+
+    this.load.spritesheet('p9', 'assets/graphics/projectiles/p9.png' ,{frameHeight: 20, frameWidth: 20});
+    this.load.spritesheet('p9_destroy', 'assets/graphics/projectiles/p9_destroy.png' ,{frameHeight: 20, frameWidth: 20});
+    this.load.spritesheet('p10', 'assets/graphics/projectiles/p10.png' ,{frameHeight: 40, frameWidth: 40});
+    this.load.spritesheet('p10_destroy', 'assets/graphics/projectiles/p10_destroy.png' ,{frameHeight: 40, frameWidth: 40});
+    this.load.spritesheet('p11', 'assets/graphics/projectiles/p11.png' ,{frameHeight: 20, frameWidth: 20});
+    this.load.spritesheet('p11_destroy', 'assets/graphics/projectiles/p11_destroy.png' ,{frameHeight: 100, frameWidth: 100});
+    this.load.spritesheet('p12', 'assets/graphics/projectiles/p12.png' ,{frameHeight: 20, frameWidth: 20});
+    this.load.spritesheet('p12_destroy', 'assets/graphics/projectiles/p12_destroy.png' ,{frameHeight: 20, frameWidth: 20});
+
+    this.load.spritesheet('p15', 'assets/graphics/projectiles/p15.png' ,{frameHeight: 4, frameWidth: 20});
+    this.load.spritesheet('p15_destroy', 'assets/graphics/projectiles/p15_destroy.png' ,{frameHeight: 20, frameWidth: 20});
 
 }
 
@@ -301,11 +322,18 @@ let Enemy = new Phaser.Class({
         }
     },
     slow:
-    function(){
-        this.speed = ENEMY_SPEED[this.id-1]/2;
-        this.tint = 0xff99ff;
-        this.slowed = true;
-        this.unfreeze = globalTime + TOWER_FREEZETIME;
+    function(type) {
+        if (type = 0) {
+            this.speed = ENEMY_SPEED[this.id - 1] / 2;
+        } else {
+            {
+                this.speed = ENEMY_SPEED[this.id - 1] / 4;
+            }
+
+            this.tint = 0xff99ff;
+            this.slowed = true;
+            this.unfreeze = globalTime + TOWER_FREEZETIME;
+        }
     }
 });
 
@@ -321,25 +349,9 @@ let AnimatedObject = new Phaser.Class({
             this.y = y;
             if(direction){this.setFlip(true)}
             switch(sprite){
-                case 'p3': this.play('p3_destroy');this.setScale(4);this.once('animationcomplete', ()=>{this.setActive(false);this.destroy()});break;
+                case 3: case 11: case 17: case 18: this.setActive(false);this.destroy();break;
                 case 'freespace': this.play('freespace_destroy');this.once('animationcomplete', ()=>{this.setActive(false);this.destroy(); blinkSpaces = true;});break;
                 default: this.play(sprite+'_destroy');this.once('animationcomplete', ()=>{this.setActive(false);this.destroy()});break;
-            }
-        }
-});
-
-let Explosion = new Phaser.Class({
-    Extends: Phaser.GameObjects.Sprite,
-    initialize:
-        function AnimatedObject(game){
-            Phaser.GameObjects.Sprite.call(this,game,0,0);
-        },
-    doYourThing:
-        function(x,y,sprite){
-            this.x = x;
-            this.y = y;
-            switch(sprite){
-                case 'p3': this.play('p3_destroy');this.setScale(4);this.once('animationcomplete', ()=>{this.setActive(false);this.destroy()});break;
             }
         }
 });
@@ -357,7 +369,7 @@ let Tower = new Phaser.Class({
             this.setInteractive().on('pointerdown', () => {
                 if(SELECTED_TOWER == 0){
                     this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
-                    if(this.TowerType != 4){
+                    if(this.TowerType%8 != 4){
                         tw.add({
                             targets: this,
                             duration: 200,
@@ -390,9 +402,10 @@ let Tower = new Phaser.Class({
                         });
                     }
                 }
-                if(SELECTED_TOWER == -2){
+                if(SELECTED_TOWER == -2 && this.TowerType<8){
                     this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
                     this.TowerType+=8;
+                    console.log("Upgraded to: "+this.TowerType);
                     switch(LEVEL){
                         case 1: level1[this.i][this.j] = this.TowerType;break;
                         case 2: level2[this.i][this.j] = this.TowerType;break;
@@ -414,31 +427,27 @@ let Tower = new Phaser.Class({
                 case 3: level3[i][j] = this.TowerType;break;
             }
             this.alpha = 0;
-            if(this.TowerType == 7){
+            if(this.TowerType%8 == 7){
                 this.play('t7_idle');
             }
-            if(this.TowerType != 4){
-                this.scaleX = 2;
-                this.scaleY = 2;
+            if(this.TowerType%8 != 4){
+                this.scale = 2;
                 tw.add({
                     targets: this,
                     duration: 200,
                     alpha: 1,
-                    scaleX: 0.8,
-                    scaleY: 0.8,
+                    scale: 0.8,
                     ease: 'Sine.easeOut',
                     repeat: 0
                 });
             }else{
                 this.setTexture('t4', 22);
-                this.scaleX = 1;
-                this.scaleY = 1;
+                this.scale = 1;
                 tw.add({
                     targets: this,
                     duration: 200,
                     alpha: 1,
-                    scaleX: 0.4,
-                    scaleY: 0.4,
+                    scale: 0.4,
                     ease: 'Sine.easeOut',
                     repeat: 0
                 });
@@ -452,7 +461,7 @@ let Tower = new Phaser.Class({
             let angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
             //default a podobne
             //iba t4
-            if(this.TowerType == 4){
+            if(this.TowerType%8 == 4){
                 this.play('t4_charge');
                 this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG );
                 this.once('animationcomplete', ()=> {
@@ -473,7 +482,7 @@ let Tower = new Phaser.Class({
             switch(this.TowerType){
                 case 1: case 3: case 5: case 6: case 7: case 9: case 11: case 13: case 15: this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG );break;
             }
-            if(this.TowerType == 7){
+            if(this.TowerType%8 == 7){
                 this.once('animationcomplete', ()=>{
                     this.play('t7_idle');
                 });
@@ -501,9 +510,7 @@ let Bullet = new Phaser.Class({
             Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'p1');
 
             this.lifespan = 0;
-
             this.speed = 0;
-            this.scale = 2;
         },
 
     fire: function (x, y, angle,type)
@@ -517,8 +524,13 @@ let Bullet = new Phaser.Class({
         this.setPosition(x, y);
         this.play('p'+type);
 
-        //  we don't need to rotate the bullets as they are round
         switch(this.type){
+            case 17: case 18: this.scale = 1;break;
+            default: this.scale = 2;break;
+        }
+
+        //  we don't need to rotate the bullets as they are round
+        switch(this.type%8){
             case 3: case 4: case 7: this.setRotation(angle);
         }
 
@@ -569,6 +581,8 @@ function create(){
     selectedImg.setScale(HUD_ICON_SCALE);
     selectedInfo = this.add.text(478,5,getTowerInfo(SELECTED_TOWER-1),textfont);
     updateTowerInfo();
+
+    waveInfo = this.add.text(690,60,'',textfont_big).setStroke('#000000', 5).setOrigin(0.5);
 
     //upgrade, sell
     this.add.image(36,683, 'button_small', 1).setInteractive().on('pointerdown', () => upgradeTool());
@@ -635,12 +649,10 @@ function create(){
 
     Towers = this.add.group({ classType: Tower, runChildUpdate: true });
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
-    Explosions = this.physics.add.group({ classType: Explosion, runChildUpdate: true });
     enemies = this.physics.add.group({ classType: Enemy, runChildUpdate: true });
     AnimatedObjects = this.add.group({ classType: AnimatedObject, runChildUpdate: true });
 
     this.physics.add.overlap(enemies, bullets, damageEnemy);
-    this.physics.add.overlap(Explosions, enemies, damageEnemyExplosion);
 
     this.nextEnemy = 0;
 
@@ -668,6 +680,7 @@ function update(time, delta){
                 console.log('end of wave '+WAVE+' reached');waveInProgress=false;nextWaveButton.visible = true;graphics.alpha = 0.8;start.alpha = 1;finish.alpha =1;
                 if(WAVE<waves.length){/*hmmmmm*/}
                 else{nextWaveButton.setTexture("button_nextLevel");}
+                updateWaveInfo();
             }
             this.nextEnemy = time + WAVE_SPEED;
         }
@@ -728,43 +741,25 @@ function createAnimated(x, y, sprite, direction){
     }
 }
 
-function createExplosion(x, y, sprite){
-    let explosion = Explosions.get();
-    if(explosion){
-        explosion.doYourThing(x,y,sprite);
-    }
-}
-
 function damageEnemy(enemy, bullet) {
     // only if both enemy and bullet are alive
     if (enemy.active === true && bullet.active === true) {
         // we remove the bullet right away
         //let bounceangle = Phaser.Math.Angle.Between(bullet.x, bullet.y, enemy.x, enemy.y);
         switch (bullet.type){
-            case 2: enemy.slow(); createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
-            case 3: let random = Math.random()*2;
-                    for(let i = 1; i<7; i++) addBullet(bullet.x, bullet.y, random+i, 18);
-                    createExplosion(bullet.x,bullet.y,'p'+bullet.type, false);break;
+            case 2: enemy.slow(0); createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
+            case 10: enemy.slow(1); createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
+            case 3: addBullet(bullet.x, bullet.y, 0, 17);break;
+            case 11: addBullet(bullet.x, bullet.y, 0, 18);break;
             default: createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
         }
 
-        bullet.setActive(false);
-        bullet.destroy();
+        switch(bullet.type){
+            case 12: case 17: case 18: break;
+            default:bullet.setActive(false);bullet.destroy();break;
+        }
 
         enemy.receiveDamage(TOWER_DAMAGE[bullet.type - 1]);
-    }
-}
-
-function damageEnemyExplosion(enemy, explosion) {
-    // only if both enemy and bullet are alive
-    if (enemy.active === true && explosion.active === true) {
-        try{
-            enemy.receiveDamage(100);
-        }catch(err) {
-            //a try catch block is a sign of me giving up
-            //this is literally my first thing in javascript were you really expecting some kind of miracle nah here have some spaghetti
-            //the fact that this works is enough for me
-        }
     }
 }
 
@@ -856,7 +851,7 @@ function updateTowerInfo(){
 
 function getTowerInfo(type){
     return   TOWER_DESCRIPTION[type]+', dmg: '+TOWER_DAMAGE[type]+', fir: '+TOWER_SPEED[type]+ ', ran: '+TOWER_RANGE[type]+ ', spd: '+PROJECTILE_SPEED[type]+ ', pls: '+PROJECTILE_LIFESPAN[type]
-            +'\nUpgrade: '+TOWER_UPGRADE_DESCRIPTION[type]+' - '+TOWER_PRICES[type]*4+'$';
+            +'\nUpgrade: '+TOWER_UPGRADE_DESCRIPTION[type]+' - '+TOWER_PRICES[type]*2+'$';
 }
 
 function updateHpText(){
@@ -899,6 +894,7 @@ function nextWave(){
         console.log('starting wave '+ WAVE);
         waveInProgress=true;
         waveIndex = 0;
+        hideWaveInfo();
 
         tw.add({
             targets: waveText,
@@ -937,13 +933,13 @@ function nextLevel(){
         graphics.alpha = 0;
         start.alpha = 0;
         finish.alpha = 0;
+        hideWaveInfo();
         //background anim
         tw.add({
             targets: background,
             duration: 500,
             alpha: 0,
-            scaleX: 2,
-            scaleY: 2,
+            scale: 2,
             ease: 'Sine.easeIn',
             onComplete: ()=> {
                 background.setTexture('bg'+LEVEL);
@@ -953,10 +949,9 @@ function nextLevel(){
                     targets: background,
                     duration: 500,
                     alpha: 1,
-                    scaleX: 1,
-                    scaleY: 1,
+                    scale: 1,
                     ease: 'Sine.easeOut',
-                    onComplete: ()=> {graphics.alpha = 0.8;start.alpha = 1;finish.alpha = 1},
+                    onComplete: ()=> {graphics.alpha = 0.8;start.alpha = 1;finish.alpha = 1;updateWaveInfo();},
                     repeat: 0
                 });
                 },
@@ -1083,14 +1078,49 @@ function generateAnims(){
     game.anims.create({key: "p3_destroy", frameRate: 10, frames: game.anims.generateFrameNumbers("p3_destroy",{start:3, end:6}), repeat: 0});
     game.anims.create({key: "p4", frameRate: 60, frames: game.anims.generateFrameNumbers("p4",{start:0, end:4}), repeat: -1});
     game.anims.create({key: "p4_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p4_destroy",{start:0, end:3}), repeat: 0});
+
     game.anims.create({key: "p7", frameRate: 15, frames: game.anims.generateFrameNumbers("p7",{start:0, end:1}), repeat: -1});
     game.anims.create({key: "p7_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p7_destroy",{start:0, end:1}), repeat: 0});
 
+    game.anims.create({key: "p9", frameRate: 15, frames: game.anims.generateFrameNumbers("p9",{start:0, end:6}), repeat: -1});
+    game.anims.create({key: "p9_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("p1_destroy",{start:1, end:4}), repeat: 0});
+    game.anims.create({key: "p10", frameRate: 15, frames: game.anims.generateFrameNumbers("p10",{start:0, end:4}), repeat: -1});
+    game.anims.create({key: "p10_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("p10_destroy",{start:0, end:3}), repeat: 0});
+    game.anims.create({key: "p11", frameRate: 15, frames: game.anims.generateFrameNumbers("p11",{start:0, end:6}), repeat: -1});
+    game.anims.create({key: "p11_destroy", frameRate: 10, frames: game.anims.generateFrameNumbers("p11_destroy",{start:3, end:6}), repeat: 0});
+    game.anims.create({key: "p12", frameRate: 60, frames: game.anims.generateFrameNumbers("p12",{start:0, end:4}), repeat: -1});
+    game.anims.create({key: "p12_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p12_destroy",{start:0, end:3}), repeat: 0});
 
-    game.anims.create({key: "p17", frameRate: 15, frames: game.anims.generateFrameNumbers("p17_destroy",{start:1, end:4}), repeat: -1});         //blue electric
-    game.anims.create({key: "p17_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("p17_destroy",{start:2, end:3}), repeat: 0});
-    game.anims.create({key: "p18", frameRate: 1, frames: game.anims.generateFrameNumbers("p3_destroy",{start:4, end:5}), repeat: -1});  //explosion
-    game.anims.create({key: "p18_destroy", frameRate: 45, frames: game.anims.generateFrameNumbers("p3_destroy",{start:3, end:6}), repeat: 0});  //explosion
+    game.anims.create({key: "p15", frameRate: 15, frames: game.anims.generateFrameNumbers("p15",{start:0, end:1}), repeat: -1});
+    game.anims.create({key: "p15_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p15_destroy",{start:0, end:1}), repeat: 0});
+
+    game.anims.create({key: "p17", frameRate: 15, frames: game.anims.generateFrameNumbers("p3_destroy",{start:3, end:6}), repeat: -1});
+    game.anims.create({key: "p17_destroy", frameRate: 10, frames: game.anims.generateFrameNumbers("p3_destroy",{start:6, end:6}), repeat: 0});
+    game.anims.create({key: "p18", frameRate: 15, frames: game.anims.generateFrameNumbers("p11_destroy",{start:3, end:6}), repeat: -1});
+    game.anims.create({key: "p18_destroy", frameRate: 10, frames: game.anims.generateFrameNumbers("p11_destroy",{start:6, end:6}), repeat: 0});
     //ui
     game.anims.create({key: "freespace_destroy", frameRate: 2, frames: game.anims.generateFrameNumbers("freespace",{start:0, end:1}), repeat: 0});
+}
+
+function updateWaveInfo(){
+    waveInfo.setText(WAVE_DESCRIPTION[WAVE]);
+    waveInfo.scale = 0;
+    tw.add({
+        targets: waveInfo,
+        duration: 300,
+        scale : 1,
+        ease: 'Back.easeOut',
+        repeat: 0
+    });
+}
+
+function hideWaveInfo(){
+    waveInfo.scale = 1;
+    tw.add({
+        targets: waveInfo,
+        duration: 300,
+        scale : 0,
+        ease: 'Back.easeIn',
+        repeat: 0
+    });
 }
