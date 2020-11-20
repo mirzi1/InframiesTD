@@ -28,6 +28,7 @@ let selector;
 let selectedImg;
 let selectedInfo;
 let waveInfo;
+let scoreText;
 let uitop;
 let uileft
 let blinkSpaces = true;
@@ -45,6 +46,7 @@ let cross6;
 let cross7;
 let cross8;
 
+let SCORE = 0;
 let LEVEL = 0;
 let WAVE = 0;
 let HEALTH;
@@ -59,11 +61,12 @@ const bigfont = { font: "bold 22px font1", fill: "#3CCEFF", boundsAlignH: "cente
 const smallfont = { font: "15px font1", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 const smallfont_black = { font: "15px font1", fill: "#000", boundsAlignH: "center", boundsAlignV: "middle" };
 const textfont = { font: "bold 10px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
-const textfont_big = { font: "bold 18px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+const textfont_big = { font: "bold 18px Arial", fill: "#fff", align:"center",boundsAlignH: "center", boundsAlignV: "middle" };
+const textfont_big_right = { font: "bold 18px Arial", fill: "#fff", align:"right",boundsAlignH: "center", boundsAlignV: "middle" };
 
 const HUD_ICON_SCALE = 0.5;
 
-const ENEMY_HEALTH = [50,200,300,400,500,600,700,1000];
+const ENEMY_HEALTH = [50,300,300,400,500,600,700,1000];
 const ENEMY_SPEED = [1/8000,1/10000,1/10000,1/10000,1/10000,1/10000,1/10000,1/10000];
 const ENEMY_REWARD = [10,20,30,40,50,100,200,1000];
 const LEVEL_SPEED_MODIFIER = [0.7, 1, 1];
@@ -72,15 +75,16 @@ let waveInProgress = false;
 let nextEnemy = 0;
 let waveIndex = 0;
 
-const WAVE_DESCRIPTION = ['Welcome to InframiesTD! Select a tower from the menu on the left and click on any valid spots to place it.',
+const WAVE_DESCRIPTION = ['Welcome to InframiesTD! Select a tower from the menu on the left and click on any valid spots to place it.\n Press "next wave" when you are ready.',
     'Killing enemies gives you money for better towers and upgrades.',
-    'wave3',
-    'wave4',
-    'wave5',
-    'wave6',
-                            ];
+    '',
+    '',
+    '',
+    '',
+    ];
 
 const TOWER_PRICES = [150,400,500,500,750,600,2500,3000];
+
 const TOWER_SPEED = [700,1300,2000,2300,2200,1000,100,1000,
                     500,1000,1500,1800,2200,1000,70,1000];
 const TOWER_RANGE = [400,350,300,2000,300,550,500,2000,
@@ -90,13 +94,13 @@ const TOWER_DESCRIPTION = ['Laser - Basic turret',
                             'Canon - Slow but lethal, instantly destroy barriers',
                             'Rail - Massive damage, sees the entire map and hidden enemies',
                             'Multishot - Fires 5 projectiles at once',
-                            'Thermal - Sees hidden enemies',
+                            'Thermal - Sees hidden enemies, piercing projectiles',
                             'Rapid - Massive firing rate',
                             'Nuke - Vaporizes everything except bosses'];
 const TOWER_UPGRADE_DESCRIPTION = ['+range, +firerate, see hidden enemies',
                                     '+firerate, enemies become even slower',
                                     '+firerate, bigger explosions',
-                                    '+firerate, piercing',
+                                    '+firerate, +damage',
                                     '+range, +damage, 7 projectiles at once',
                                     '+firerate, piercing',
                                     '+damage, see hidden enemies',
@@ -166,8 +170,9 @@ let level3 =       [[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
                     [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]];
 
 //TODO: waves
-const waves = [ [1,0,1,0,1,0,2],
-                [1,1,0,0,1,1,1,0,0,1,1,1,1,2]
+const waves = [ [1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,2],
+                [1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,2,0,2],
+                [1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,2,0,1,0,2,0,1,0,2,0,1],
               ];
 
 function preload(){
@@ -315,6 +320,8 @@ let Enemy = new Phaser.Class({
         // if hp drops below 0 we deactivate this enemy
         if(this.hp <= 0) {
             MONEY+=ENEMY_REWARD[this.id-1];
+            SCORE+=Math.round(ENEMY_REWARD[this.id-1]*(1-this.follower.t));
+            console.log(ENEMY_REWARD[this.id-1]*this.follower.t);
             updateMoneyText();
             createAnimated(this.x,this.y,'a'+this.id, this.flipX);
             this.setActive(false);
@@ -367,9 +374,14 @@ let Tower = new Phaser.Class({
             this.nextTic = 0;
             this.TowerType = SELECTED_TOWER;
             this.setInteractive().on('pointerdown', () => {
-                if(SELECTED_TOWER == 0){
+                if(SELECTED_TOWER == 0 && this.active === true){
                     this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
                     if(this.TowerType%8 != 4){
+                        this.setActive(false);
+                        if(this.TowerType <8){MONEY+=TOWER_PRICES[this.TowerType-1]/2;}
+                        else{MONEY+=TOWER_PRICES[(this.TowerType%8)-1];}
+
+                        updateMoneyText();
                         tw.add({
                             targets: this,
                             duration: 200,
@@ -382,7 +394,7 @@ let Tower = new Phaser.Class({
                                 case 2: level2[this.i][this.j] = 0;break;
                                 case 3: level3[this.i][this.j] = 0;break;
                             }
-                            this.setActive(false);this.destroy();},
+                            this.destroy();},
                         });
                     }
                     else{
@@ -402,17 +414,21 @@ let Tower = new Phaser.Class({
                         });
                     }
                 }
-                if(SELECTED_TOWER == -2 && this.TowerType<8){
-                    this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
-                    this.TowerType+=8;
-                    console.log("Upgraded to: "+this.TowerType);
-                    switch(LEVEL){
-                        case 1: level1[this.i][this.j] = this.TowerType;break;
-                        case 2: level2[this.i][this.j] = this.TowerType;break;
-                        case 3: level3[this.i][this.j] = this.TowerType;break;
+                if(SELECTED_TOWER == -2 && this.TowerType<8 && this.active === true){
+                    if(MONEY>=TOWER_PRICES[this.TowerType-1]*2){
+                        MONEY-=TOWER_PRICES[(this.TowerType%8)-1]
+                        this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
+                        updateMoneyText();
+                        this.TowerType+=8;
+                        console.log("Upgraded to: "+this.TowerType);
+                        switch(LEVEL){
+                            case 1: level1[this.i][this.j] = this.TowerType;break;
+                            case 2: level2[this.i][this.j] = this.TowerType;break;
+                            case 3: level3[this.i][this.j] = this.TowerType;break;
+                        }
+                        this.setTint(0xff0000);
+                        this.nextTic = globalTime + TOWER_SPEED[this.TowerType - 1];
                     }
-                    this.setTint(0xff0000);
-                    this.nextTic = globalTime + TOWER_SPEED[this.TowerType - 1];
                 }
             });
         },
@@ -434,10 +450,10 @@ let Tower = new Phaser.Class({
                 this.scale = 2;
                 tw.add({
                     targets: this,
-                    duration: 200,
+                    duration: 700,
                     alpha: 1,
                     scale: 0.8,
-                    ease: 'Sine.easeOut',
+                    ease: 'Bounce.easeOut',
                     repeat: 0
                 });
             }else{
@@ -445,10 +461,10 @@ let Tower = new Phaser.Class({
                 this.scale = 1;
                 tw.add({
                     targets: this,
-                    duration: 200,
+                    duration: 700,
                     alpha: 1,
                     scale: 0.4,
-                    ease: 'Sine.easeOut',
+                    ease: 'Bounce.easeOut',
                     repeat: 0
                 });
             }
@@ -582,14 +598,14 @@ function create(){
     selectedInfo = this.add.text(478,5,getTowerInfo(SELECTED_TOWER-1),textfont);
     updateTowerInfo();
 
-    waveInfo = this.add.text(690,60,'',textfont_big).setStroke('#000000', 5).setOrigin(0.5);
+    waveInfo = this.add.text(690,70,'',textfont_big).setStroke('#000000', 5).setOrigin(0.5);
+    scoreText = this.add.text(1270,95,'SCORE\n0',textfont_big_right).setStroke('#000000', 5).setOrigin(1);
 
     //upgrade, sell
     this.add.image(36,683, 'button_small', 1).setInteractive().on('pointerdown', () => upgradeTool());
     this.add.image(72,683, 'button_small', 2).setInteractive().on('pointerdown', () => sellTool());
     this.add.image(36,683, 'button_icons', 0);
     this.add.image(72,683, 'button_icons', 1);
-
 
     //tlacidla nalavo
     for(let i=0; i<8; i++){
@@ -627,7 +643,7 @@ function create(){
 
     }
 
-    this.add.text(120,690, 'EARLY ALPHA BUILD, type motherlode() in console for goodies', textfont_big).setStroke('#000000', 5);
+    this.add.text(690,700, 'EARLY ALPHA BUILD, type motherlode() in console for goodies', textfont_big).setStroke('#000000', 5).setOrigin(0.5);
 
     //kurzor
     this.input.setDefaultCursor('url(assets/graphics/ui/cursor.cur), pointer');
@@ -868,6 +884,7 @@ function updateHpText(){
 
 function updateMoneyText(){
     moneyText.setText(MONEY);
+    scoreText.setText("SCORE\n"+SCORE);
     //if(MONEY>)
     moneyText.y = 4;
 
@@ -1108,7 +1125,7 @@ function updateWaveInfo(){
     tw.add({
         targets: waveInfo,
         duration: 300,
-        scale : 1,
+        scale: 1,
         ease: 'Back.easeOut',
         repeat: 0
     });
