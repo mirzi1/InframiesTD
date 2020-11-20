@@ -95,7 +95,8 @@
       <workItem from="1605799364775" duration="1811000" />
       <workItem from="1605801768656" duration="2460000" />
       <workItem from="1605805898018" duration="261000" />
-      <workItem from="1605866240093" duration="10714000" />
+      <workItem from="1605866240093" duration="10876000" />
+      <workItem from="1605879931850" duration="19000" />
     </task>
     <servers />
   </component>
@@ -112,6 +113,7 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="690" y="271" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1605798831426">

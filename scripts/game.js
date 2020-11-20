@@ -321,7 +321,6 @@ let Enemy = new Phaser.Class({
         if(this.hp <= 0) {
             MONEY+=ENEMY_REWARD[this.id-1];
             SCORE+=Math.round(ENEMY_REWARD[this.id-1]*(1-this.follower.t));
-            console.log(ENEMY_REWARD[this.id-1]*this.follower.t);
             updateMoneyText();
             createAnimated(this.x,this.y,'a'+this.id, this.flipX);
             this.setActive(false);
