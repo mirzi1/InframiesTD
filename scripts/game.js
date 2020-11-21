@@ -39,6 +39,7 @@ let globalTime;
 let music;
 let fsrect;
 let creditsText;
+let preloadText;
 
 let cross1;
 let cross2;
@@ -60,11 +61,13 @@ let SELECTED_TOWER = 1;
 
 const WAVE_SPEED = 100;
 
+let font1;
 const bigfont = { font: "bold 22px font1", fill: "#3CCEFF", boundsAlignH: "center", boundsAlignV: "middle" };
 const smallfont = { font: "15px font1", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 const smallfont_black = { font: "15px font1", fill: "#000", boundsAlignH: "center", boundsAlignV: "middle" };
 const textfont = { font: "bold 10px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 const textfont_big = { font: "bold 18px Arial", fill: "#fff", align:"center",boundsAlignH: "center", boundsAlignV: "middle" };
+const textfont_superbig = { font: "bold 100px font1", fill: "#fff", align:"center",boundsAlignH: "center", boundsAlignV: "middle" };
 const textfont_big_right = { font: "bold 18px Arial", fill: "#fff", align:"right",boundsAlignH: "center", boundsAlignV: "middle" };
 
 const HUD_ICON_SCALE = 0.5;
@@ -80,7 +83,7 @@ let waveIndex = 0;
 
 const CREDITS = ['InframiesTD - Space themed tower defence game\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
                 '\nMusic used:\nTimesplitters 2 - Spacestation\nTimesplitters 2 - Astrolander\nTimesplitters 2 - Ice Station\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
-                '\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs for making a game framework that\'s easy to work with.']
+                '\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs for making a game framework that\'s easy to work with.\n\n\n\n\nClick to continue']
 
 const WAVE_DESCRIPTION = ['Welcome to InframiesTD! Select a tower from the menu on the left and click on any valid spots to place it.\n Press "next wave" when you are ready.',
     'Killing enemies gives you money for better towers and upgrades.',
@@ -185,6 +188,8 @@ const waves = [ [1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,2],
                 [1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,2,0,1,0,2,0,1,0,2,0,1],
               ];
 function preload(){
+    preloadText = this.add.text(640,360, 'Loading...', textfont_superbig).setOrigin(0.5);
+
     //nacitanie spritov
     //ui
     this.load.image('ui_top', 'assets/graphics/ui/UI_top.png');
@@ -589,19 +594,31 @@ let Bullet = new Phaser.Class({
 
 function create(){
     //zaklad
+    preloadText.destroy();
     background = this.add.image(640, 360, 'itdMenu');           //background bude vzdy naspodku
+    background.alpha = 0;
 
     //don't mind me
     fsrect = this.add.rectangle(640, 360, 1280, 720, 0x000000).setInteractive().on('pointerdown', () => {if(fsrect.active === true){if(LEVEL==-1){createGame.call(this);}nextLevel();}});;
     fsrect.alpha = 0.01;
 
     music = this.sound.add('intro', {volume: 0.2, loop: true});             //bgm
-    music.play();
+    //music.play();
 
     tw = this.tweens;       //tween manager
 
     creditsText = this.add.text(640,360,CREDITS,textfont_big).setStroke('#000000', 5).setOrigin(0.5);
-    creditsText.scale = 0;
+    creditsText.scale = 0.8;
+    creditsText.alpha = 0;
+
+    tw.add({
+        targets: creditsText,
+        duration: 200,
+        scale: 1,
+        alpha: 1,
+        ease: 'Sine.easeOut',
+        repeat: 0
+    });
 
     this.add.text(1270,715, 'EARLY ALPHA BUILD, type motherlode() in console for goodies', textfont_big).setStroke('#000000', 5).setOrigin(1);
 
@@ -773,7 +790,7 @@ function blinkAvailableSpaces(){
 function sellTool(){
     SELECTED_TOWER = 0;
     selectedImg.setTexture('button_icons', 1).setScale(1);
-    selectedInfo.setText('Sell');
+    selectedInfo.setText('Sell (For half the price)');
     game.input.setDefaultCursor('url(assets/graphics/ui/cursor_delete.cur), pointer');
 
     tw.add({
@@ -790,7 +807,7 @@ function sellTool(){
 function upgradeTool(){
     SELECTED_TOWER = -2;
     selectedImg.setTexture('button_icons', 0).setScale(1);
-    selectedInfo.setText('Upgrade (WIP)');
+    selectedInfo.setText('Upgrade (Costs twice as much as the tower)');
     game.input.setDefaultCursor('url(assets/graphics/ui/cursor_upgrade.cur), pointer');
 
     tw.add({
@@ -894,21 +911,26 @@ function nextLevel(){
     LEVEL++;
     switch(LEVEL){
         case -1:
+            background.scale = 1.2;
             tw.add({
-                targets: fsrect,
-                duration: 200,
-                alpha: 0.9,
+                targets: background,
+                duration: 500,
+                scale: 1,
+                alpha: 1,
                 ease: 'Sine.easeOut',
                 onComplete: ()=> {creditsText.alpha = 1;},
                 repeat: 0
             });
             tw.add({
                 targets: creditsText,
-                duration: 700,
-                scale: 1,
-                ease: 'Back.easeOut',
+                duration: 500,
+                scale: 0.8,
+                alpha: 0,
+                ease: 'Sine.easeOut',
+                onComplete: ()=> {},
                 repeat: 0
             });
+            music.play();
             break;
         case 0:
             fsrect.setActive(false);
@@ -917,15 +939,6 @@ function nextLevel(){
                 duration: 200,
                 alpha: 0,
                 ease: 'Sine.easeOut',
-                onComplete: ()=> {},
-                repeat: 0
-            });
-            tw.add({
-                targets: creditsText,
-                duration: 500,
-                scale: 3,
-                alpha: 0,
-                ease: 'Sine.easeIn',
                 onComplete: ()=> {fsrect.destroy();creditsText.destroy();},
                 repeat: 0
             });
@@ -1214,7 +1227,6 @@ function createGame(){
             case 6: case 7: this.add.text(15,75*i+117, TOWER_PRICES[i]+'$', smallfont).setStroke('#000000', 3);break;
             default: this.add.text(22,75*i+117, TOWER_PRICES[i]+'$', smallfont).setStroke('#000000', 3);break;
         }
-
     }
 
     //keyboard
