@@ -210,9 +210,9 @@ function preload(){
     this.load.spritesheet('freespace', 'assets/graphics/ui/freespace.png' ,{frameHeight: 50, frameWidth: 50});
 
     //pozadia
-    this.load.image('bg1', 'assets/graphics/levels/bg1.jpeg');
+    this.load.image('bg1', 'assets/graphics/levels/bg1.png);
     this.load.image('bg2', 'assets/graphics/levels/bg2.jpeg');
-    this.load.image('bg3', 'assets/graphics/levels/bg3.jpeg');
+    this.load.image('bg3', 'assets/graphics/levels/bg3.png');
 
     //attackers
     this.load.spritesheet('a1', 'assets/graphics/attackers/a1.png' ,{frameHeight: 50, frameWidth: 50});
