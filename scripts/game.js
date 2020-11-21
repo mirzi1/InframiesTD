@@ -1,3 +1,4 @@
+//ayy welcome to my first thing in javascript
 let config = {
     type: Phaser.AUTO,
     scale:{
@@ -40,6 +41,8 @@ let music;
 let fsrect;
 let creditsText;
 let preloadText;
+
+let emitter_upgrade;
 
 let cross1;
 let cross2;
@@ -187,6 +190,7 @@ const waves = [ [1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,2],
                 [1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,2,0,2],
                 [1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,2,0,1,0,2,0,1,0,2,0,1],
               ];
+
 function preload(){
     preloadText = this.add.text(640,360, 'Loading...', textfont_superbig).setOrigin(0.5);
 
@@ -445,6 +449,7 @@ let Tower = new Phaser.Class({
                             case 2: level2[this.i][this.j] = this.TowerType;break;
                             case 3: level3[this.i][this.j] = this.TowerType;break;
                         }
+                        emitter_upgrade.setDepth(1).emitParticleAt(this.x, this.y);
                         this.setTint(0xff0000);
                         this.nextTic = globalTime + TOWER_SPEED[this.TowerType - 1];
                     }
@@ -1175,6 +1180,20 @@ function createGame(){
     moneyText = this.add.text(300, 9, '', bigfont);
     graphics.lineStyle(3, 0xaaaaaa).alpha = 0;
 
+    emitter_upgrade = this.add.particles('button_icons');
+
+    emitter_upgrade.createEmitter({
+        frame: 0,
+        angle: {min: 0, max: 360},
+        speed: {min: 10, max: 100},
+        lifespan: {min: 1000, max: 2000},
+        quantity: 20,
+        alpha: { start: 1, end: 0 },
+        scale: { start: 4, end: 0.5 },
+        gravityY: -200,
+        on: false
+    });
+
     //nextwave
     nextWaveButton = this.add.image(1140,20, 'button_nextwave').setInteractive().on('pointerdown', () => nextWave());
 
@@ -1194,7 +1213,6 @@ function createGame(){
     this.add.image(36,683, 'button_icons', 0);
     this.add.image(72,683, 'button_icons', 1);
 
-    //tlacidla nalavo
     for(let i=0; i<8; i++){
         this.add.image(53,75*i+100, 'button').setInteractive().on('pointerdown', () => changeSelectedTower(i+1));
         if(i==3){
@@ -1222,11 +1240,7 @@ function createGame(){
 
     //cenovky
     for(let i=0; i<8; i++){
-        switch(i){
-            case 0: this.add.text(25,75*i+117, TOWER_PRICES[i]+'$', smallfont).setStroke('#000000', 3);break;
-            case 6: case 7: this.add.text(15,75*i+117, TOWER_PRICES[i]+'$', smallfont).setStroke('#000000', 3);break;
-            default: this.add.text(22,75*i+117, TOWER_PRICES[i]+'$', smallfont).setStroke('#000000', 3);break;
-        }
+        this.add.text(54,75*i+127, TOWER_PRICES[i]+'$', smallfont).setStroke('#000000', 3).setOrigin(0.5);
     }
 
     //keyboard
