@@ -79,7 +79,7 @@ let nextEnemy = 0;
 let waveIndex = 0;
 
 const CREDITS = ['InframiesTD - Space themed tower defence game\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
-                '\nMusic used:\nTimesplitters 2 - Spacestation\nTimesplitters 2 - Astrolander\nTimesplitters 2 - Ice Station\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Success\n' +
+                '\nMusic used:\nTimesplitters 2 - Spacestation\nTimesplitters 2 - Astrolander\nTimesplitters 2 - Ice Station\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
                 '\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs for making a game framework that\'s easy to work with.']
 
 const WAVE_DESCRIPTION = ['Welcome to InframiesTD! Select a tower from the menu on the left and click on any valid spots to place it.\n Press "next wave" when you are ready.',
@@ -595,7 +595,7 @@ function create(){
     fsrect = this.add.rectangle(640, 360, 1280, 720, 0x000000).setInteractive().on('pointerdown', () => {if(fsrect.active === true){if(LEVEL==-1){createGame.call(this);}nextLevel();}});;
     fsrect.alpha = 0.01;
 
-    music = this.sound.add('intro', {volume: 0.2});             //bgm
+    music = this.sound.add('intro', {volume: 0.2, loop: true});             //bgm
     music.play();
 
     tw = this.tweens;       //tween manager
@@ -922,10 +922,11 @@ function nextLevel(){
             });
             tw.add({
                 targets: creditsText,
-                duration: 700,
-                scale: 0,
-                ease: 'Back.easeIn',
-                onComplete: ()=> {},
+                duration: 500,
+                scale: 3,
+                alpha: 0,
+                ease: 'Sine.easeIn',
+                onComplete: ()=> {fsrect.destroy();creditsText.destroy();},
                 repeat: 0
             });
             nextLevel();
@@ -1137,11 +1138,11 @@ function playMusic(mus_id){
     if(mus_id>=1){
         tw.add({
             targets: music,
-            duration: 500,
+            duration: 1000,
             volume: 0,
             onComplete: ()=>{
                 switch(mus_id){
-                    case 1: music = game.sound.add('bgm1', {volume: 0.2}); music.play();break;
+                    case 1: music = game.sound.add('bgm1', {volume: 0.2, loop: true}); music.play();break;
                 }
             },
             repeat: 0
