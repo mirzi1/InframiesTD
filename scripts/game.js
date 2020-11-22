@@ -37,13 +37,14 @@ let tw;
 let start;
 let finish;
 let globalTime;
-let music;
 let fsrect;
 let creditsText;
 let preloadText;
 let nukeIcon;
 let nukeReady = true;
 let camera;
+let gameInProgress = false;
+let music;
 
 let emitter_upgrade;
 
@@ -111,7 +112,7 @@ const TOWER_DESCRIPTION = ['Laser - Basic turret',
                             'Multishot - Fires 5 projectiles at once',
                             'Thermal - Sees hidden enemies, piercing projectiles',
                             'Rapid - Massive firing rate',
-                            'Nuke - Vaporizes everything except bosses'];
+                            'Nuke - Vaporizes everything except bosses, 30 second cooldown'];
 const TOWER_UPGRADE_DESCRIPTION = ['+range, +firerate, see hidden enemies',
                                     '+firerate, enemies become even slower',
                                     '+firerate, bigger explosions',
@@ -125,8 +126,8 @@ const TOWER_UPGRADE_DESCRIPTION = ['+range, +firerate, see hidden enemies',
 const TOWER_DAMAGE = [50,10,100,200,50,100,40,1000,
                       50,10,200,400,80,150,70,1000,
                       10, 20];
-const PROJECTILE_SPEED = [500,600,450,4000,300,600,700,1000,
-                          600,600,500,5000,300,600,700,1000,
+const PROJECTILE_SPEED = [700,600,450,4000,300,600,700,1000,
+                          800,600,500,5000,300,600,700,1000,
                           1, 1];
 const PROJECTILE_LIFESPAN = [500,500,1500,1000,1200,500,600,500,
                              500,500,1500,1000,1200,500,600,500,
@@ -260,6 +261,23 @@ function preload(){
     this.load.spritesheet('p15', 'assets/graphics/projectiles/p15.png' ,{frameHeight: 4, frameWidth: 20});
     this.load.spritesheet('p15_destroy', 'assets/graphics/projectiles/p15_destroy.png' ,{frameHeight: 20, frameWidth: 20});
 
+    //sounds
+    this.load.audio('3beeps', ['assets/sounds/3beeps.ogg']);
+    this.load.audio('blip', ['assets/sounds/blip.ogg']);
+    this.load.audio('transition', ['assets/sounds/transition.ogg']);
+    this.load.audio('denied', ['assets/sounds/denied.ogg']);
+    this.load.audio('upgrade', ['assets/sounds/upgrade.ogg']);
+    this.load.audio('sell', ['assets/sounds/sell.ogg']);
+
+    this.load.audio('fire_1', ['assets/sounds/fire_laser.ogg']);
+
+
+    this.load.audio('charge_4', ['assets/sounds/charge_rail.ogg']);
+    this.load.audio('fire_4', ['assets/sounds/fire_rail.ogg']);
+    this.load.audio('fire_7', ['assets/sounds/fire_rapid.ogg']);
+    this.load.audio('fire_8', ['assets/sounds/fire_nuke.ogg']);
+
+    //music
     this.load.audio('intro', [
         'assets/music/Timesplitters 2 - Astrolander.ogg'
     ]);
@@ -413,6 +431,8 @@ let Tower = new Phaser.Class({
                         if(this.TowerType <8){MONEY+=TOWER_PRICES[this.TowerType-1]/2;}
                         else{MONEY+=TOWER_PRICES[(this.TowerType%8)-1];}
 
+                        game.sound.add('sell', {volume: 0.3}).play();
+
                         updateMoneyText();
                         tw.add({
                             targets: this,
@@ -447,9 +467,11 @@ let Tower = new Phaser.Class({
                     }
                 }
                 if(SELECTED_TOWER == -2 && this.TowerType<8 && this.active === true){
+                    //if there is enough money for an upgrade
                     if(MONEY>=TOWER_PRICES[this.TowerType-1]*2){
                         MONEY-=TOWER_PRICES[(this.TowerType%8)-1]
                         this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
+                        game.sound.add('upgrade', {volume: 0.5}).play();
                         updateMoneyText();
                         this.TowerType+=8;
                         console.log("Upgraded to: "+this.TowerType);
@@ -462,6 +484,7 @@ let Tower = new Phaser.Class({
                         this.setTint(0xff0000);
                         this.nextTic = globalTime + TOWER_SPEED[this.TowerType - 1];
                     }
+                    else{playDeniedSound()}
                 }
             });
             }
@@ -503,56 +526,61 @@ let Tower = new Phaser.Class({
                 });
             }
         }
+
         //duki nuki
         if(this.TowerType == 8 && nukeReady === true){
-            this.x = i; this.y = j;
-            nukeReady = false;
-            createAnimated(690, 380, 'p8', 0);
+            if(nukeReady){
+                this.x = i; this.y = j;
+                nukeReady = false;
+                game.sound.add('fire_8', {volume: 0.4}).play();
+                createAnimated(690, 380, 'p8', 0);
 
-            fsrect.fillColor = '0x000000';
-            nukeIcon.alpha = 0.4;
-            tw.add({targets: fsrect,
-                duration: 500,
-                alpha: 0.5,
-                repeat: 0,
-                onComplete: ()=>{
-                    camera.shake(2000, 0.02);
-                    let enemyUnits = enemies.getChildren();
-                    //phaser pls
-                    for(let j = 0; j<10; j++){
-                        for(let i = 0; i < enemyUnits.length; i++) {
-                            if(enemyUnits[i].id <=6){enemyUnits[i].receiveDamage(5000);}
+                fsrect.fillColor = '0x000000';
+                nukeIcon.alpha = 0.4;
+                tw.add({targets: fsrect,
+                    duration: 500,
+                    alpha: 0.5,
+                    repeat: 0,
+                    onComplete: ()=>{
+                        camera.shake(2000, 0.02);
+                        let enemyUnits = enemies.getChildren();
+                        //phaser pls
+                        for(let j = 0; j<10; j++){
+                            for(let i = 0; i < enemyUnits.length; i++) {
+                                if(enemyUnits[i].id <=6){enemyUnits[i].receiveDamage(5000);}
+                            }
                         }
+                        fsrect.fillColor = '0xFFFFFF';
+                        fsrect.alpha = 1;
+                        tw.add({
+                            targets: fsrect,
+                            duration: 1500,
+                            alpha: 0,
+                            repeat: 0
+                        });
                     }
-                    fsrect.fillColor = '0xFFFFFF';
-                    fsrect.alpha = 1;
-                    tw.add({
-                        targets: fsrect,
-                        duration: 1500,
-                        alpha: 0,
-                        repeat: 0
-                    });
-                }
-            });
+                });
 
-            tw.add({
-                targets: nukeIcon,
-                duration: 20000,
-                angle: 7200,
-                alpha: 0.7,
-                scale: HUD_ICON_SCALE*0.8,
-                repeat: 0,
-                onComplete: ()=>{nukeReady = true; nukeIcon.angle = 0;
-                    tw.add({
-                        targets: nukeIcon,
-                        duration: 1000,
-                        alpha: 1,
-                        scale: HUD_ICON_SCALE,
-                        repeat: 0,
-                        ease: 'Back.easeOut',
-                    });},
-            });
-            this.destroy();
+                tw.add({
+                    targets: nukeIcon,
+                    duration: 20000,
+                    angle: 7200,
+                    alpha: 0.7,
+                    scale: HUD_ICON_SCALE*0.8,
+                    repeat: 0,
+                    onComplete: ()=>{nukeReady = true; nukeIcon.angle = 0;game.sound.add('blip', {volume: 0.3, loop: false}).play();
+                        tw.add({
+                            targets: nukeIcon,
+                            duration: 1000,
+                            alpha: 1,
+                            scale: HUD_ICON_SCALE,
+                            repeat: 0,
+                            ease: 'Back.easeOut',
+                        });},
+                });
+                this.destroy();
+            }
+            else{playDeniedSound()}
         }
     },
     fire: function() {
@@ -564,14 +592,16 @@ let Tower = new Phaser.Class({
             //iba t4
             if(this.TowerType%8 == 4){
                 this.play('t4_charge');
+                playSound('c4');
                 this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG );
                 this.once('animationcomplete', ()=> {
                     angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
                     this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG );
                     this.play('t4_fire');
+                    playSound('f4');
                     addBullet(this.x, this.y, angle, this.TowerType)});
             }
-            else{addBullet(this.x, this.y, angle, this.TowerType);this.play('t'+this.TowerType%8+'_fire');}
+            else{addBullet(this.x, this.y, angle, this.TowerType);this.play('t'+this.TowerType%8+'_fire');playSound('f'+this.TowerType%8);}
             //t5 multishot
             if(this.TowerType == 5){
                 addBullet(this.x, this.y, angle-0.1, this.TowerType);
@@ -668,7 +698,7 @@ function create(){
     fsrect = this.add.rectangle(640, 360, 1280, 720, 0x000000).setInteractive().on('pointerdown', () => {if(fsrect.active === true){if(LEVEL==-1){createGame.call(this);}nextLevel();}});;
     fsrect.alpha = 0.01;
 
-    music = this.sound.add('intro', {volume: 0.2, loop: true});             //bgm
+    music = this.sound.add('intro', {volume: 0.5, loop: true});             //bgm
     //music.play();
 
     tw = this.tweens;       //tween manager
@@ -740,6 +770,7 @@ function placeTower(pointer) {
             let i = Math.floor(pointer.y / GRID_H);
             let j = Math.floor(pointer.x / GRID_W);
             if (canPlaceTower(i, j)) {
+                //if there is enough money for purchase
                 if(MONEY-TOWER_PRICES[SELECTED_TOWER-1]>=0) {
                     MONEY -= TOWER_PRICES[SELECTED_TOWER - 1];
                     updateMoneyText();
@@ -750,6 +781,7 @@ function placeTower(pointer) {
                         Tower.place(i, j);
                     }
                 }
+                else{playDeniedSound()}
             } else {
                 blinkAvailableSpaces();
             }
@@ -765,6 +797,7 @@ function placeTower(pointer) {
                     Tower.place(640, 360);
                 }
             }
+            else{playDeniedSound()}
         }
 }
 
@@ -844,6 +877,7 @@ function moveSelector(position){
 function blinkAvailableSpaces(){
     if(blinkSpaces){
         blinkSpaces=false;
+        game.sound.add('denied', {volume: 0.4}).play();
         switch(LEVEL){
             case 1:
                 for(let i = 0; i<level1.length; i++){
@@ -993,6 +1027,7 @@ function nextLevel(){
     //touching pretty much anything here breaks the game
     //i am flabbergasted that this abomination actually works
     LEVEL++;
+    gameInProgress = false;
     switch(LEVEL){
         case -1:
             background.scale = 1.2;
@@ -1087,6 +1122,7 @@ function nextLevel(){
         start.alpha = 0;
         finish.alpha = 0;
         hideWaveInfo();
+        game.sound.add('transition', {volume: 0.5}).play();
         //background anim
         tw.add({
             targets: background,
@@ -1106,7 +1142,7 @@ function nextLevel(){
                     alpha: 1,
                     scale: 1,
                     ease: 'Sine.easeOut',
-                    onComplete: ()=> {graphics.alpha = 0.8;start.alpha = 1;finish.alpha = 1;updateWaveInfo();},
+                    onComplete: ()=> {graphics.alpha = 0.8;start.alpha = 1;finish.alpha = 1;gameInProgress = true;updateWaveInfo();},
                     repeat: 0
                 });
             },
@@ -1235,7 +1271,7 @@ function hideWaveInfo(){
 
 function playMusic(mus_id){
     if(mus_id>=1){
-        music.volume = 0.2;
+        music.volume = 0.5;
         tw.add({
             targets: music,
             duration: 1000,
@@ -1243,16 +1279,32 @@ function playMusic(mus_id){
             onComplete: ()=>{
                 music.stop();
                 switch(mus_id){
-                    case 1: music = game.sound.add('bgm1', {volume: 0.2, loop: true}); music.play();break;
+                    case 1: music = game.sound.add('bgm1', {volume: 0.5, loop: true}); music.play();break;
                 }
                 switch(mus_id){
-                    case 2: music = game.sound.add('bgm2', {volume: 0.2, loop: true}); music.play();break;
+                    case 2: music = game.sound.add('bgm2', {volume: 0.5, loop: true}); music.play();break;
                 }
             },
             repeat: 0
         });
     }
 
+}
+
+function playSound(id){
+    switch(id){
+        case 'f1': game.sound.add('fire_1', {volume: 0.2}).play();break;
+
+        case 'f4': game.sound.add('fire_4', {volume: 0.2}).play();break;
+        case 'c4': game.sound.add('charge_4', {volume: 0.4}).play();break;
+        case 'f7': game.sound.add('fire_7', {volume: 0.05}).play();break;
+    }
+}
+
+function playDeniedSound(){
+    if(gameInProgress){
+        game.sound.add('denied', {volume: 0.5}).play();
+    }
 }
 
 function createGame(){
