@@ -47,6 +47,7 @@ let nukeReady = true;
 let camera;
 let gameInProgress = false;
 let music;
+let music_enabled = true;
 
 let emitter_upgrade;
 
@@ -1306,10 +1307,10 @@ function playMusic(mus_id){
             onComplete: ()=>{
                 music.stop();
                 switch(mus_id){
-                    case 1: music = game.sound.add('bgm1', {volume: 0.3, loop: true}); music.play();break;
+                    case 1: music = game.sound.add('bgm1', {volume: 0.3, loop: true}); if(music_enabled){music.play();}break;
                 }
                 switch(mus_id){
-                    case 2: music = game.sound.add('bgm2', {volume: 0.3, loop: true}); music.play();break;
+                    case 2: music = game.sound.add('bgm2', {volume: 0.3, loop: true}); if(music_enabled){music.play();}break;
                 }
             },
             repeat: 0
@@ -1335,11 +1336,13 @@ function playDeniedSound(){
 }
 
 function toggleMusic(){
-    if (music.volume>0){
-        music.volume = 0;
+    if (music.isPlaying){
+        music.stop();
+        music_enabled = false;
         musicButton.setTexture('topbuttons', 1);
     }else{
-        music.volume = 0.3;
+        music.play();
+        music_enabled = true;
         musicButton.setTexture('topbuttons', 0);
     }
 }
