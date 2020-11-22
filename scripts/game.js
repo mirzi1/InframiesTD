@@ -216,7 +216,7 @@ function preload(){
     //pozadia
     this.load.image('bg1', 'assets/graphics/levels/bg1.png');
     this.load.image('bg2', 'assets/graphics/levels/bg2.jpeg');
-    this.load.image('bg3', 'assets/graphics/levels/bg3.png');
+    this.load.image('bg3', 'assets/graphics/levels/bg3.jpeg');
 
     //attackers
     this.load.spritesheet('a1', 'assets/graphics/attackers/a1.png' ,{frameHeight: 50, frameWidth: 50});
@@ -231,10 +231,13 @@ function preload(){
     this.load.spritesheet('t2', 'assets/graphics/towers/t2.png' ,{frameHeight: 100, frameWidth: 100});
     this.load.spritesheet('t3', 'assets/graphics/towers/t3.png' ,{frameHeight: 120, frameWidth: 80});
     this.load.spritesheet('t4', 'assets/graphics/towers/t4.png' ,{frameHeight: 250, frameWidth: 150});
-
-    this.load.image('t8', 'assets/graphics/towers/t8.png' ,{frameHeight: 100, frameWidth: 100});
+    this.load.spritesheet('t5', 'assets/graphics/towers/t5.png' ,{frameHeight: 120, frameWidth: 80});
+    this.load.spritesheet('t6', 'assets/graphics/towers/t6.png' ,{frameHeight: 200, frameWidth: 120});
+    this.load.spritesheet('t6_idle', 'assets/graphics/towers/t6_idle.png' ,{frameHeight: 200, frameWidth: 120});
     this.load.spritesheet('t7', 'assets/graphics/towers/t7.png' ,{frameHeight: 100, frameWidth: 100});
     this.load.spritesheet('t7_idle', 'assets/graphics/towers/t7_idle.png' ,{frameHeight: 100, frameWidth: 100});
+    this.load.image('t8', 'assets/graphics/towers/t8.png' ,{frameHeight: 100, frameWidth: 100});
+
 
     //projectiles
     this.load.spritesheet('p1', 'assets/graphics/projectiles/p1.png' ,{frameHeight: 20, frameWidth: 20});
@@ -427,7 +430,7 @@ let Tower = new Phaser.Class({
                 this.setInteractive().on('pointerdown', () => {
                 if(SELECTED_TOWER == 0 && this.active === true){
                     this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
-                    if(this.TowerType%8 != 4){
+                    if(this.TowerType%8 != 4 && this.TowerType%8 != 6){
                         this.setActive(false);
                         if(this.TowerType <8){MONEY+=TOWER_PRICES[this.TowerType-1]/2;}
                         else{MONEY+=TOWER_PRICES[(this.TowerType%8)-1];}
@@ -505,24 +508,36 @@ let Tower = new Phaser.Class({
             if(this.TowerType%8 == 7){
                 this.play('t7_idle');
             }
-            if(this.TowerType%8 != 4){
-                this.scale = 2;
-                tw.add({
-                    targets: this,
-                    duration: 700,
-                    alpha: 1,
-                    scale: 0.8,
-                    ease: 'Bounce.easeOut',
-                    repeat: 0
-                });
-            }else{
+            if(this.TowerType%8 == 4){
                 this.setTexture('t4', 22);
                 this.scale = 1;
                 tw.add({
                     targets: this,
                     duration: 700,
                     alpha: 1,
-                    scale: 0.4,
+                    scale: 0.5,
+                    ease: 'Bounce.easeOut',
+                    repeat: 0
+                });
+            }else if(this.TowerType%8 == 6){
+                this.play('t6_idle');
+                this.scale = 1.5;
+                tw.add({
+                    targets: this,
+                    duration: 700,
+                    alpha: 1,
+                    scale: 0.6,
+                    ease: 'Bounce.easeOut',
+                    repeat: 0
+                });
+            }
+            else{
+                this.scale = 2;
+                tw.add({
+                    targets: this,
+                    duration: 700,
+                    alpha: 1,
+                    scale: 0.8,
                     ease: 'Bounce.easeOut',
                     repeat: 0
                 });
@@ -592,16 +607,25 @@ let Tower = new Phaser.Class({
             let angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
             //default a podobne
             //iba t4
-            if(this.TowerType%8 == 4){
-                this.play('t4_charge');
-                playSound('c4');
+            if(this.TowerType%8 == 4 || this.TowerType%8 == 6){
+                //charging turrets animation
+                this.play('t'+this.TowerType%8+'_charge');
+                playSound('c'+this.TowerType%8);
                 this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG );
                 this.once('animationcomplete', ()=> {
                     angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
                     this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG );
-                    this.play('t4_fire');
-                    playSound('f4');
-                    addBullet(this.x, this.y, angle, this.TowerType)});
+                    this.play('t'+this.TowerType%8+'_fire');
+                    playSound('f'+this.TowerType%8);
+                    addBullet(this.x, this.y, angle, this.TowerType)
+
+                    if(this.TowerType%8 == 6){
+                        //return to idle anim
+                        this.once('animationcomplete', ()=>{
+                            this.play('t'+this.TowerType%8+'_idle');
+                        });
+                    }
+                });
             }
             else{addBullet(this.x, this.y, angle, this.TowerType);this.play('t'+this.TowerType%8+'_fire');playSound('f'+this.TowerType%8);}
             //t5 multishot
@@ -617,7 +641,7 @@ let Tower = new Phaser.Class({
             }
             if(this.TowerType%8 == 7){
                 this.once('animationcomplete', ()=>{
-                    this.play('t7_idle');
+                    this.play('t'+this.TowerType%8+'_idle');
                 });
             }
 
@@ -940,7 +964,8 @@ function upgradeTool(){
 
 function updateTowerInfo(){
     selectedImg.setTexture('t'+(SELECTED_TOWER)).setScale(0.25);
-    if(SELECTED_TOWER == 4){selectedImg.setScale(0.10)};
+    if(SELECTED_TOWER == 4){selectedImg.setScale(0.1)};
+    if(SELECTED_TOWER == 6){selectedImg.setScale(0.17)};
     selectedInfo.setText(getTowerInfo(SELECTED_TOWER-1));
     game.input.setDefaultCursor('url(assets/graphics/ui/cursor.cur), pointer');
 }
@@ -1208,7 +1233,10 @@ function generateAnims(){
     game.anims.create({key: "t3_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t3",{start:0, end:10}), repeat: 0});
     game.anims.create({key: "t4_charge", frameRate: 15, frames: game.anims.generateFrameNumbers("t4",{start:0, end:13}), repeat: 0});
     game.anims.create({key: "t4_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t4",{start:14, end:22}), repeat: 0});
-
+    game.anims.create({key: "t5_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t5",{start:0, end:5}), repeat: 0});
+    game.anims.create({key: "t6_idle", frameRate: 15, frames: game.anims.generateFrameNumbers("t6_idle",{start:0, end:6}), repeat: -1});
+    game.anims.create({key: "t6_charge", frameRate: 24, frames: game.anims.generateFrameNumbers("t6",{start:0, end:11}), repeat: 0});
+    game.anims.create({key: "t6_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t6",{start:12, end:18}), repeat: 0});
     game.anims.create({key: "t7_idle", frameRate: 7, frames: game.anims.generateFrameNumbers("t7_idle",{start:0, end:1}), repeat: -1});
     game.anims.create({key: "t7_fire", frameRate: 24, frames: game.anims.generateFrameNumbers("t7",{start:0, end:2}), repeat: 0});
     //projectiles
@@ -1379,6 +1407,8 @@ function createGame(){
     for(let i=0; i<7; i++){
         if(i==3){
             this.add.image(53,75*i+98, 't'+(i+1)).setScale(HUD_ICON_SCALE*0.5);
+        }else if(i==5) {
+            this.add.image(53, 75 * i + 98, 't6_idle').setScale(HUD_ICON_SCALE*0.7);
         }else if(i==6){
             this.add.image(53,75*i+98, 't7_idle').setScale(HUD_ICON_SCALE);
         }else{
