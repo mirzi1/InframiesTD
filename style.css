@@ -1,0 +1,39 @@
+body {
+    background: #b1b4c4;
+    font-family: "Courier New";
+    font-size: 35px;
+}
+.main_table {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 14vh;
+    border-collapse: collapse;
+}
+ table, th, td, tr {
+     border: 2px solid #b1b4c4;
+     color: white;
+ }
+th {
+    background-color: black;
+    color: white;
+    border-radius: 15px;
+}
+td {
+    border-radius: 15px;
+    text-align: center;
+}
+tr:hover {
+    background: black !important;
+    transition-duration: 0.1s;
+}
+tr:nth-child(odd) {
+    background-color: #343d46;
+    transition-duration: 0.5s;
+}
+tr:nth-child(even) {
+    background-color: #4f5b66;
+    transition-duration: 0.5s;
+}
+ .table_th {
+     width: 180px;
+ }
