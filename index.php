@@ -28,6 +28,8 @@
     <!-- game -->
     <div id="main-game">
     </div>
+    <button>
     <a href="http://localhost/inframiesTD/highScoreMain.php" target="_blank">High Score !</a>
+    </button>
 </body>
 </html>
