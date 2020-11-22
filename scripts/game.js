@@ -31,8 +31,8 @@ let selectedInfo;
 let waveInfo;
 let scoreText;
 let uitop;
-let uileft
-let blinkSpaces = true;
+let uileft;
+let blinkSpaces = false;
 let tw;
 let start;
 let finish;
@@ -41,6 +41,9 @@ let music;
 let fsrect;
 let creditsText;
 let preloadText;
+let nukeIcon;
+let nukeReady = true;
+let camera;
 
 let emitter_upgrade;
 
@@ -64,7 +67,6 @@ let SELECTED_TOWER = 1;
 
 const WAVE_SPEED = 100;
 
-let font1;
 const bigfont = { font: "bold 22px font1", fill: "#3CCEFF", boundsAlignH: "center", boundsAlignV: "middle" };
 const smallfont = { font: "15px font1", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 const smallfont_black = { font: "15px font1", fill: "#000", boundsAlignH: "center", boundsAlignV: "middle" };
@@ -86,7 +88,7 @@ let waveIndex = 0;
 
 const CREDITS = ['InframiesTD - Space themed tower defence game\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
                 '\nMusic used:\nTimesplitters 2 - Spacestation\nTimesplitters 2 - Astrolander\nTimesplitters 2 - Ice Station\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
-                '\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs for making a game framework that\'s easy to work with.\n\n\n\n\nClick to continue']
+                '\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs for making a game framework that\'s fairly easy to work with.\n\n\n\n\nClick to continue']
 
 const WAVE_DESCRIPTION = ['Welcome to InframiesTD! Select a tower from the menu on the left and click on any valid spots to place it.\n Press "next wave" when you are ready.',
     'Killing enemies gives you money for better towers and upgrades.',
@@ -98,8 +100,8 @@ const WAVE_DESCRIPTION = ['Welcome to InframiesTD! Select a tower from the menu 
 
 const TOWER_PRICES = [150,400,500,500,750,600,2500,3000];
 
-const TOWER_SPEED = [700,1300,2000,2300,2200,1000,100,1000,
-                    500,1000,1500,1800,2200,1000,70,1000];
+const TOWER_SPEED = [700,1300,2000,3000,2200,1000,100,1000,
+                    500,1000,1500,2500,2200,1000,70,1000];
 const TOWER_RANGE = [400,350,300,2000,300,550,500,2000,
                     600,350,400,2000,400,700,550,2000];
 const TOWER_DESCRIPTION = ['Laser - Basic turret',
@@ -115,7 +117,7 @@ const TOWER_UPGRADE_DESCRIPTION = ['+range, +firerate, see hidden enemies',
                                     '+firerate, bigger explosions',
                                     '+firerate, +damage',
                                     '+range, +damage, 7 projectiles at once',
-                                    '+firerate, piercing',
+                                    '+firerate',
                                     '+damage, see hidden enemies',
                                     'none'];
 
@@ -228,6 +230,7 @@ function preload(){
     this.load.spritesheet('t3', 'assets/graphics/towers/t3.png' ,{frameHeight: 120, frameWidth: 80});
     this.load.spritesheet('t4', 'assets/graphics/towers/t4.png' ,{frameHeight: 250, frameWidth: 150});
 
+    this.load.image('t8', 'assets/graphics/towers/t8.png' ,{frameHeight: 100, frameWidth: 100});
     this.load.spritesheet('t7', 'assets/graphics/towers/t7.png' ,{frameHeight: 100, frameWidth: 100});
     this.load.spritesheet('t7_idle', 'assets/graphics/towers/t7_idle.png' ,{frameHeight: 100, frameWidth: 100});
 
@@ -243,13 +246,14 @@ function preload(){
 
     this.load.spritesheet('p7', 'assets/graphics/projectiles/p7.png' ,{frameHeight: 4, frameWidth: 20});
     this.load.spritesheet('p7_destroy', 'assets/graphics/projectiles/p7_destroy.png' ,{frameHeight: 20, frameWidth: 20});
+    this.load.spritesheet('p8_destroy', 'assets/graphics/projectiles/p8_destroy.png' ,{frameHeight: 200, frameWidth: 300});
 
     this.load.spritesheet('p9', 'assets/graphics/projectiles/p9.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p9_destroy', 'assets/graphics/projectiles/p9_destroy.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p10', 'assets/graphics/projectiles/p10.png' ,{frameHeight: 40, frameWidth: 40});
     this.load.spritesheet('p10_destroy', 'assets/graphics/projectiles/p10_destroy.png' ,{frameHeight: 40, frameWidth: 40});
     this.load.spritesheet('p11', 'assets/graphics/projectiles/p11.png' ,{frameHeight: 20, frameWidth: 20});
-    this.load.spritesheet('p11_destroy', 'assets/graphics/projectiles/p11_destroy.png' ,{frameHeight: 100, frameWidth: 100});
+    this.load.spritesheet('p11_destroy', 'assets/graphics/projectiles/p11_destroy.png' ,{frameHeight: 150, frameWidth: 150});
     this.load.spritesheet('p12', 'assets/graphics/projectiles/p12.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p12_destroy', 'assets/graphics/projectiles/p12_destroy.png' ,{frameHeight: 20, frameWidth: 20});
 
@@ -353,7 +357,7 @@ let Enemy = new Phaser.Class({
     },
     slow:
     function(type) {
-        if (type = 0) {
+        if (type == 0) {
             this.speed = ENEMY_SPEED[this.id - 1] / 2;
         } else {
             {
@@ -381,6 +385,7 @@ let AnimatedObject = new Phaser.Class({
             switch(sprite){
                 case 3: case 11: case 17: case 18: this.setActive(false);this.destroy();break;
                 case 'freespace': this.play('freespace_destroy');this.once('animationcomplete', ()=>{this.setActive(false);this.destroy(); blinkSpaces = true;});break;
+                case 'p8': this.play('p8_destroy');this.scale = 3.5;this.once('animationcomplete', ()=>{this.setActive(false);this.destroy()});break;
                 default: this.play(sprite+'_destroy');this.once('animationcomplete', ()=>{this.setActive(false);this.destroy()});break;
             }
         }
@@ -396,7 +401,8 @@ let Tower = new Phaser.Class({
             Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 't'+SELECTED_TOWER);
             this.nextTic = 0;
             this.TowerType = SELECTED_TOWER;
-            this.setInteractive().on('pointerdown', () => {
+            if(this.TowerType != 8){
+                this.setInteractive().on('pointerdown', () => {
                 if(SELECTED_TOWER == 0 && this.active === true){
                     this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
                     if(this.TowerType%8 != 4){
@@ -455,10 +461,11 @@ let Tower = new Phaser.Class({
                     }
                 }
             });
+            }
         },
     place: function(i, j) {
         //polozenie - pozicia a typ
-        if(SELECTED_TOWER != 0 && SELECTED_TOWER != -2){
+        if(SELECTED_TOWER != 0 && SELECTED_TOWER != -2 && this.TowerType != 8){
             this.y = i * GRID_H + GRID_H/2;
             this.x = j * GRID_W + GRID_W/2;
             switch(LEVEL){
@@ -492,6 +499,57 @@ let Tower = new Phaser.Class({
                     repeat: 0
                 });
             }
+        }
+        //duki nuki
+        if(this.TowerType == 8 && nukeReady === true){
+            this.x = i; this.y = j;
+            nukeReady = false;
+            createAnimated(690, 380, 'p8', 0);
+
+            fsrect.fillColor = '0x000000';
+            nukeIcon.alpha = 0.4;
+            tw.add({targets: fsrect,
+                duration: 500,
+                alpha: 0.5,
+                repeat: 0,
+                onComplete: ()=>{
+                    camera.shake(2000, 0.02);
+                    let enemyUnits = enemies.getChildren();
+                    //phaser pls
+                    for(let j = 0; j<10; j++){
+                        for(let i = 0; i < enemyUnits.length; i++) {
+                            if(enemyUnits[i].id <=6){enemyUnits[i].receiveDamage(5000);}
+                        }
+                    }
+                    fsrect.fillColor = '0xFFFFFF';
+                    fsrect.alpha = 1;
+                    tw.add({
+                        targets: fsrect,
+                        duration: 1500,
+                        alpha: 0,
+                        repeat: 0
+                    });
+                }
+            });
+
+            tw.add({
+                targets: nukeIcon,
+                duration: 20000,
+                angle: 7200,
+                alpha: 0.7,
+                scale: HUD_ICON_SCALE*0.8,
+                repeat: 0,
+                onComplete: ()=>{nukeReady = true; nukeIcon.angle = 0;
+                    tw.add({
+                        targets: nukeIcon,
+                        duration: 1000,
+                        alpha: 1,
+                        scale: HUD_ICON_SCALE,
+                        repeat: 0,
+                        ease: 'Back.easeOut',
+                    });},
+            });
+            this.destroy();
         }
     },
     fire: function() {
@@ -631,6 +689,8 @@ function create(){
 
     generateAnims();                    //generovanie animacii
 
+    camera = this.cameras.main.setBounds(0, 0, 1280, 720);   //camera pre shake effect
+
     Towers = this.add.group({ classType: Tower, runChildUpdate: true });
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
     enemies = this.physics.add.group({ classType: Enemy, runChildUpdate: true });
@@ -673,7 +733,7 @@ function update(time, delta){
 }
 
 function placeTower(pointer) {
-    if(pointer.x>100 && pointer.y>40 && SELECTED_TOWER != 0 && SELECTED_TOWER != -2) {
+    if(pointer.x>100 && pointer.y>40 && SELECTED_TOWER != 0 && SELECTED_TOWER != -2 && SELECTED_TOWER != 8) {
             let i = Math.floor(pointer.y / GRID_H);
             let j = Math.floor(pointer.x / GRID_W);
             if (canPlaceTower(i, j)) {
@@ -689,6 +749,18 @@ function placeTower(pointer) {
                 }
             } else {
                 blinkAvailableSpaces();
+            }
+        }
+    if(pointer.x>100 && pointer.y>40 && SELECTED_TOWER == 8 && waveInProgress && nukeReady) {
+            if(MONEY-TOWER_PRICES[SELECTED_TOWER-1]>=0) {
+                MONEY -= TOWER_PRICES[SELECTED_TOWER - 1];
+                updateMoneyText();
+                let Tower = Towers.get();
+                if (Tower) {
+                    Tower.setActive(true);
+                    Tower.setVisible(true);
+                    Tower.place(640, 360);
+                }
             }
         }
 }
@@ -735,6 +807,7 @@ function damageEnemy(enemy, bullet) {
             case 10: enemy.slow(1); createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
             case 3: addBullet(bullet.x, bullet.y, 0, 17);break;
             case 11: addBullet(bullet.x, bullet.y, 0, 18);break;
+            case 17: case 18: break;
             default: createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
         }
 
@@ -834,6 +907,9 @@ function updateTowerInfo(){
 }
 
 function getTowerInfo(type){
+    if(type == 7){return TOWER_DESCRIPTION[type]}
+    if(type == 3){return TOWER_DESCRIPTION[type]+'\ndmg: '+TOWER_DAMAGE[type]+', fir: '+TOWER_SPEED[type]+ ', ran: '+TOWER_RANGE[type]+ ', spd: '+PROJECTILE_SPEED[type]+ ', pls: '+PROJECTILE_LIFESPAN[type]
+        +', Upgrade: '+TOWER_UPGRADE_DESCRIPTION[type]+' - '+TOWER_PRICES[type]*2+'$';}
     return   TOWER_DESCRIPTION[type]+', dmg: '+TOWER_DAMAGE[type]+', fir: '+TOWER_SPEED[type]+ ', ran: '+TOWER_RANGE[type]+ ', spd: '+PROJECTILE_SPEED[type]+ ', pls: '+PROJECTILE_LIFESPAN[type]
             +'\nUpgrade: '+TOWER_UPGRADE_DESCRIPTION[type]+' - '+TOWER_PRICES[type]*2+'$';
 }
@@ -944,7 +1020,7 @@ function nextLevel(){
                 duration: 200,
                 alpha: 0,
                 ease: 'Sine.easeOut',
-                onComplete: ()=> {fsrect.destroy();creditsText.destroy();},
+                onComplete: ()=> {fsrect.alpha = 0;creditsText.destroy();},
                 repeat: 0
             });
             nextLevel();
@@ -1048,6 +1124,7 @@ function nextLevel(){
                     ease: 'Sine.easeOut',
                     repeat: 0
                 });
+                blinkSpaces = true;
                 MONEY = STARTMONEY;
                 HEALTH = STARTHEALTH;
                 updateMoneyText();
@@ -1108,23 +1185,24 @@ function generateAnims(){
 
     game.anims.create({key: "p7", frameRate: 15, frames: game.anims.generateFrameNumbers("p7",{start:0, end:1}), repeat: -1});
     game.anims.create({key: "p7_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p7_destroy",{start:0, end:1}), repeat: 0});
+    game.anims.create({key: "p8_destroy", frameRate: 10, frames: game.anims.generateFrameNumbers("p8_destroy",{start:0, end:24}), repeat: 0});
 
     game.anims.create({key: "p9", frameRate: 15, frames: game.anims.generateFrameNumbers("p9",{start:0, end:6}), repeat: -1});
     game.anims.create({key: "p9_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("p1_destroy",{start:1, end:4}), repeat: 0});
     game.anims.create({key: "p10", frameRate: 15, frames: game.anims.generateFrameNumbers("p10",{start:0, end:4}), repeat: -1});
     game.anims.create({key: "p10_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("p10_destroy",{start:0, end:3}), repeat: 0});
     game.anims.create({key: "p11", frameRate: 15, frames: game.anims.generateFrameNumbers("p11",{start:0, end:6}), repeat: -1});
-    game.anims.create({key: "p11_destroy", frameRate: 10, frames: game.anims.generateFrameNumbers("p11_destroy",{start:3, end:6}), repeat: 0});
+    game.anims.create({key: "p11_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("p11_destroy",{start:0, end:6}), repeat: 0});
     game.anims.create({key: "p12", frameRate: 60, frames: game.anims.generateFrameNumbers("p12",{start:0, end:4}), repeat: -1});
     game.anims.create({key: "p12_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p12_destroy",{start:0, end:3}), repeat: 0});
 
     game.anims.create({key: "p15", frameRate: 15, frames: game.anims.generateFrameNumbers("p15",{start:0, end:1}), repeat: -1});
     game.anims.create({key: "p15_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p15_destroy",{start:0, end:1}), repeat: 0});
 
-    game.anims.create({key: "p17", frameRate: 15, frames: game.anims.generateFrameNumbers("p3_destroy",{start:3, end:6}), repeat: -1});
-    game.anims.create({key: "p17_destroy", frameRate: 10, frames: game.anims.generateFrameNumbers("p3_destroy",{start:6, end:6}), repeat: 0});
-    game.anims.create({key: "p18", frameRate: 15, frames: game.anims.generateFrameNumbers("p11_destroy",{start:3, end:6}), repeat: -1});
-    game.anims.create({key: "p18_destroy", frameRate: 10, frames: game.anims.generateFrameNumbers("p11_destroy",{start:6, end:6}), repeat: 0});
+    game.anims.create({key: "p17", frameRate: 16, frames: game.anims.generateFrameNumbers("p3_destroy",{start:3, end:6}), repeat: -1});
+    game.anims.create({key: "p17_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p3_destroy",{start:6, end:6}), repeat: 0});
+    game.anims.create({key: "p18", frameRate: 17, frames: game.anims.generateFrameNumbers("p11_destroy",{start:0, end:6}), repeat: 0});
+    game.anims.create({key: "p18_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p11_destroy",{start:6, end:6}), repeat: 0});
     //ui
     game.anims.create({key: "freespace_destroy", frameRate: 2, frames: game.anims.generateFrameNumbers("freespace",{start:0, end:1}), repeat: 0});
 }
@@ -1215,6 +1293,9 @@ function createGame(){
 
     for(let i=0; i<8; i++){
         this.add.image(53,75*i+100, 'button').setInteractive().on('pointerdown', () => changeSelectedTower(i+1));
+    }
+
+    for(let i=0; i<7; i++){
         if(i==3){
             this.add.image(53,75*i+98, 't'+(i+1)).setScale(HUD_ICON_SCALE*0.5);
         }else if(i==6){
@@ -1223,6 +1304,8 @@ function createGame(){
             this.add.image(53,75*i+98, 't'+(i+1)).setScale(HUD_ICON_SCALE);
         }
     }
+
+    nukeIcon = this.add.image(53,75*7+98, 't8').setScale(HUD_ICON_SCALE);
 
     //selektor
     selector = this.add.image(0,0,'selector');
