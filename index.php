@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="sk-SK">
 <head>
+	<link rel="shortcut icon" href="favicon.ico"/>
     <title>InframiesTD</title>
     <meta charset="utf-8">
 
