@@ -41,12 +41,13 @@ let finish;
 let globalTime;
 let fsrect;
 let creditsText;
-let preloadText;
+let fsText;
 let nukeIcon;
 let nukeReady = true;
 let camera;
 let gameInProgress = false;
 let music;
+let fsmusic;
 let music_enabled = true;
 
 let emitter_upgrade;
@@ -198,7 +199,7 @@ const waves = [ [1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,2],
               ];
 
 function preload(){
-    preloadText = this.add.text(640,360, 'Loading...', textfont_superbig).setOrigin(0.5);
+    fsText = this.add.text(640,360, 'Loading...', textfont_superbig).setOrigin(0.5);
 
     //nacitanie spritov
     //ui
@@ -210,9 +211,9 @@ function preload(){
     this.load.image('itdMenu', 'assets/graphics/ui/menu.jpg');
     this.load.spritesheet('button_nextwave', 'assets/graphics/ui/button_nextwave.png',{frameHeight: 40, frameWidth: 197});
     this.load.spritesheet('topbuttons', 'assets/graphics/ui/topbuttons.png',{frameHeight: 40, frameWidth: 41});
-    this.load.spritesheet('start_finish', 'assets/graphics/ui/start_finish.png' ,{frameHeight: 50, frameWidth: 50});
+    this.load.spritesheet('start_finish', 'assets/graphics/ui/start_finish.png' ,{frameHeight: 100, frameWidth: 100});
     this.load.spritesheet('button_small', 'assets/graphics/ui/button_small.png' ,{frameHeight: 35, frameWidth: 35});
-    this.load.spritesheet('button_icons', 'assets/graphics/ui/button_icons.png' ,{frameHeight: 24, frameWidth: 16});
+    this.load.spritesheet('button_icons', 'assets/graphics/ui/button_icons.png' ,{frameHeight: 25, frameWidth: 19});
     this.load.spritesheet('freespace', 'assets/graphics/ui/freespace.png' ,{frameHeight: 50, frameWidth: 50});
 
     //pozadia
@@ -296,6 +297,12 @@ function preload(){
     this.load.audio('intro', [
         'assets/music/Timesplitters 2 - Astrolander.ogg'
     ]);
+    this.load.audio('victory', [
+        'assets/music/Timesplitters 2 - Mission Success.ogg'
+    ]);
+    this.load.audio('defeat', [
+        'assets/music/Timesplitters 2 - Mission Failed.ogg'
+    ]);
     this.load.audio('bgm1', [
         'assets/music/Unreal Tournament - Foregone Destruction.ogg'
     ]);
@@ -317,14 +324,12 @@ let Enemy = new Phaser.Class({
         this.prevx = 0;
         this.speed = ENEMY_SPEED[this.id-1];
         this.alpha = 0;
-        this.scale = 0;
         this.slowed = false;
         this.unfreeze = 0;
         tw.add({
             targets: this,
             duration: 200,
             alpha: 1,
-            scale: 1,
             ease: 'Sine.easeOut',
             repeat: 0
         });
@@ -564,6 +569,7 @@ let Tower = new Phaser.Class({
 
                 fsrect.fillColor = '0x000000';
                 nukeIcon.alpha = 0.4;
+                fsrect.setDepth(1);
                 tw.add({targets: fsrect,
                     duration: 500,
                     alpha: 0.5,
@@ -735,7 +741,7 @@ let Bullet = new Phaser.Class({
 
 function create(){
     //zaklad
-    preloadText.destroy();
+    fsText.alpha = 0;
     background = this.add.image(640, 360, 'itdMenu');           //background bude vzdy naspodku
     background.alpha = 0;
 
@@ -744,6 +750,7 @@ function create(){
     fsrect.alpha = 0.01;
 
     music = this.sound.add('intro', {volume: 0.3, loop: true});             //bgm
+    fsmusic = this.sound.add('blip', {volume: 0.1, loop: false});
     //music.play();
 
     tw = this.tweens;       //tween manager
@@ -801,7 +808,7 @@ function update(time, delta){
             }else if(enemies.countActive() == 0){
                 console.log('end of wave '+WAVE+' reached');MONEY+=WAVE_REWARD;updateMoneyText();waveInProgress=false;nextWaveButton.visible = true;graphics.alpha = 0.8;start.alpha = 1;finish.alpha =1;
                 if(WAVE<waves.length){/*hmmmmm*/}
-                else{nextWaveButton.setTexture("button_nextwave", 1);}
+                else{showVictoryScreen();nextWaveButton.setTexture("button_nextwave", 1);}
                 updateWaveInfo();
             }
             this.nextEnemy = time + WAVE_SPEED;
@@ -1116,7 +1123,8 @@ function nextLevel(){
             nextLevel();
             break;
         case 1: uileft.setTint(0x3cceff);uitop.setTint(0x3cceff);selector.setTint(0xffe002);musicButton.setTint(0x3cceff);fullscreenButton.setTint(0x3cceff);nextWaveButton.setTint(0x3cceff);
-            path = new Phaser.Curves.Path(250, 100);
+            path = new Phaser.Curves.Path(250, 40);
+            path.lineTo(250, 100);
             path.lineTo(510, 150);
             path.lineTo(250, 200);
             path.lineTo(510, 250);
@@ -1125,17 +1133,17 @@ function nextLevel(){
             path.lineTo(250, 400);
             path.lineTo(510, 450);
             path.lineTo(1000, 450);
-            path.lineTo(1000, 110);
+            path.lineTo(1000, 40);
             start.x = 250;
-            start.y = 100;
+            start.y = 40;
             finish.x = 1000;
-            finish.y = 110;
+            finish.y = 40;
             break;
         case 2: uileft.setTint(0xff0054);uitop.setTint(0xff0054);selector.setTint(0xffe002);musicButton.setTint(0xff0054);fullscreenButton.setTint(0xff0054);waveText.setColor("#ff0054");hpText.setColor("#ff0054");moneyText.setColor("#ff0054");nextWaveButton.setTint(0xff0054);
             graphics.clear();
             path.destroy();
             graphics.lineStyle(3, 0x000000).alpha = 0;
-            path = new Phaser.Curves.Path(300, 100);
+            path = new Phaser.Curves.Path(300, 40);
             path.lineTo(285, 567);
             path.lineTo(494, 589);
             path.lineTo(576, 158);
@@ -1143,17 +1151,17 @@ function nextLevel(){
             path.lineTo(1063, 309);
             path.lineTo(868, 380);
             path.lineTo(850, 597);
-            path.lineTo(1224, 579);
+            path.lineTo(1280, 579);
             start.x = 300;
-            start.y = 100;
-            finish.x = 1224;
+            start.y = 40;
+            finish.x = 1280;
             finish.y = 579;
             break;
         case 3: uileft.setTint(0x00ff00);uitop.setTint(0x00ff00);selector.setTint(0xff0000);musicButton.setTint(0x00ff00);fullscreenButton.setTint(0x00ff00);waveText.setColor("#00ff00");hpText.setColor("#00ff00");moneyText.setColor("#00ff00");nextWaveButton.setTint(0x00ff00);
             graphics.clear();
             path.destroy();
             graphics.lineStyle(3, 0xffff00).alpha = 0;
-            path = new Phaser.Curves.Path(300, 100);
+            path = new Phaser.Curves.Path(300, 40);
             path.lineTo(300, 570);
             path.lineTo(1130, 570);
             path.lineTo(1130, 370);
@@ -1162,7 +1170,7 @@ function nextLevel(){
             path.lineTo(615, 200);
             path.lineTo(524, 290);
             start.x = 300;
-            start.y = 100;
+            start.y = 40;
             finish.x = 524;
             finish.y = 290;
             break;
@@ -1175,6 +1183,9 @@ function nextLevel(){
         finish.alpha = 0;
         hideWaveInfo();
         game.sound.add('transition', {volume: 0.5}).play();
+        //fsrect anim
+        undimScreen();
+        hideFsMessage();
         //background anim
         tw.add({
             targets: background,
@@ -1233,7 +1244,6 @@ function nextLevel(){
                 }
             }
         }
-        nextWaveButton.setTexture("button_nextwave", 0);
 
         path.draw(graphics);
     }
@@ -1337,6 +1347,15 @@ function playMusic(mus_id){
     if(mus_id>=1){
         music.volume = 0.3;
         tw.add({
+            targets: fsmusic,
+            duration: 1000,
+            volume: 0,
+            onComplete: ()=>{
+                this.stop();
+            },
+            repeat: 0
+        });
+        tw.add({
             targets: music,
             duration: 1000,
             volume: 0,
@@ -1393,6 +1412,82 @@ function toggleFullscreen() {
     }
 }
 
+function showVictoryScreen(){
+    blinkSpaces = false;
+    nextWaveButton.alpha = 0;
+    nextWaveButton.setDepth(3);
+    nextWaveButton.x = 640;
+    nextWaveButton.y = 460;
+    MONEY = 0;
+    dimScreen();
+    tw.add({
+        targets: music,
+        duration: 1000,
+        volume: 0,
+        onComplete: ()=> {
+            music.stop();
+        },
+        repeat: 0
+    });
+
+    fsText.setText('Victory').setDepth(3);
+    fsText.scale = 0;
+    fsText.alpha = 0;
+    tw.add({
+        targets: fsText,
+        duration: 300,
+        alpha: 1,
+        scale: 1,
+        ease: 'Back.easeOut',
+        onComplete: ()=> {
+            tw.add({
+                targets: nextWaveButton,
+                duration: 300,
+                alpha: 1,
+                scale: 2,
+                ease: 'Back.easeOut',
+            });
+        },
+        repeat: 0
+    });
+
+    if(music_enabled){
+        fsmusic = game.sound.add('victory', {volume: 0.3});
+        fsmusic.play();
+    }
+}
+
+function dimScreen(){
+    fsrect.setDepth(2);
+    fsrect.fillColor = '0x000000';
+    tw.add({
+        targets: fsrect,
+        duration: 500,
+        alpha: 0.5,
+        volume: 0,
+        repeat: 0
+    });
+}
+
+function undimScreen(){
+    tw.add({
+        targets: fsrect,
+        duration: 500,
+        alpha: 0,
+        repeat: 0
+    });
+}
+
+function hideFsMessage(){
+    tw.add({
+        targets: [nextWaveButton, fsText],
+        duration: 300,
+        scale: 0,
+        onComplete: ()=> {nextWaveButton.x = 1099; nextWaveButton.y = 20; nextWaveButton.setTexture("button_nextwave", 0).setScale(1);blinkSpaces = true;},
+        ease: 'Back.easeIn',
+    });
+}
+
 function createGame(){
     graphics = this.add.graphics();                         //cesty
     uileft = this.add.image(55,380, 'ui_left').setDepth(1);
@@ -1419,7 +1514,7 @@ function createGame(){
     });
 
     //top buttons
-    nextWaveButton = this.add.image(1099,20, 'button_nextwave', 0).setDepth(1).setInteractive().on('pointerdown', () => nextWave());
+    nextWaveButton = this.add.image(1099,20, 'button_nextwave', 0).setDepth(1).setScale(0).setInteractive().on('pointerdown', () => nextWave());
     musicButton = this.add.image(1218,20, 'topbuttons', 0).setDepth(1).setInteractive().on('pointerdown', () => toggleMusic());
     fullscreenButton = this.add.image(1259,20, 'topbuttons', 2).setDepth(1).setInteractive().on('pointerdown', () => toggleFullscreen());
 
