@@ -491,7 +491,7 @@ let Tower = new Phaser.Class({
                             case 2: level2[this.i][this.j] = this.TowerType;break;
                             case 3: level3[this.i][this.j] = this.TowerType;break;
                         }
-                        emitter_upgrade.setDepth(1).emitParticleAt(this.x, this.y);
+                        emitter_upgrade.emitParticleAt(this.x, this.y);
                         this.setTint(0xff0000);
                         this.nextTic = globalTime + TOWER_SPEED[this.TowerType - 1];
                     }
@@ -757,7 +757,7 @@ function create(){
         repeat: 0
     });
 
-    this.add.text(1270,715, 'EARLY ALPHA BUILD, type motherlode() in console for goodies', textfont_big).setStroke('#000000', 5).setOrigin(1);
+    this.add.text(53,710, 'ALPHA', textfont_big).setStroke('#000000', 5).setOrigin(0.5).setDepth(2);
 
     this.input.setDefaultCursor('url(assets/graphics/ui/cursor.cur), pointer'); //kurzor
 
@@ -1015,7 +1015,7 @@ function updateHpText(){
 
 function updateMoneyText(){
     moneyText.setText(MONEY);
-    scoreText.setText("SCORE\n"+SCORE);
+    scoreText.setText("Score: "+SCORE);
     moneyText.y = 6;
 
     if(MONEY >= TOWER_PRICES[0]){cross1.visible = false;}else{cross1.visible = true;}
@@ -1388,16 +1388,16 @@ function toggleFullscreen() {
 
 function createGame(){
     graphics = this.add.graphics();                         //cesty
-    uileft = this.add.image(55,380, 'ui_left');
-    uitop = this.add.image(640,20, 'ui_top');
+    uileft = this.add.image(55,380, 'ui_left').setDepth(1);
+    uitop = this.add.image(640,20, 'ui_top').setDepth(1);
     start = this.add.image(250,105, 'start_finish', 0);
     finish = this.add.image(1000,110, 'start_finish', 1);
-    waveText = this.add.text(87, 13, '', bigfont);
-    hpText = this.add.text(191, 13, '', bigfont);
-    moneyText = this.add.text(295, 13, '', bigfont);
+    waveText = this.add.text(87, 13, '', bigfont).setDepth(1);
+    hpText = this.add.text(191, 13, '', bigfont).setDepth(1);
+    moneyText = this.add.text(295, 13, '', bigfont).setDepth(1);
     graphics.lineStyle(3, 0xaaaaaa).alpha = 0;
 
-    emitter_upgrade = this.add.particles('button_icons');
+    emitter_upgrade = this.add.particles('button_icons').setDepth(1);
 
     emitter_upgrade.createEmitter({
         frame: 0,
@@ -1412,61 +1412,61 @@ function createGame(){
     });
 
     //top buttons
-    nextWaveButton = this.add.image(1099,20, 'button_nextwave', 0).setInteractive().on('pointerdown', () => nextWave());
-    musicButton = this.add.image(1218,20, 'topbuttons', 0).setInteractive().on('pointerdown', () => toggleMusic());
-    fullscreenButton = this.add.image(1259,20, 'topbuttons', 2).setInteractive().on('pointerdown', () => toggleFullscreen());
+    nextWaveButton = this.add.image(1099,20, 'button_nextwave', 0).setDepth(1).setInteractive().on('pointerdown', () => nextWave());
+    musicButton = this.add.image(1218,20, 'topbuttons', 0).setDepth(1).setInteractive().on('pointerdown', () => toggleMusic());
+    fullscreenButton = this.add.image(1259,20, 'topbuttons', 2).setDepth(1).setInteractive().on('pointerdown', () => toggleFullscreen());
 
     //tower info
     //this.add.image(200,50, 'button');
-    selectedImg = this.add.image(453,18,'t1', SELECTED_TOWER-1);
+    selectedImg = this.add.image(453,18,'t1', SELECTED_TOWER-1).setDepth(1);
     selectedImg.setScale(HUD_ICON_SCALE);
-    selectedInfo = this.add.text(478,5,getTowerInfo(SELECTED_TOWER-1),textfont);
+    selectedInfo = this.add.text(478,5,getTowerInfo(SELECTED_TOWER-1),textfont).setDepth(1);
     updateTowerInfo();
 
-    waveInfo = this.add.text(690,70,'',textfont_big).setStroke('#000000', 5).setOrigin(0.5);
-    scoreText = this.add.text(1270,95,'SCORE\n0',textfont_big_right).setStroke('#000000', 5).setOrigin(1);
+    waveInfo = this.add.text(690,70,'',textfont_big).setStroke('#000000', 5).setDepth(1).setOrigin(0.5);
+    scoreText = this.add.text(1270,710,'Score: 0',textfont_big_right).setStroke('#000000', 5).setDepth(1).setOrigin(1);
 
     //upgrade, sell
-    this.add.image(36,683, 'button_small', 1).setInteractive().on('pointerdown', () => upgradeTool());
-    this.add.image(72,683, 'button_small', 2).setInteractive().on('pointerdown', () => sellTool());
-    this.add.image(36,683, 'button_icons', 0);
-    this.add.image(72,683, 'button_icons', 1);
+    this.add.image(36,683, 'button_small', 1).setDepth(1).setInteractive().on('pointerdown', () => upgradeTool());
+    this.add.image(72,683, 'button_small', 2).setDepth(1).setInteractive().on('pointerdown', () => sellTool());
+    this.add.image(36,683, 'button_icons', 0).setDepth(1);
+    this.add.image(72,683, 'button_icons', 1).setDepth(1);
 
     for(let i=0; i<8; i++){
-        this.add.image(53,75*i+100, 'button').setInteractive().on('pointerdown', () => changeSelectedTower(i+1));
+        this.add.image(53,75*i+100, 'button').setDepth(1).setInteractive().on('pointerdown', () => changeSelectedTower(i+1));
     }
 
     for(let i=0; i<7; i++){
         if(i==3){
-            this.add.image(53,75*i+98, 't'+(i+1)).setScale(HUD_ICON_SCALE*0.5);
+            this.add.image(53,75*i+98, 't'+(i+1)).setDepth(1).setScale(HUD_ICON_SCALE*0.5);
         }else if(i==5) {
-            this.add.image(53, 75 * i + 98, 't6_idle').setScale(HUD_ICON_SCALE*0.7);
+            this.add.image(53, 75 * i + 98, 't6_idle').setDepth(1).setScale(HUD_ICON_SCALE*0.7);
         }else if(i==6){
-            this.add.image(53,75*i+98, 't7_idle').setScale(HUD_ICON_SCALE);
+            this.add.image(53,75*i+98, 't7_idle').setDepth(1).setScale(HUD_ICON_SCALE);
         }else{
-            this.add.image(53,75*i+98, 't'+(i+1)).setScale(HUD_ICON_SCALE);
+            this.add.image(53,75*i+98, 't'+(i+1)).setDepth(1).setScale(HUD_ICON_SCALE);
         }
     }
 
-    nukeIcon = this.add.image(53,75*7+98, 't8').setScale(HUD_ICON_SCALE);
+    nukeIcon = this.add.image(53,75*7+98, 't8').setDepth(1).setScale(HUD_ICON_SCALE);
 
     //selektor
-    selector = this.add.image(0,0,'selector');
+    selector = this.add.image(0,0,'selector').setDepth(1);
     selector.x = 53;
     selector.y = 75*(SELECTED_TOWER-1)+100;
 
-    cross1 = this.add.image(53,100,'cross');
-    cross2 = this.add.image(53,75+100, 'cross');
-    cross3 = this.add.image(53,75*2+100, 'cross');
-    cross4 = this.add.image(53,75*3+100, 'cross');
-    cross5 = this.add.image(53,75*4+100, 'cross');
-    cross6 = this.add.image(53,75*5+100, 'cross');
-    cross7 = this.add.image(53,75*6+100, 'cross');
-    cross8 = this.add.image(53,75*7+100, 'cross');
+    cross1 = this.add.image(53,100,'cross').setDepth(1);
+    cross2 = this.add.image(53,75+100, 'cross').setDepth(1);
+    cross3 = this.add.image(53,75*2+100, 'cross').setDepth(1);
+    cross4 = this.add.image(53,75*3+100, 'cross').setDepth(1);
+    cross5 = this.add.image(53,75*4+100, 'cross').setDepth(1);
+    cross6 = this.add.image(53,75*5+100, 'cross').setDepth(1);
+    cross7 = this.add.image(53,75*6+100, 'cross').setDepth(1);
+    cross8 = this.add.image(53,75*7+100, 'cross').setDepth(1);
 
     //cenovky
     for(let i=0; i<8; i++){
-        this.add.text(54,75*i+127, TOWER_PRICES[i]+'$', bigfont_white).setStroke('#000000', 2).setOrigin(0.5);
+        this.add.text(54,75*i+127, TOWER_PRICES[i]+'$', bigfont_white).setDepth(1).setStroke('#000000', 2).setOrigin(0.5);
     }
 
     //keyboard
