@@ -101,39 +101,39 @@ const WAVE_DESCRIPTION = ['Welcome to InframiesTD! Select a tower from the menu 
     '',
     ];
 
-const TOWER_PRICES = [150,400,500,500,750,600,2500,3000];
+const TOWER_PRICES = [150,400,600,1000,700,600,3000,4000];
 
-const TOWER_SPEED = [700,1300,2000,3000,2200,1000,100,1000,
-                    500,1000,1500,2500,2200,1000,70,1000];
-const TOWER_RANGE = [400,350,300,2000,300,550,500,2000,
-                    600,350,400,2000,400,700,550,2000];
-const TOWER_DESCRIPTION = ['Laser - Basic turret',
-                            'Electric - Slows enemies on hit',
-                            'Canon - Slow but lethal, instantly destroy barriers',
-                            'Rail - Massive damage, sees the entire map and hidden enemies',
-                            'Multishot - Fires 5 projectiles at once',
-                            'Thermal - Sees hidden enemies, piercing projectiles',
-                            'Rapid - Massive firing rate',
+const TOWER_SPEED = [700,1300,2000,3000,1700,1500,100,1000,
+                    500,1000,1500,2500,1400,1200,70,1000];
+const TOWER_RANGE = [400,350,300,2000,270,350,500,2000,
+                    600,350,400,2000,350,400,550,2000];
+const TOWER_DESCRIPTION = ['Laser - Basic and all around good tower.',
+                            'Electric - Low damage, slows enemies on hit.',
+                            'Canon - Slow but lethal, explosions deal area of effect damage.',
+                            'Rail - Massive damage, slow firing rate, no range limit.',
+                            'Shotgunner - Close range, fires 5 projectiles at once.',
+                            'Thermal - Sees hidden enemies and pierces through them.',
+                            'Rapid - Expensive, but has amazing firerate.',
                             'Nuke - Vaporizes everything except bosses, 30 second cooldown'];
-const TOWER_UPGRADE_DESCRIPTION = ['+range, +firerate, see hidden enemies',
+const TOWER_UPGRADE_DESCRIPTION = [ '+firerate, +range, see hidden enemies',
                                     '+firerate, enemies become even slower',
-                                    '+firerate, bigger explosions',
-                                    '+firerate, +damage',
-                                    '+range, +damage, 7 projectiles at once',
-                                    '+firerate',
-                                    '+damage, see hidden enemies',
-                                    'none'];
+                                    '+firerate, +range, +damage, slightly bigger explosions',
+                                    '+firerate, +damage, piercing projectiles',
+                                    '+firerate, +range, +damage, fires 2 more projectiles',
+                                    '+firerate, +range',
+                                    '+firerate, +range, +damage',
+                                    ''];
 
 //TODO: tower balancing
-const TOWER_DAMAGE = [50,10,100,200,50,100,40,1000,
-                      50,10,200,400,80,150,70,1000,
-                      10, 20];
-const PROJECTILE_SPEED = [700,600,450,4000,300,600,700,1000,
-                          800,600,500,5000,300,600,700,1000,
-                          1, 1];
-const PROJECTILE_LIFESPAN = [500,500,1500,1000,1200,500,600,500,
-                             500,500,1500,1000,1200,500,600,500,
-                             250, 250];
+const TOWER_DAMAGE = [50,10,100,200,30,50,50,1000,
+                      50,10,200,400,40,100,80,1000,
+                      15, 30];
+const PROJECTILE_SPEED = [900,600,500,4000,1000,600,700,1000,
+                          1200,600,600,5000,1200,600,700,1000,
+                          0, 0];
+const PROJECTILE_LIFESPAN = [500,500,1500,1000,200,500,600,500,
+                             500,500,1500,1000,200,500,600,500,
+                             500, 500];
 const TOWER_FREEZETIME = 2000;
 
 const GRID_W = 50;
@@ -249,8 +249,11 @@ function preload(){
     this.load.spritesheet('p3_destroy', 'assets/graphics/projectiles/p3_destroy.png' ,{frameHeight: 80, frameWidth: 80});
     this.load.spritesheet('p4', 'assets/graphics/projectiles/p4.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p4_destroy', 'assets/graphics/projectiles/p4_destroy.png' ,{frameHeight: 20, frameWidth: 20});
-
-    this.load.spritesheet('p7', 'assets/graphics/projectiles/p7.png' ,{frameHeight: 4, frameWidth: 20});
+    this.load.spritesheet('p5', 'assets/graphics/projectiles/p7.png' ,{frameHeight: 4, frameWidth: 4});
+    this.load.spritesheet('p5_destroy', 'assets/graphics/projectiles/p7_destroy.png' ,{frameHeight: 20, frameWidth: 20});
+    this.load.spritesheet('p6', 'assets/graphics/projectiles/p4.png' ,{frameHeight: 20, frameWidth: 20});
+    this.load.spritesheet('p6_destroy', 'assets/graphics/projectiles/p4_destroy.png' ,{frameHeight: 20, frameWidth: 20});
+    this.load.spritesheet('p7', 'assets/graphics/projectiles/p7.png' ,{frameHeight: 4, frameWidth: 4});
     this.load.spritesheet('p7_destroy', 'assets/graphics/projectiles/p7_destroy.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p8_destroy', 'assets/graphics/projectiles/p8_destroy.png' ,{frameHeight: 200, frameWidth: 300});
 
@@ -262,8 +265,11 @@ function preload(){
     this.load.spritesheet('p11_destroy', 'assets/graphics/projectiles/p11_destroy.png' ,{frameHeight: 150, frameWidth: 150});
     this.load.spritesheet('p12', 'assets/graphics/projectiles/p12.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p12_destroy', 'assets/graphics/projectiles/p12_destroy.png' ,{frameHeight: 20, frameWidth: 20});
-
-    this.load.spritesheet('p15', 'assets/graphics/projectiles/p15.png' ,{frameHeight: 4, frameWidth: 20});
+    this.load.spritesheet('p13', 'assets/graphics/projectiles/p15.png' ,{frameHeight: 4, frameWidth: 4});
+    this.load.spritesheet('p13_destroy', 'assets/graphics/projectiles/p15_destroy.png' ,{frameHeight: 20, frameWidth: 20});
+    this.load.spritesheet('p14', 'assets/graphics/projectiles/p12.png' ,{frameHeight: 20, frameWidth: 20});
+    this.load.spritesheet('p14_destroy', 'assets/graphics/projectiles/p12_destroy.png' ,{frameHeight: 20, frameWidth: 20});
+    this.load.spritesheet('p15', 'assets/graphics/projectiles/p15.png' ,{frameHeight: 4, frameWidth: 4});
     this.load.spritesheet('p15_destroy', 'assets/graphics/projectiles/p15_destroy.png' ,{frameHeight: 20, frameWidth: 20});
 
     //sounds
@@ -385,15 +391,14 @@ let Enemy = new Phaser.Class({
     function(type) {
         if (type == 0) {
             this.speed = ENEMY_SPEED[this.id - 1] / 2;
-        } else {
-            {
-                this.speed = ENEMY_SPEED[this.id - 1] / 4;
-            }
-
-            this.tint = 0xff99ff;
-            this.slowed = true;
             this.unfreeze = globalTime + TOWER_FREEZETIME;
+            this.tint = 0xff55ff;
+        } else {
+            this.speed = ENEMY_SPEED[this.id - 1] / 4;
+            this.unfreeze = globalTime + TOWER_FREEZETIME*1.5;
+            this.tint = 0xff5555;
         }
+        this.slowed = true;
     }
 });
 
@@ -584,6 +589,7 @@ let Tower = new Phaser.Class({
                     duration: 20000,
                     angle: 7200,
                     alpha: 0.7,
+                    ease: 'Sine.easeIn',
                     scale: HUD_ICON_SCALE*0.8,
                     repeat: 0,
                     onComplete: ()=>{nukeReady = true; nukeIcon.angle = 0;game.sound.add('blip', {volume: 0.3, loop: false}).play();
@@ -614,12 +620,14 @@ let Tower = new Phaser.Class({
                 playSound('c'+this.TowerType%8);
                 this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG );
                 this.once('animationcomplete', ()=> {
-                    angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
-                    this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG );
+                    enemy = getEnemy(this.x, this.y, TOWER_RANGE[this.TowerType-1]);
+                    if(enemy){
+                        angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
+                        this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG );
+                    }
                     this.play('t'+this.TowerType%8+'_fire');
                     playSound('f'+this.TowerType%8);
                     addBullet(this.x, this.y, angle, this.TowerType)
-
                     if(this.TowerType%8 == 6){
                         //return to idle anim
                         this.once('animationcomplete', ()=>{
@@ -630,11 +638,15 @@ let Tower = new Phaser.Class({
             }
             else{addBullet(this.x, this.y, angle, this.TowerType);this.play('t'+this.TowerType%8+'_fire');playSound('f'+this.TowerType%8);}
             //t5 multishot
-            if(this.TowerType == 5){
+            if(this.TowerType%8 == 5){
                 addBullet(this.x, this.y, angle-0.1, this.TowerType);
                 addBullet(this.x, this.y, angle-0.2, this.TowerType);
                 addBullet(this.x, this.y, angle+0.1, this.TowerType);
                 addBullet(this.x, this.y, angle+0.2, this.TowerType);
+                if(this.TowerType == 13){
+                    addBullet(this.x, this.y, angle-0.3, this.TowerType);
+                    addBullet(this.x, this.y, angle+0.3, this.TowerType);
+                }
             }
             //otacanie podla druhu Towery
             switch(this.TowerType){
@@ -667,6 +679,7 @@ let Bullet = new Phaser.Class({
         {
             Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'p1');
 
+            this.damage = 0;
             this.lifespan = 0;
             this.speed = 0;
         },
@@ -674,13 +687,14 @@ let Bullet = new Phaser.Class({
     fire: function (x, y, angle,type)
     {
         this.type = type;
-        this.speed = Phaser.Math.GetSpeed(PROJECTILE_SPEED[type-1], 1);
+        this.damage = TOWER_DAMAGE[this.type-1];
+        this.speed = Phaser.Math.GetSpeed(PROJECTILE_SPEED[this.type-1], 1);
 
         this.setActive(true);
         this.setVisible(true);
         //  Bullets fire from the middle of the screen to the given x/y
         this.setPosition(x, y);
-        this.play('p'+type);
+        this.play('p'+this.type);
 
         switch(this.type){
             case 17: case 18: this.scale = 1;break;
@@ -689,13 +703,13 @@ let Bullet = new Phaser.Class({
 
         //  we don't need to rotate the bullets as they are round
         switch(this.type%8){
-            case 3: case 4: case 7: this.setRotation(angle);
+            case 3: case 4: case 6: case 7: this.setRotation(angle);
         }
 
         this.dx = Math.cos(angle);
         this.dy = Math.sin(angle);
 
-        this.lifespan = PROJECTILE_LIFESPAN[type-1];
+        this.lifespan = PROJECTILE_LIFESPAN[this.type-1];
     },
 
     update: function (time, delta)
@@ -874,12 +888,13 @@ function damageEnemy(enemy, bullet) {
             default: createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
         }
 
+        enemy.receiveDamage(bullet.damage);
+
         switch(bullet.type){
-            case 12: case 17: case 18: break;
+            case 17: case 18: break;
+            case 6: case 14: case 12:  bullet.damage /= 1.5;break;
             default:bullet.setActive(false);bullet.destroy();break;
         }
-
-        enemy.receiveDamage(TOWER_DAMAGE[bullet.type - 1]);
     }
 }
 
@@ -972,11 +987,19 @@ function updateTowerInfo(){
 }
 
 function getTowerInfo(type){
+
+    if(type == 7){return TOWER_DESCRIPTION[type];}
+    return TOWER_DESCRIPTION[type]+'\nUpgrade: '+TOWER_UPGRADE_DESCRIPTION[type]+' - '+TOWER_PRICES[type]*2+'$';
+
+    //old info used for debugging stuff
+    /*
     if(type == 7){return TOWER_DESCRIPTION[type]}
     if(type == 3){return TOWER_DESCRIPTION[type]+'\ndmg: '+TOWER_DAMAGE[type]+', fir: '+TOWER_SPEED[type]+ ', ran: '+TOWER_RANGE[type]+ ', spd: '+PROJECTILE_SPEED[type]+ ', pls: '+PROJECTILE_LIFESPAN[type]
         +', Upgrade: '+TOWER_UPGRADE_DESCRIPTION[type]+' - '+TOWER_PRICES[type]*2+'$';}
     return   TOWER_DESCRIPTION[type]+', dmg: '+TOWER_DAMAGE[type]+', fir: '+TOWER_SPEED[type]+ ', ran: '+TOWER_RANGE[type]+ ', spd: '+PROJECTILE_SPEED[type]+ ', pls: '+PROJECTILE_LIFESPAN[type]
             +'\nUpgrade: '+TOWER_UPGRADE_DESCRIPTION[type]+' - '+TOWER_PRICES[type]*2+'$';
+
+    */
 }
 
 function updateHpText(){
@@ -1088,7 +1111,7 @@ function nextLevel(){
             });
             nextLevel();
             break;
-        case 1: uileft.setTint(0x3cceff);uitop.setTint(0x3cceff);musicButton.setTint(0x3cceff);fullscreenButton.setTint(0x3cceff);nextWaveButton.setTint(0x3cceff);
+        case 1: uileft.setTint(0x3cceff);uitop.setTint(0x3cceff);selector.setTint(0xffe002);musicButton.setTint(0x3cceff);fullscreenButton.setTint(0x3cceff);nextWaveButton.setTint(0x3cceff);
             path = new Phaser.Curves.Path(250, 100);
             path.lineTo(510, 150);
             path.lineTo(250, 200);
@@ -1104,7 +1127,7 @@ function nextLevel(){
             finish.x = 1000;
             finish.y = 110;
             break;
-        case 2: uileft.setTint(0xff0054);uitop.setTint(0xff0054);musicButton.setTint(0xff0054);fullscreenButton.setTint(0xff0054);waveText.setColor("#ff0054");hpText.setColor("#ff0054");moneyText.setColor("#ff0054");nextWaveButton.setTint(0xff0054);
+        case 2: uileft.setTint(0xff0054);uitop.setTint(0xff0054);selector.setTint(0xffe002);musicButton.setTint(0xff0054);fullscreenButton.setTint(0xff0054);waveText.setColor("#ff0054");hpText.setColor("#ff0054");moneyText.setColor("#ff0054");nextWaveButton.setTint(0xff0054);
             graphics.clear();
             path.destroy();
             graphics.lineStyle(3, 0x000000).alpha = 0;
@@ -1122,7 +1145,7 @@ function nextLevel(){
             finish.x = 1224;
             finish.y = 579;
             break;
-        case 3: uileft.setTint(0x00ff00);uitop.setTint(0x00ff00);musicButton.setTint(0x00ff00);fullscreenButton.setTint(0x00ff00);waveText.setColor("#00ff00");hpText.setColor("#00ff00");moneyText.setColor("#00ff00");nextWaveButton.setTint(0x00ff00);
+        case 3: uileft.setTint(0x00ff00);uitop.setTint(0x00ff00);selector.setTint(0xff0000);musicButton.setTint(0x00ff00);fullscreenButton.setTint(0x00ff00);waveText.setColor("#00ff00");hpText.setColor("#00ff00");moneyText.setColor("#00ff00");nextWaveButton.setTint(0x00ff00);
             graphics.clear();
             path.destroy();
             graphics.lineStyle(3, 0xffff00).alpha = 0;
@@ -1247,9 +1270,12 @@ function generateAnims(){
     game.anims.create({key: "p2_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("p2_destroy",{start:0, end:3}), repeat: 0});
     game.anims.create({key: "p3", frameRate: 15, frames: game.anims.generateFrameNumbers("p3",{start:0, end:6}), repeat: -1});
     game.anims.create({key: "p3_destroy", frameRate: 10, frames: game.anims.generateFrameNumbers("p3_destroy",{start:3, end:6}), repeat: 0});
-    game.anims.create({key: "p4", frameRate: 60, frames: game.anims.generateFrameNumbers("p4",{start:0, end:4}), repeat: -1});
+    game.anims.create({key: "p4", frameRate: 30, frames: game.anims.generateFrameNumbers("p4",{start:0, end:4}), repeat: -1});
     game.anims.create({key: "p4_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p4_destroy",{start:0, end:3}), repeat: 0});
-
+    game.anims.create({key: "p5", frameRate: 15, frames: game.anims.generateFrameNumbers("p5",{start:0, end:1}), repeat: -1});
+    game.anims.create({key: "p5_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p5_destroy",{start:0, end:1}), repeat: 0});
+    game.anims.create({key: "p6", frameRate: 30, frames: game.anims.generateFrameNumbers("p6",{start:0, end:4}), repeat: -1});
+    game.anims.create({key: "p6_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p6_destroy",{start:0, end:3}), repeat: 0});
     game.anims.create({key: "p7", frameRate: 15, frames: game.anims.generateFrameNumbers("p7",{start:0, end:1}), repeat: -1});
     game.anims.create({key: "p7_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p7_destroy",{start:0, end:1}), repeat: 0});
     game.anims.create({key: "p8_destroy", frameRate: 10, frames: game.anims.generateFrameNumbers("p8_destroy",{start:0, end:24}), repeat: 0});
@@ -1262,13 +1288,16 @@ function generateAnims(){
     game.anims.create({key: "p11_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("p11_destroy",{start:0, end:6}), repeat: 0});
     game.anims.create({key: "p12", frameRate: 60, frames: game.anims.generateFrameNumbers("p12",{start:0, end:4}), repeat: -1});
     game.anims.create({key: "p12_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p12_destroy",{start:0, end:3}), repeat: 0});
-
+    game.anims.create({key: "p13", frameRate: 15, frames: game.anims.generateFrameNumbers("p13",{start:0, end:1}), repeat: -1});
+    game.anims.create({key: "p13_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p13_destroy",{start:0, end:1}), repeat: 0});
+    game.anims.create({key: "p14", frameRate: 60, frames: game.anims.generateFrameNumbers("p14",{start:0, end:4}), repeat: -1});
+    game.anims.create({key: "p14_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p14_destroy",{start:0, end:3}), repeat: 0});
     game.anims.create({key: "p15", frameRate: 15, frames: game.anims.generateFrameNumbers("p15",{start:0, end:1}), repeat: -1});
     game.anims.create({key: "p15_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p15_destroy",{start:0, end:1}), repeat: 0});
 
-    game.anims.create({key: "p17", frameRate: 16, frames: game.anims.generateFrameNumbers("p3_destroy",{start:3, end:6}), repeat: -1});
+    game.anims.create({key: "p17", frameRate: 8, frames: game.anims.generateFrameNumbers("p3_destroy",{start:3, end:6}), repeat: -1});
     game.anims.create({key: "p17_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p3_destroy",{start:6, end:6}), repeat: 0});
-    game.anims.create({key: "p18", frameRate: 17, frames: game.anims.generateFrameNumbers("p11_destroy",{start:0, end:6}), repeat: 0});
+    game.anims.create({key: "p18", frameRate: 8, frames: game.anims.generateFrameNumbers("p11_destroy",{start:0, end:6}), repeat: 0});
     game.anims.create({key: "p18_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p11_destroy",{start:6, end:6}), repeat: 0});
     //ui
     game.anims.create({key: "freespace_destroy", frameRate: 2, frames: game.anims.generateFrameNumbers("freespace",{start:0, end:1}), repeat: 0});
@@ -1449,5 +1478,8 @@ function createGame(){
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SIX)  .on('down', function() {changeSelectedTower(6)}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SEVEN).on('down', function() {changeSelectedTower(7)}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.EIGHT).on('down', function() {changeSelectedTower(8)}, this);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.NINE).on('down', function() {upgradeTool()}, this);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ZERO).on('down', function() {sellTool()}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)    .on('down', function() {toggleFullscreen()}, this);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M)    .on('down', function() {toggleMusic()}, this);
 }
