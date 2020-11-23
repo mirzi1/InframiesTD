@@ -67,6 +67,7 @@ let HEALTH;
 let MONEY;
 const STARTHEALTH = 5;
 const STARTMONEY = 300;
+const WAVE_REWARD = 100;
 let SELECTED_TOWER = 1;
 
 const WAVE_SPEED = 100;
@@ -140,46 +141,46 @@ const GRID_W = 50;
 const GRID_H = 50;
 
 let level1 =       [[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-                    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1],
-                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1],
-                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1,-1, 0, 0,-1,-1],
-                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0,-1,-1],
-                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0,-1,-1],
-                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1],
-                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1],
-                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1],
-                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1],
-                    [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-                    [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-                    [-1,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1,-1,-1, 0, 0, 0,-1],
+                    [-1,-1, 0, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1],
+                    [-1,-1, 0, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1],
+                    [-1,-1, 0, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1],
+                    [-1,-1, 0, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1, 0, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1, 0, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1],
+                    [-1,-1, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0,-1],
+                    [-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
+                    [-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
+                    [-1,-1, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1],
                     [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]];
 
 let level2 =       [[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-                    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-                    [-1,-1,-1, 0, 0,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0,-1,-1],
-                    [-1,-1,-1, 0, 0,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1],
-                    [-1,-1,-1, 0, 0,-1,-1, 0, 0, 0,-1,-1,-1, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1, 0, 0,-1],
-                    [-1,-1,-1, 0, 0,-1,-1, 0, 0, 0,-1,-1,-1, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1, 0, 0,-1],
-                    [-1,-1,-1, 0, 0,-1,-1, 0, 0, 0,-1,-1,-1, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1, 0, 0,-1],
-                    [-1,-1,-1, 0, 0,-1,-1, 0, 0, 0,-1,-1, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1, 0, 0, 0,-1],
-                    [-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1, 0, 0, 0, 0,-1,-1,-1, 0, 0, 0, 0, 0, 0,-1],
-                    [-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1, 0, 0, 0, 0,-1,-1, 0, 0, 0, 0, 0, 0, 0,-1],
-                    [-1,-1,-1, 0, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0,-1,-1, 0, 0, 0, 0,-1,-1,-1,-1],
-                    [-1,-1,-1, 0, 0,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-                    [-1,-1,-1, 0, 0,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-                    [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
+                    [-1,-1, 0, 0, 0,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
+                    [-1,-1, 0, 0, 0,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0,-1,-1],
+                    [-1,-1, 0, 0, 0,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1],
+                    [-1,-1, 0, 0, 0,-1,-1, 0, 0, 0,-1,-1,-1, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1, 0, 0,-1],
+                    [-1,-1, 0, 0, 0,-1,-1, 0, 0, 0,-1,-1,-1, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1, 0, 0,-1],
+                    [-1,-1, 0, 0, 0,-1,-1, 0, 0, 0,-1,-1,-1, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1, 0, 0,-1],
+                    [-1,-1, 0, 0, 0,-1,-1, 0, 0, 0,-1,-1, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1, 0, 0, 0,-1],
+                    [-1,-1, 0, 0, 0,-1,-1, 0, 0,-1,-1,-1, 0, 0, 0, 0,-1,-1,-1, 0, 0, 0, 0, 0, 0,-1],
+                    [-1,-1, 0, 0, 0,-1,-1, 0, 0,-1,-1,-1, 0, 0, 0, 0,-1,-1, 0, 0, 0, 0, 0, 0, 0,-1],
+                    [-1,-1, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0,-1,-1, 0, 0, 0, 0,-1,-1,-1,-1],
+                    [-1,-1, 0, 0, 0,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                    [-1,-1, 0, 0, 0,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                    [-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
                     [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]];
 
 let level3 =       [[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-                    [-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1],
-                    [-1,-1,-1, 0,-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0,-1],
+                    [-1,-1,-1, 0,-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1],
+                    [-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0,-1],
                     [-1,-1,-1, 0,-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0,-1],
                     [-1,-1,-1, 0,-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0,-1, 0,-1],
                     [-1,-1,-1, 0,-1,-1,-1, 0,-1,-1,-1,-1,-1, 0,-1,-1,-1,-1, 0, 0, 0, 0, 0,-1, 0,-1],
                     [-1,-1,-1, 0,-1,-1,-1, 0,-1,-1,-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0,-1],
                     [-1,-1,-1, 0,-1,-1,-1, 0,-1,-1,-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0,-1],
-                    [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0,-1],
+                    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0,-1],
                     [-1,-1,-1, 0,-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1, 0,-1],
                     [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0,-1],
                     [-1,-1,-1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0,-1],
@@ -223,9 +224,12 @@ function preload(){
     this.load.spritesheet('a1', 'assets/graphics/attackers/a1.png' ,{frameHeight: 50, frameWidth: 50});
     this.load.spritesheet('a1_hurt', 'assets/graphics/attackers/a1_hurt.png' ,{frameHeight: 50, frameWidth: 50});
     this.load.spritesheet('a1_destroy', 'assets/graphics/attackers/a1_death.png' ,{frameHeight:50, frameWidth: 50});
-    this.load.spritesheet('a2', 'assets/graphics/attackers/a2.png' ,{frameHeight: 96, frameWidth: 55});
-    this.load.spritesheet('a2_hurt', 'assets/graphics/attackers/a2_hurt.png' ,{frameHeight: 96, frameWidth: 54});
-    this.load.spritesheet('a2_destroy', 'assets/graphics/attackers/a2_death.png' ,{frameHeight: 100, frameWidth: 100});
+    this.load.spritesheet('a2', 'assets/graphics/attackers/a2.png' ,{frameHeight: 50, frameWidth: 50});
+    this.load.spritesheet('a2_hurt', 'assets/graphics/attackers/a2_hurt.png' ,{frameHeight: 50, frameWidth: 50});
+    this.load.spritesheet('a2_destroy', 'assets/graphics/attackers/a2_death.png' ,{frameHeight: 50, frameWidth: 50});
+    this.load.spritesheet('a3', 'assets/graphics/attackers/a3.png' ,{frameHeight: 96, frameWidth: 55});
+    this.load.spritesheet('a3_hurt', 'assets/graphics/attackers/a3_hurt.png' ,{frameHeight: 96, frameWidth: 54});
+    this.load.spritesheet('a3_destroy', 'assets/graphics/attackers/a3_death.png' ,{frameHeight: 100, frameWidth: 100});
 
     //towers
     this.load.spritesheet('t1', 'assets/graphics/towers/t1.png' ,{frameHeight: 100, frameWidth: 100});
@@ -795,7 +799,7 @@ function update(time, delta){
                 }
                 waveIndex++;
             }else if(enemies.countActive() == 0){
-                console.log('end of wave '+WAVE+' reached');waveInProgress=false;nextWaveButton.visible = true;graphics.alpha = 0.8;start.alpha = 1;finish.alpha =1;
+                console.log('end of wave '+WAVE+' reached');MONEY+=WAVE_REWARD;updateMoneyText();waveInProgress=false;nextWaveButton.visible = true;graphics.alpha = 0.8;start.alpha = 1;finish.alpha =1;
                 if(WAVE<waves.length){/*hmmmmm*/}
                 else{nextWaveButton.setTexture("button_nextwave", 1);}
                 updateWaveInfo();
@@ -1248,9 +1252,12 @@ function generateAnims(){
     game.anims.create({key: "a1_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a1",{start:0, end:6}), repeat: -1});
     game.anims.create({key: "a1_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a1_hurt",{start:1, end:10}), repeat: 0});
     game.anims.create({key: "a1_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a1_destroy",{start:4, end:10}), repeat: 0});
-    game.anims.create({key: "a2_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a2",{start:0, end:9}), repeat: -1});
-    game.anims.create({key: "a2_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a2_hurt",{start:0, end:9}), repeat: 0});
-    game.anims.create({key: "a2_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a2_destroy",{start:3, end:10}), repeat: 0});
+    game.anims.create({key: "a2_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a2",{start:0, end:6}), repeat: -1});
+    game.anims.create({key: "a2_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a2_hurt",{start:1, end:10}), repeat: 0});
+    game.anims.create({key: "a2_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a2_destroy",{start:4, end:10}), repeat: 0});
+    game.anims.create({key: "a3_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a3",{start:0, end:9}), repeat: -1});
+    game.anims.create({key: "a3_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a3_hurt",{start:0, end:9}), repeat: 0});
+    game.anims.create({key: "a3_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a3_destroy",{start:3, end:10}), repeat: 0});
     //towers
     game.anims.create({key: "t1_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t1",{start:8, end:0}), repeat: 0});
     game.anims.create({key: "t2_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t2",{start:9, end:0}), repeat: 0});
