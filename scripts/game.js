@@ -52,6 +52,8 @@ let fsmusic;
 let music_enabled = true;
 
 let emitter_upgrade;
+let emitter_enemies;
+let emitter_victory;
 
 let cross1;
 let cross2;
@@ -232,6 +234,9 @@ function preload(){
     this.load.spritesheet('a3', 'assets/graphics/attackers/a3.png' ,{frameHeight: 96, frameWidth: 55});
     this.load.spritesheet('a3_hurt', 'assets/graphics/attackers/a3_hurt.png' ,{frameHeight: 96, frameWidth: 54});
     this.load.spritesheet('a3_destroy', 'assets/graphics/attackers/a3_death.png' ,{frameHeight: 100, frameWidth: 100});
+    this.load.spritesheet('a4', 'assets/graphics/attackers/a4.png' ,{frameHeight: 40, frameWidth: 40});
+    this.load.spritesheet('a4_hurt', 'assets/graphics/attackers/a4_hurt.png' ,{frameHeight: 40, frameWidth: 40});
+    this.load.spritesheet('a4_destroy', 'assets/graphics/attackers/a4_death.png' ,{frameHeight: 40, frameWidth: 40});
 
     //towers
     this.load.spritesheet('t1', 'assets/graphics/towers/t1.png' ,{frameHeight: 100, frameWidth: 100});
@@ -1278,6 +1283,9 @@ function generateAnims(){
     game.anims.create({key: "a3_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a3",{start:0, end:9}), repeat: -1});
     game.anims.create({key: "a3_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a3_hurt",{start:0, end:9}), repeat: 0});
     game.anims.create({key: "a3_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a3_destroy",{start:3, end:10}), repeat: 0});
+    game.anims.create({key: "a4_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a4",{start:0, end:9}), repeat: -1});
+    game.anims.create({key: "a4_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a4_hurt",{start:0, end:9}), repeat: 0});
+    game.anims.create({key: "a4_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a4_destroy",{start:0, end:13}), repeat: 0});
     //towers
     game.anims.create({key: "t1_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t1",{start:8, end:0}), repeat: 0});
     game.anims.create({key: "t2_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t2",{start:9, end:0}), repeat: 0});
@@ -1429,6 +1437,9 @@ function showVictoryScreen(){
     nextWaveButton.x = 640;
     nextWaveButton.y = 560;
     MONEY = 0;
+
+    emitter_victory.emitParticleAt(640, 360, 32);
+
     dimScreen(0.5);
     tw.add({
         targets: music,
@@ -1472,6 +1483,8 @@ function showDefeatScreen(){
     WAVE = 1;
     blinkSpaces = false;
     MONEY = 0;
+
+    emitter_enemies.emitParticleAt(640, 360, 100);
 
     restartButton.alpha = 0;
     restartButton.scale = 1.5;
@@ -1579,6 +1592,28 @@ function createGame(){
     graphics.lineStyle(3, 0xaaaaaa).alpha = 0;
 
     emitter_upgrade = this.add.particles('button_icons').setDepth(1);
+    emitter_enemies = this.add.particles('a3').setDepth(2);
+    emitter_victory = this.add.particles('p1').setDepth(2);
+
+    emitter_enemies.createEmitter({
+        frame: 0,
+        angle: { min: 0, max: 360 },
+        speed: { min: 100, max: 400 },
+        lifespan: { min: 3000, max: 10000 },
+        alpha: { start: 1, end: 0 },
+        scale: { min: 0.5, max: 3 },
+        on: false
+    });
+
+    emitter_victory.createEmitter({
+        frame: 4,
+        angle: { min: 0, max: 360, steps: 32 },
+        speed: 300,
+        lifespan: 3000,
+        alpha: { start: 1, end: 0 },
+        scale: { start: 1, end: 6 },
+        on: false
+    });
 
     emitter_upgrade.createEmitter({
         frame: 0,
