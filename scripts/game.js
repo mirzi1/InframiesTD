@@ -70,7 +70,7 @@ let WAVE = 0;
 let HEALTH;
 let MONEY;
 const STARTHEALTH = 100;
-const STARTMONEY = 300;
+const STARTMONEY = 250;
 const WAVE_REWARD = 100;
 let SELECTED_TOWER = 1;
 
@@ -85,8 +85,8 @@ const textfont_superbig = { font: "bold 100px font1", fill: "#fff", align:"cente
 
 const HUD_ICON_SCALE = 0.5;
 
-const ENEMY_HEALTH = [50,300,800,10,500,600,700,1000];
-const ENEMY_SPEED = [1/8000,1/10000,1/15000,1/3000,1/10000,1/10000,1/10000,1/10000];
+const ENEMY_HEALTH = [50,300,1000,1,500,600,700,1000];
+const ENEMY_SPEED = [1/8000,1/10000,1/15000,1/4000,1/10000,1/10000,1/10000,1/10000];
 const ENEMY_REWARD = [10,20,50,1,50,100,200,1000];
 const LEVEL_SPEED_MODIFIER = [0.7, 1, 1];
 
@@ -98,25 +98,28 @@ const CREDITS = ['InframiesTD - Space themed tower defence game\n\n Credits: \n 
                 '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nTimesplitters 2 - Spacestation\nTimesplitters 2 - Ice Station\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
                 '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs for making a game framework that\'s fairly easy to work with.\n\n\n\n\nClick to continue']
 
-const WAVE_DESCRIPTION = ['Welcome to InframiesTD! Select a tower from the menu on the left and click on any valid spots to place it.\n Press "next wave" when you are ready.',
+const WAVE_DESCRIPTION = [
+    'Welcome to InframiesTD! Select a tower from the menu on the left and click on any valid spots to place it.\n Press "next wave" when you are ready.',
     'Killing enemies gives you money for better towers and upgrades.',
     '',
     '',
+    'Armored attackers incoming! Upgrading your towers is a must.',
     '',
     '',
+    'Quick units are attacking next wave, shotgunners are one of their many weaknesses.',
     ];
 
-const TOWER_PRICES = [300,400,600,1000,700,600,3000,4000];
+const TOWER_PRICES = [250,400,600,1000,700,600,3000,4000];
 
-const TOWER_SPEED = [700,1300,2000,3000,1700,1500,100,1000,
-                    500,1000,1500,2500,1400,1200,70,1000];
-const TOWER_RANGE = [400,350,300,2000,270,350,500,2000,
-                    600,350,400,2000,330,400,550,2000];
+const TOWER_SPEED = [700,1300,2000,3000,1400,1100,100,1000,
+                    500,1000,1500,2500,700,900,70,1000];
+const TOWER_RANGE = [400,350,300,2000,300,350,500,2000,
+                    600,350,400,2000,350,400,550,2000];
 const TOWER_DESCRIPTION = ['Laser - Basic and all around good tower.',
                             'Electric - Low damage, slows enemies on hit.',
                             'Rocket - Slow but lethal, explosions deal area of effect damage.',
                             'Rail - Massive damage, slow firing rate, no range limit.',
-                            'Shotgunner - Close range, fires 5 projectiles at once.',
+                            'Shotgunner - Low damage, multiple projectiles',
                             'Thermal - Sees hidden enemies and pierces through them.',
                             'Rapid - Expensive, but has amazing firerate.',
                             'Nuke - Vaporizes everything except bosses, 30 second cooldown'];
@@ -124,20 +127,20 @@ const TOWER_UPGRADE_DESCRIPTION = [ '+firerate, +range, see hidden enemies',
                                     '+firerate, enemies become even slower',
                                     '+firerate, +range, +damage, slightly bigger explosions',
                                     '+firerate, +damage, piercing projectiles',
-                                    '+firerate, +range, +damage, fires 2 more projectiles',
+                                    '+firerate, +range, +damage, firerate roughly doubles',
                                     '+firerate, +range',
                                     '+firerate, +range, +damage',
                                     ''];
 
 //TODO: tower balancing
-const TOWER_DAMAGE = [50,10,100,200,30,50,40,1000,
-                      50,10,200,400,40,100,80,1000,
+const TOWER_DAMAGE = [50,10,100,500,5,30,40,1000,
+                      80,10,200,500,10,70,80,1000,
                       15, 30];
-const PROJECTILE_SPEED = [900,600,500,4000,1000,600,700,1000,
-                          1200,600,600,5000,1200,600,700,1000,
+const PROJECTILE_SPEED = [900,600,500,4000,1000,800,700,1000,
+                          1200,600,600,5000,1200,1000,700,1000,
                           0, 0];
-const PROJECTILE_LIFESPAN = [500,500,1500,1000,200,500,600,500,
-                             500,500,1500,1000,200,500,600,500,
+const PROJECTILE_LIFESPAN = [500,500,1500,1000,300,500,600,500,
+                             500,500,1500,1000,300,500,600,500,
                              500, 500];
 const TOWER_FREEZETIME = 2000;
 
@@ -193,7 +196,7 @@ let level3 =       [[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
                     [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]];
 
 //debug waves
-//const waves = [[1]];
+//const waves = [[1], [4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4]];
 
 //TODO: waves
 const waves = [ [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
@@ -201,6 +204,8 @@ const waves = [ [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0
                 [1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,2,0,2],
                 [1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,2,0,1,0,2,0,1,0,2,0,1],
                 [3,0,0,0,0,1,1,1,1,0,0,0,0,3],
+                [3,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,3,0,0,0,3],
+                [1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2],
                 [4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4]
               ];
 
@@ -263,7 +268,7 @@ function preload(){
     this.load.spritesheet('p3_destroy', 'assets/graphics/projectiles/p3_destroy.png' ,{frameHeight: 80, frameWidth: 80});
     this.load.spritesheet('p4', 'assets/graphics/projectiles/p4.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p4_destroy', 'assets/graphics/projectiles/p4_destroy.png' ,{frameHeight: 20, frameWidth: 20});
-    this.load.spritesheet('p5', 'assets/graphics/projectiles/p7.png' ,{frameHeight: 4, frameWidth: 4});
+    this.load.spritesheet('p5', 'assets/graphics/projectiles/p5.png' ,{frameHeight: 8, frameWidth: 8});
     this.load.spritesheet('p5_destroy', 'assets/graphics/projectiles/p7_destroy.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p6', 'assets/graphics/projectiles/p4.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p6_destroy', 'assets/graphics/projectiles/p4_destroy.png' ,{frameHeight: 20, frameWidth: 20});
@@ -279,7 +284,7 @@ function preload(){
     this.load.spritesheet('p11_destroy', 'assets/graphics/projectiles/p11_destroy.png' ,{frameHeight: 150, frameWidth: 150});
     this.load.spritesheet('p12', 'assets/graphics/projectiles/p12.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p12_destroy', 'assets/graphics/projectiles/p12_destroy.png' ,{frameHeight: 20, frameWidth: 20});
-    this.load.spritesheet('p13', 'assets/graphics/projectiles/p15.png' ,{frameHeight: 4, frameWidth: 4});
+    this.load.spritesheet('p13', 'assets/graphics/projectiles/p13.png' ,{frameHeight: 8, frameWidth: 8});
     this.load.spritesheet('p13_destroy', 'assets/graphics/projectiles/p15_destroy.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p14', 'assets/graphics/projectiles/p12.png' ,{frameHeight: 20, frameWidth: 20});
     this.load.spritesheet('p14_destroy', 'assets/graphics/projectiles/p12_destroy.png' ,{frameHeight: 20, frameWidth: 20});
@@ -481,7 +486,12 @@ let Tower = new Phaser.Class({
                         });
                     }
                     else{
+                        if(this.TowerType <8){MONEY+=TOWER_PRICES[this.TowerType-1]/2;}
+                        else{MONEY+=TOWER_PRICES[(this.TowerType%8)-1];}
+
                         game.sound.add('sell', {volume: 0.3}).play();
+
+                        updateMoneyText();
                         tw.add({
                             targets: this,
                             duration: 200,
@@ -663,12 +673,10 @@ let Tower = new Phaser.Class({
             if(this.TowerType%8 == 5){
                 addBullet(this.x, this.y, angle-0.1, this.TowerType);
                 addBullet(this.x, this.y, angle-0.2, this.TowerType);
+                addBullet(this.x, this.y, angle-0.3, this.TowerType);
                 addBullet(this.x, this.y, angle+0.1, this.TowerType);
                 addBullet(this.x, this.y, angle+0.2, this.TowerType);
-                if(this.TowerType == 13){
-                    addBullet(this.x, this.y, angle-0.3, this.TowerType);
-                    addBullet(this.x, this.y, angle+0.3, this.TowerType);
-                }
+                addBullet(this.x, this.y, angle+0.3, this.TowerType);
             }
             //otacanie podla druhu Towery
             switch(this.TowerType){
@@ -915,7 +923,7 @@ function damageEnemy(enemy, bullet) {
 
         switch(bullet.type){
             case 17: case 18: break;
-            case 6: case 14: case 12:  bullet.damage /= 1.5;break;
+            case 6: case 14: case 12: bullet.damage /= 1.5;break;
             default:bullet.setActive(false);bullet.destroy();break;
         }
     }
@@ -1088,11 +1096,6 @@ function nextWave(){
         graphics.alpha = 0.3;
         start.alpha = 0;
         finish.alpha = 0;
-
-        let towers_placed = Towers.getChildren();
-        for(let i = 0; i < towers_placed.length; i++) {
-            towers_placed[i].nextTic = globalTime+500*Math.random();
-        }
     }else{nextLevel();console.log('no more waves in array!')}
 }
 
