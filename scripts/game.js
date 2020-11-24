@@ -69,7 +69,7 @@ let LEVEL = -2;
 let WAVE = 0;
 let HEALTH;
 let MONEY;
-const STARTHEALTH = 5;
+const STARTHEALTH = 100;
 const STARTMONEY = 300;
 const WAVE_REWARD = 100;
 let SELECTED_TOWER = 1;
@@ -111,10 +111,10 @@ const TOWER_PRICES = [300,400,600,1000,700,600,3000,4000];
 const TOWER_SPEED = [700,1300,2000,3000,1700,1500,100,1000,
                     500,1000,1500,2500,1400,1200,70,1000];
 const TOWER_RANGE = [400,350,300,2000,270,350,500,2000,
-                    600,350,400,2000,350,400,550,2000];
+                    600,350,400,2000,330,400,550,2000];
 const TOWER_DESCRIPTION = ['Laser - Basic and all around good tower.',
                             'Electric - Low damage, slows enemies on hit.',
-                            'Canon - Slow but lethal, explosions deal area of effect damage.',
+                            'Rocket - Slow but lethal, explosions deal area of effect damage.',
                             'Rail - Massive damage, slow firing rate, no range limit.',
                             'Shotgunner - Close range, fires 5 projectiles at once.',
                             'Thermal - Sees hidden enemies and pierces through them.',
@@ -130,7 +130,7 @@ const TOWER_UPGRADE_DESCRIPTION = [ '+firerate, +range, see hidden enemies',
                                     ''];
 
 //TODO: tower balancing
-const TOWER_DAMAGE = [50,10,100,200,30,50,50,1000,
+const TOWER_DAMAGE = [50,10,100,200,30,50,40,1000,
                       50,10,200,400,40,100,80,1000,
                       15, 30];
 const PROJECTILE_SPEED = [900,600,500,4000,1000,600,700,1000,
@@ -295,10 +295,13 @@ function preload(){
     this.load.audio('sell', ['assets/sounds/sell.ogg']);
 
     this.load.audio('fire_1', ['assets/sounds/fire_laser.ogg']);
-
-
+    this.load.audio('fire_2', ['assets/sounds/fire_electric.ogg']);
+    this.load.audio('fire_3', ['assets/sounds/fire_rocket.ogg']);
     this.load.audio('charge_4', ['assets/sounds/charge_rail.ogg']);
     this.load.audio('fire_4', ['assets/sounds/fire_rail.ogg']);
+    this.load.audio('fire_5', ['assets/sounds/fire_multi.ogg']);
+    this.load.audio('charge_6', ['assets/sounds/charge_thermal.ogg']);
+    this.load.audio('fire_6', ['assets/sounds/fire_thermal.ogg']);
     this.load.audio('fire_7', ['assets/sounds/fire_rapid.ogg']);
     this.load.audio('fire_8', ['assets/sounds/fire_nuke.ogg']);
 
@@ -1419,9 +1422,13 @@ function playMusic(mus_id){
 function playSound(id){
     switch(id){
         case 'f1': game.sound.add('fire_1', {volume: 0.2}).play();break;
-
+        case 'f2': game.sound.add('fire_2', {volume: 0.2}).play();break;
+        case 'f3': game.sound.add('fire_3', {volume: 0.2}).play();break;
         case 'f4': game.sound.add('fire_4', {volume: 0.2}).play();break;
         case 'c4': game.sound.add('charge_4', {volume: 0.4}).play();break;
+        case 'f5': game.sound.add('fire_5', {volume: 0.15}).play();break;
+        case 'c6': game.sound.add('charge_6', {volume: 0.2}).play();break;
+        case 'f6': game.sound.add('fire_6', {volume: 0.15}).play();break;
         case 'f7': game.sound.add('fire_7', {volume: 0.05}).play();break;
     }
 }
