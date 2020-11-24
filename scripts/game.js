@@ -70,7 +70,7 @@ let WAVE = 0;
 let HEALTH;
 let MONEY;
 const STARTHEALTH = 5;
-const STARTMONEY = 150;
+const STARTMONEY = 300;
 const WAVE_REWARD = 100;
 let SELECTED_TOWER = 1;
 
@@ -106,7 +106,7 @@ const WAVE_DESCRIPTION = ['Welcome to InframiesTD! Select a tower from the menu 
     '',
     ];
 
-const TOWER_PRICES = [150,400,600,1000,700,600,3000,4000];
+const TOWER_PRICES = [300,400,600,1000,700,600,3000,4000];
 
 const TOWER_SPEED = [700,1300,2000,3000,1700,1500,100,1000,
                     500,1000,1500,2500,1400,1200,70,1000];
@@ -1247,7 +1247,7 @@ function nextLevel(){
             repeat: 0
         });
         //delete towers
-        if(LEVEL>1){
+        if(LEVEL>=1){
             let towers_placed = Towers.getChildren();
             while(towers_placed.length>0){
                 console.log("phaser pls");
@@ -1263,6 +1263,27 @@ function nextLevel(){
 }
 
 function restartLevel(){
+    //clear towers
+    switch(LEVEL){
+        case 1:
+            for(let i = 0; i<level1.length; i++){
+                for(let j = 0; j<level1[i].length; j++){
+                    if(level1[i][j]!=-1){level1[i][j]=0;}
+                }
+            }break;
+        case 2:
+            for(let i = 0; i<level2.length; i++){
+                for(let j = 0; j<level2[i].length; j++){
+                    if(level2[i][j]!=-1){level2[i][j]=0;}
+                }
+            }break;
+        case 3:
+            for(let i = 0; i<level3.length; i++){
+                for(let j = 0; j<level3[i].length; j++){
+                    if(level3[i][j]!=-1){level3[i][j]=0;}
+                }
+            }break;
+    }
     SCORE = 0;
     LEVEL--;
     nextLevel();
@@ -1288,7 +1309,7 @@ function generateAnims(){
     game.anims.create({key: "a3_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a3_destroy",{start:3, end:10}), repeat: 0});
     game.anims.create({key: "a4_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a4",{start:0, end:9}), repeat: -1});
     game.anims.create({key: "a4_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a4_hurt",{start:0, end:9}), repeat: 0});
-    game.anims.create({key: "a4_destroy", frameRate: 24, frames: game.anims.generateFrameNumbers("a4_destroy",{start:2, end:13}), repeat: 0});
+    game.anims.create({key: "a4_destroy", frameRate: 24, frames: game.anims.generateFrameNumbers("a4_destroy",{start:0, end:13}), repeat: 0});
     //towers
     game.anims.create({key: "t1_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t1",{start:8, end:0}), repeat: 0});
     game.anims.create({key: "t2_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t2",{start:9, end:0}), repeat: 0});
@@ -1572,10 +1593,10 @@ function hideFsMessage(){
     nextWaveButton.setDepth(1);
     tw.add({
         targets: fsText,
-        duration: 500,
+        duration: 600,
         scale: 6,
         alpha: 0,
-        onComplete: ()=> {blinkSpaces = true;},
+        onComplete: ()=> {blinkSpaces = true;restartButton.y = -100;restartButton.setScale(0);nextWaveButton.x = 1099; nextWaveButton.y = 20;nextWaveButton.setScale(1);},
         ease: 'Sine.easeIn',
     });
     restartButton.y = -100;
@@ -1633,8 +1654,8 @@ function createGame(){
     //top buttons
     nextWaveButton = this.add.image(1099,20, 'button_nextwave', 0).setDepth(1).setScale(0).setInteractive().on('pointerdown', () => nextWave());
     restartButton = this.add.image(1099,-100, 'button_nextwave', 2).setDepth(4).setScale(0).setInteractive().on('pointerdown', () => restartLevel());
-    musicButton = this.add.image(1218,20, 'topbuttons', 0).setDepth(1).setInteractive().on('pointerdown', () => toggleMusic());
-    fullscreenButton = this.add.image(1259,20, 'topbuttons', 2).setDepth(1).setInteractive().on('pointerdown', () => toggleFullscreen());
+    musicButton = this.add.image(1218,20, 'topbuttons', 0).setDepth(3).setInteractive().on('pointerdown', () => toggleMusic());
+    fullscreenButton = this.add.image(1259,20, 'topbuttons', 2).setDepth(3).setInteractive().on('pointerdown', () => toggleFullscreen());
 
     //tower info
     //this.add.image(200,50, 'button');
