@@ -70,7 +70,7 @@ let WAVE = 0;
 let HEALTH;
 let MONEY;
 const STARTHEALTH = 5;
-const STARTMONEY = 300;
+const STARTMONEY = 150;
 const WAVE_REWARD = 100;
 let SELECTED_TOWER = 1;
 
@@ -85,9 +85,9 @@ const textfont_superbig = { font: "bold 100px font1", fill: "#fff", align:"cente
 
 const HUD_ICON_SCALE = 0.5;
 
-const ENEMY_HEALTH = [50,300,300,400,500,600,700,1000];
-const ENEMY_SPEED = [1/8000,1/10000,1/10000,1/10000,1/10000,1/10000,1/10000,1/10000];
-const ENEMY_REWARD = [10,20,30,40,50,100,200,1000];
+const ENEMY_HEALTH = [50,300,800,10,500,600,700,1000];
+const ENEMY_SPEED = [1/8000,1/10000,1/15000,1/3000,1/10000,1/10000,1/10000,1/10000];
+const ENEMY_REWARD = [10,20,50,1,50,100,200,1000];
 const LEVEL_SPEED_MODIFIER = [0.7, 1, 1];
 
 let waveInProgress = false;
@@ -196,9 +196,12 @@ let level3 =       [[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
 //const waves = [[1]];
 
 //TODO: waves
-const waves = [ [1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,2],
+const waves = [ [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+                [1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,2],
                 [1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,2,0,2],
                 [1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,2,0,1,0,2,0,1,0,2,0,1],
+                [3,0,0,0,0,1,1,1,1,0,0,0,0,3],
+                [4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4]
               ];
 
 function preload(){
@@ -1285,7 +1288,7 @@ function generateAnims(){
     game.anims.create({key: "a3_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a3_destroy",{start:3, end:10}), repeat: 0});
     game.anims.create({key: "a4_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a4",{start:0, end:9}), repeat: -1});
     game.anims.create({key: "a4_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a4_hurt",{start:0, end:9}), repeat: 0});
-    game.anims.create({key: "a4_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a4_destroy",{start:0, end:13}), repeat: 0});
+    game.anims.create({key: "a4_destroy", frameRate: 24, frames: game.anims.generateFrameNumbers("a4_destroy",{start:2, end:13}), repeat: 0});
     //towers
     game.anims.create({key: "t1_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t1",{start:8, end:0}), repeat: 0});
     game.anims.create({key: "t2_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t2",{start:9, end:0}), repeat: 0});
