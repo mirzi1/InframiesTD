@@ -858,7 +858,7 @@ function update(time, delta){
                 }
                 waveIndex++;
             }else if(enemies.countActive() == 0){
-                //console.log('end of wave '+WAVE+' reached');MONEY+=WAVE_REWARD;updateMoneyText();waveInProgress=false;nextWaveButton.visible = true;graphics.alpha = 0.8;start.alpha = 1;finish.alpha =1;
+                /*console.log('end of wave '+WAVE+' reached');*/MONEY+=WAVE_REWARD;updateMoneyText();waveInProgress=false;nextWaveButton.visible = true;graphics.alpha = 0.8;start.alpha = 1;finish.alpha =1;
                 if(WAVE == MAXWAVES[LEVEL-1] || WAVE == waves.length){showVictoryScreen();nextWaveButton.setTexture("button_nextwave", 1);}
                 updateWaveInfo();
             }
