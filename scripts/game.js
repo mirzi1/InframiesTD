@@ -187,7 +187,7 @@ let level3 =       [[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
 //debug waves
 //const waves = [[1], [4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4]];
 
-const MAXWAVES = [2, 40, 50];
+const MAXWAVES = [30, 40, 50];
 
 const WAVE_DESCRIPTION = [
     'Welcome to InframiesTD! Select a tower from the menu on the left and click on any valid spots to place it.\n Press "next wave" when you are ready.',
@@ -548,7 +548,7 @@ let Tower = new Phaser.Class({
                         game.sound.add('upgrade', {volume: 0.2}).play();
                         updateMoneyText();
                         this.TowerType+=8;
-                        console.log("Upgraded to: "+this.TowerType);
+                        //console.log("Upgraded to: "+this.TowerType);
                         switch(LEVEL){
                             case 1: level1[this.i][this.j] = this.TowerType;break;
                             case 2: level2[this.i][this.j] = this.TowerType;break;
@@ -858,7 +858,7 @@ function update(time, delta){
                 }
                 waveIndex++;
             }else if(enemies.countActive() == 0){
-                console.log('end of wave '+WAVE+' reached');MONEY+=WAVE_REWARD;updateMoneyText();waveInProgress=false;nextWaveButton.visible = true;graphics.alpha = 0.8;start.alpha = 1;finish.alpha =1;
+                //console.log('end of wave '+WAVE+' reached');MONEY+=WAVE_REWARD;updateMoneyText();waveInProgress=false;nextWaveButton.visible = true;graphics.alpha = 0.8;start.alpha = 1;finish.alpha =1;
                 if(WAVE == MAXWAVES[LEVEL-1] || WAVE == waves.length){showVictoryScreen();nextWaveButton.setTexture("button_nextwave", 1);}
                 updateWaveInfo();
             }
@@ -1065,11 +1065,12 @@ function getTowerInfo(type){
 }
 
 function updateHpText(){
-    hpText.setText(HEALTH);
     hpText.y = 6;
-    if(HEALTH == 0){
+    if(HEALTH <= 0){
+        HEALTH = 0;
         showDefeatScreen();
     }
+    hpText.setText(HEALTH);
     tw.add({
         targets: hpText,
         duration: 100,
@@ -1102,7 +1103,7 @@ function updateMoneyText(){
 function nextWave(){
     if(WAVE<waves.length){
         WAVE++;
-        console.log('starting wave '+ WAVE);
+        //console.log('starting wave '+ WAVE);
         waveInProgress=true;
         waveIndex = 0;
         hideWaveInfo();
@@ -1127,7 +1128,10 @@ function nextWave(){
         graphics.alpha = 0.3;
         start.alpha = 0;
         finish.alpha = 0;
-    }else{nextLevel();console.log('no more waves in array!')}
+        if(WAVE==waves.length){
+            playMusic(4);
+        }
+    }else{nextLevel();/*console.log('no more waves in array!')*/}
 }
 
 function nextLevel(){
@@ -1287,7 +1291,7 @@ function nextLevel(){
         if(LEVEL>=1){
             let towers_placed = Towers.getChildren();
             while(towers_placed.length>0){
-                console.log("phaser pls");
+                //console.log("phaser pls");
                 for(let i = 0; i < towers_placed.length; i++) {
                     towers_placed[i].destroy();
                 }
@@ -1383,7 +1387,7 @@ function generateAnims(){
     game.anims.create({key: "p7_destroy", frameRate: 30, frames: game.anims.generateFrameNumbers("p7_destroy",{start:0, end:1}), repeat: 0});
     game.anims.create({key: "p8_destroy", frameRate: 10, frames: game.anims.generateFrameNumbers("p8_destroy",{start:0, end:24}), repeat: 0});
 
-    game.anims.create({key: "p9", frameRate: 15, frames: game.anims.generateFrameNumbers("p9",{start:0, end:6}), repeat: -1});
+    game.anims.create({key: "p9", frameRate: 30, frames: game.anims.generateFrameNumbers("p9",{start:0, end:5}), repeat: -1});
     game.anims.create({key: "p9_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("p1_destroy",{start:1, end:4}), repeat: 0});
     game.anims.create({key: "p10", frameRate: 15, frames: game.anims.generateFrameNumbers("p10",{start:0, end:4}), repeat: -1});
     game.anims.create({key: "p10_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("p10_destroy",{start:0, end:3}), repeat: 0});
@@ -1436,7 +1440,7 @@ function playMusic(mus_id){
             duration: 1000,
             volume: 0,
             onComplete: ()=>{
-                this.stop();
+                fsmusic.stop();
             },
             repeat: 0
         });
@@ -1456,7 +1460,7 @@ function playMusic(mus_id){
                     case 3: music = game.sound.add('bgm3', {volume: 0.1, loop: true}); if(music_enabled){music.play();}break;
                 }
                 switch(mus_id){
-                    case 4: music = game.sound.add('bgm4', {volume: 0.2, loop: true}); if(music_enabled){music.play();}break;
+                    case 4: music = game.sound.add('bgm4', {volume: 0.3, loop: true}); if(music_enabled){music.play();}break;
                 }
             },
             repeat: 0
@@ -1549,11 +1553,6 @@ function showVictoryScreen(){
                     },
                     repeat: 0
                 });
-
-                if(music_enabled){
-                    fsmusic = game.sound.add('victory', {volume: 0.3});
-                    fsmusic.play();
-                }
             }
         },
         repeat: 0
@@ -1712,8 +1711,8 @@ function createGame(){
     //top buttons
     nextWaveButton = this.add.image(1099,20, 'button_nextwave', 0).setDepth(1).setScale(0).setInteractive().on('pointerdown', () => nextWave());
     restartButton = this.add.image(1099,-100, 'button_nextwave', 2).setDepth(4).setScale(0).setInteractive().on('pointerdown', () => restartLevel());
-    musicButton = this.add.image(1218,20, 'topbuttons', 0).setDepth(3).setInteractive().on('pointerdown', () => toggleMusic());
-    fullscreenButton = this.add.image(1259,20, 'topbuttons', 2).setDepth(3).setInteractive().on('pointerdown', () => toggleFullscreen());
+    musicButton = this.add.image(1218,20, 'topbuttons', 0).setDepth(1).setInteractive().on('pointerdown', () => toggleMusic());
+    fullscreenButton = this.add.image(1259,20, 'topbuttons', 2).setDepth(1).setInteractive().on('pointerdown', () => toggleFullscreen());
 
     //tower info
     //this.add.image(200,50, 'button');
