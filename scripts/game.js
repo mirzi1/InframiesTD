@@ -85,8 +85,8 @@ const textfont_superbig = { font: "bold 100px font1", fill: "#fff", align:"cente
 
 const HUD_ICON_SCALE = 0.5;
 
-const ENEMY_HEALTH = [50,300,800,1,500,600,700,1000];
-const ENEMY_SPEED = [1/8000,1/10000,1/15000,1/4000,1/10000,1/10000,1/10000,1/10000];
+const ENEMY_HEALTH = [50,300,800,1,500,600,20000,50000];
+const ENEMY_SPEED = [1/8000,1/10000,1/15000,1/4000,1/10000,1/10000,1/16000,1/20000];
 const ENEMY_REWARD = [15,30,70,10,50,100,100,2000];
 const LEVEL_SPEED_MODIFIER = [0.7, 0.8, 0.9];
 
@@ -187,6 +187,8 @@ let level3 =       [[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
 //debug waves
 //const waves = [[1], [4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4]];
 
+const MAXWAVES = [2, 40, 50];
+
 const WAVE_DESCRIPTION = [
     'Welcome to InframiesTD! Select a tower from the menu on the left and click on any valid spots to place it.\n Press "next wave" when you are ready.',
     'Killing enemies gives you money for better towers and upgrades.',
@@ -199,7 +201,9 @@ const WAVE_DESCRIPTION = [
 ];
 
 //TODO: waves
-const waves = [ [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+const waves = [ [7],
+                [8],
+                [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
                 [1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,2],
                 [1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,2,0,2],
                 [1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,2,0,1,0,2,0,1,0,2,0,1],
@@ -207,7 +211,7 @@ const waves = [ [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0
                 [3,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,3,0,0,0,3],
                 [3,0,0,0,3,0,0,0,3,0,0,0,3],
                 [4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4],
-                [1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2]
+                [1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2],
               ];
 
 function preload(){
@@ -246,6 +250,12 @@ function preload(){
     this.load.spritesheet('a4', 'assets/graphics/attackers/a4.png' ,{frameHeight: 40, frameWidth: 40});
     this.load.spritesheet('a4_hurt', 'assets/graphics/attackers/a4_hurt.png' ,{frameHeight: 40, frameWidth: 40});
     this.load.spritesheet('a4_destroy', 'assets/graphics/attackers/a4_death.png' ,{frameHeight: 40, frameWidth: 40});
+    this.load.spritesheet('a7', 'assets/graphics/attackers/a7.png' ,{frameHeight: 200, frameWidth: 100});
+    this.load.spritesheet('a7_hurt', 'assets/graphics/attackers/a7_hurt.png' ,{frameHeight: 200, frameWidth: 100});
+    this.load.spritesheet('a7_destroy', 'assets/graphics/attackers/a7_death.png' ,{frameHeight: 200, frameWidth: 100});
+    this.load.spritesheet('a8', 'assets/graphics/attackers/a8.png' ,{frameHeight: 300, frameWidth: 200});
+    this.load.spritesheet('a8_hurt', 'assets/graphics/attackers/a8_hurt.png' ,{frameHeight: 300, frameWidth: 200});
+    this.load.spritesheet('a8_destroy', 'assets/graphics/attackers/a8_death.png' ,{frameHeight: 300, frameWidth: 200});
 
     //towers
     this.load.spritesheet('t1', 'assets/graphics/towers/t1.png' ,{frameHeight: 100, frameWidth: 100});
@@ -310,6 +320,8 @@ function preload(){
     this.load.audio('fire_6', ['assets/sounds/fire_thermal.ogg']);
     this.load.audio('fire_7', ['assets/sounds/fire_rapid.ogg']);
     this.load.audio('fire_8', ['assets/sounds/fire_nuke.ogg']);
+    this.load.audio('death_7', ['assets/sounds/a7_death.ogg']);
+    this.load.audio('death_8', ['assets/sounds/a8_death.ogg']);
 
     //music
     this.load.audio('intro', [
@@ -350,6 +362,7 @@ let Enemy = new Phaser.Class({
         this.alpha = 0;
         this.slowed = false;
         this.unfreeze = 0;
+        this.hurt = false;
         tw.add({
             targets: this,
             duration: 200,
@@ -391,6 +404,7 @@ let Enemy = new Phaser.Class({
             this.setActive(false);
             this.destroy();
             HEALTH--;
+            if(this.id >= 7)HEALTH-=100;
             updateHpText();
         }
     },
@@ -405,10 +419,14 @@ let Enemy = new Phaser.Class({
     function(damage) {
         this.hp -= damage;
 
-        this.play('a'+this.id+'_hurt');
-        this.once('animationcomplete', ()=>{
-            this.play('a'+this.id+'_normal');
-        });
+        if(this.hurt === false){
+            this.play('a'+this.id+'_hurt');
+            this.hurt = true;
+            this.once('animationcomplete', ()=>{
+                this.play('a'+this.id+'_normal');
+                this.hurt = false;
+            });
+        }
 
         // if hp drops below 0 we deactivate this enemy
         if(this.hp <= 0) {
@@ -418,6 +436,7 @@ let Enemy = new Phaser.Class({
             createAnimated(this.x,this.y,'a'+this.id, this.flipX);
             this.setActive(false);
             this.destroy();
+            playSound('a'+this.id);
         }
     },
     slow:
@@ -427,7 +446,13 @@ let Enemy = new Phaser.Class({
             this.unfreeze = globalTime + TOWER_FREEZETIME;
             this.tint = 0xff55ff;
         } else {
-            this.speed = ENEMY_SPEED[this.id - 1] / 4;
+            if(this.id >= 7)
+            {
+                this.speed = ENEMY_SPEED[this.id - 1] / 2;
+            }
+            else{
+                this.speed = ENEMY_SPEED[this.id - 1] / 4;
+            }
             this.unfreeze = globalTime + TOWER_FREEZETIME*1.5;
             this.tint = 0xff5555;
         }
@@ -834,8 +859,7 @@ function update(time, delta){
                 waveIndex++;
             }else if(enemies.countActive() == 0){
                 console.log('end of wave '+WAVE+' reached');MONEY+=WAVE_REWARD;updateMoneyText();waveInProgress=false;nextWaveButton.visible = true;graphics.alpha = 0.8;start.alpha = 1;finish.alpha =1;
-                if(WAVE<waves.length){/*hmmmmm*/}
-                else{showVictoryScreen();nextWaveButton.setTexture("button_nextwave", 1);}
+                if(WAVE == MAXWAVES[LEVEL-1] || WAVE == waves.length){showVictoryScreen();nextWaveButton.setTexture("button_nextwave", 1);}
                 updateWaveInfo();
             }
             this.nextEnemy = time + WAVE_SPEED;
@@ -1323,6 +1347,13 @@ function generateAnims(){
     game.anims.create({key: "a4_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a4",{start:0, end:9}), repeat: -1});
     game.anims.create({key: "a4_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a4_hurt",{start:0, end:9}), repeat: 0});
     game.anims.create({key: "a4_destroy", frameRate: 24, frames: game.anims.generateFrameNumbers("a4_destroy",{start:0, end:13}), repeat: 0});
+
+    game.anims.create({key: "a7_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a7",{start:0, end:19}), repeat: -1});
+    game.anims.create({key: "a7_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a7_hurt",{start:0, end:19}), repeat: 0});
+    game.anims.create({key: "a7_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a7_destroy",{start:0, end:23}), repeat: 0});
+    game.anims.create({key: "a8_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a8",{start:0, end:15}), repeat: -1});
+    game.anims.create({key: "a8_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a8_hurt",{start:0, end:15}), repeat: 0});
+    game.anims.create({key: "a8_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a8_destroy",{start:0, end:42}), repeat: 0});
     //towers
     game.anims.create({key: "t1_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t1",{start:8, end:0}), repeat: 0});
     game.anims.create({key: "t2_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t2",{start:9, end:0}), repeat: 0});
@@ -1445,6 +1476,8 @@ function playSound(id){
         case 'c6': game.sound.add('charge_6', {volume: 0.2}).play();break;
         case 'f6': game.sound.add('fire_6', {volume: 0.1}).play();break;
         case 'f7': game.sound.add('fire_7', {volume: 0.05}).play();break;
+        case 'a7': game.sound.add('death_7', {volume: 0.5}).play();break;
+        case 'a8': game.sound.add('death_8', {volume: 0.7}).play();break;
     }
 }
 
@@ -1484,44 +1517,47 @@ function showVictoryScreen(){
     nextWaveButton.y = 560;
     MONEY = 0;
 
-    emitter_victory.emitParticleAt(640, 360, 32);
-
-    dimScreen(0.5);
     tw.add({
         targets: music,
-        duration: 1000,
+        duration: 2000,
         volume: 0,
         onComplete: ()=> {
             music.stop();
+            if(music_enabled){
+                dimScreen(0.5);
+                emitter_victory.emitParticleAt(640, 360, 32);
+                fsmusic = game.sound.add('victory', {volume: 0.3});
+                fsmusic.play();
+
+                fsText.setText('LEVEL\nCOMPLETE').setDepth(3);
+                fsText.scale = 0;
+                fsText.alpha = 0;
+                tw.add({
+                    targets: fsText,
+                    duration: 300,
+                    alpha: 1,
+                    scale: 1,
+                    ease: 'Back.easeOut',
+                    onComplete: ()=> {
+                        tw.add({
+                            targets: nextWaveButton,
+                            duration: 300,
+                            alpha: 1,
+                            scale: 2,
+                            ease: 'Back.easeOut',
+                        });
+                    },
+                    repeat: 0
+                });
+
+                if(music_enabled){
+                    fsmusic = game.sound.add('victory', {volume: 0.3});
+                    fsmusic.play();
+                }
+            }
         },
         repeat: 0
     });
-
-    fsText.setText('LEVEL\nCOMPLETE').setDepth(3);
-    fsText.scale = 0;
-    fsText.alpha = 0;
-    tw.add({
-        targets: fsText,
-        duration: 300,
-        alpha: 1,
-        scale: 1,
-        ease: 'Back.easeOut',
-        onComplete: ()=> {
-            tw.add({
-                targets: nextWaveButton,
-                duration: 300,
-                alpha: 1,
-                scale: 2,
-                ease: 'Back.easeOut',
-            });
-        },
-        repeat: 0
-    });
-
-    if(music_enabled){
-        fsmusic = game.sound.add('victory', {volume: 0.3});
-        fsmusic.play();
-    }
 }
 
 function showDefeatScreen(){
