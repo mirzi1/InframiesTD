@@ -88,14 +88,14 @@ const HUD_ICON_SCALE = 0.5;
 const ENEMY_HEALTH = [50,300,1000,1,500,600,700,1000];
 const ENEMY_SPEED = [1/8000,1/10000,1/15000,1/4000,1/10000,1/10000,1/10000,1/10000];
 const ENEMY_REWARD = [10,20,50,1,50,100,200,1000];
-const LEVEL_SPEED_MODIFIER = [0.7, 1, 1];
+const LEVEL_SPEED_MODIFIER = [0.7, 0.8, 0.9];
 
 let waveInProgress = false;
 let nextEnemy = 0;
 let waveIndex = 0;
 
 const CREDITS = ['InframiesTD - Space themed tower defence game\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
-                '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nTimesplitters 2 - Spacestation\nNeed For Speed III - Romulus 3 (Mellow Sonic 2nd Remix)\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
+                '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nNeed for Speed III - Hydrus 606\nNeed For Speed III - Romulus 3 (Mellow Sonic 2nd Remix)\nTimesplitters Future Perfect - Spaceport\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
                 '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs for making a game framework that\'s fairly easy to work with.\n\n\n\n\nClick to continue']
 
 const WAVE_DESCRIPTION = [
@@ -113,8 +113,8 @@ const TOWER_PRICES = [250,400,600,1000,700,600,3000,4000];
 
 const TOWER_SPEED = [700,1300,2000,3000,1400,1100,100,1000,
                     500,1000,1500,2500,700,900,70,1000];
-const TOWER_RANGE = [400,350,300,2000,300,350,500,2000,
-                    600,350,400,2000,350,400,550,2000];
+const TOWER_RANGE = [400,350,300,2000,300,500,500,2000,
+                    600,350,400,2000,350,600,550,2000];
 const TOWER_DESCRIPTION = ['Laser - Basic and all around good tower.',
                             'Electric - Low damage, slows enemies on hit.',
                             'Rocket - Slow but lethal, explosions deal area of effect damage.',
@@ -324,10 +324,13 @@ function preload(){
         'assets/music/Unreal Tournament - Foregone Destruction.ogg'
     ]);
     this.load.audio('bgm2', [
-        'assets/music/Timesplitters 2 - Spacestation.ogg'
+        'assets/music/Need for Speed III - Hydrus 606.ogg'
     ]);
     this.load.audio('bgm3', [
         'assets/music/Need For Speed III - Romulus 3 (Mellow Sonic 2nd Remix).ogg'
+    ]);
+    this.load.audio('bgm4', [
+        'assets/music/Timesplitters Future Perfect - Spaceport.ogg'
     ]);
 }
 
@@ -1396,7 +1399,6 @@ function hideWaveInfo(){
 
 function playMusic(mus_id){
     if(mus_id>=1){
-        music.volume = 0.3;
         tw.add({
             targets: fsmusic,
             duration: 1000,
@@ -1420,6 +1422,9 @@ function playMusic(mus_id){
                 }
                 switch(mus_id){
                     case 3: music = game.sound.add('bgm3', {volume: 0.1, loop: true}); if(music_enabled){music.play();}break;
+                }
+                switch(mus_id){
+                    case 4: music = game.sound.add('bgm4', {volume: 0.2, loop: true}); if(music_enabled){music.play();}break;
                 }
             },
             repeat: 0
