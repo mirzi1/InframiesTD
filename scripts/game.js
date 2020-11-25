@@ -95,7 +95,7 @@ let nextEnemy = 0;
 let waveIndex = 0;
 
 const CREDITS = ['InframiesTD - Space themed tower defence game\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
-                '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nTimesplitters 2 - Spacestation\nTimesplitters 2 - Ice Station\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
+                '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nTimesplitters 2 - Spacestation\nNeed For Speed III - Romulus 3 (Mellow Sonic 2nd Remix)\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
                 '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs for making a game framework that\'s fairly easy to work with.\n\n\n\n\nClick to continue']
 
 const WAVE_DESCRIPTION = [
@@ -325,6 +325,9 @@ function preload(){
     ]);
     this.load.audio('bgm2', [
         'assets/music/Timesplitters 2 - Spacestation.ogg'
+    ]);
+    this.load.audio('bgm3', [
+        'assets/music/Need For Speed III - Romulus 3 (Mellow Sonic 2nd Remix).ogg'
     ]);
 }
 
@@ -1413,7 +1416,10 @@ function playMusic(mus_id){
                     case 1: music = game.sound.add('bgm1', {volume: 0.3, loop: true}); if(music_enabled){music.play();}break;
                 }
                 switch(mus_id){
-                    case 2: music = game.sound.add('bgm2', {volume: 0.3, loop: true}); if(music_enabled){music.play();}break;
+                    case 2: music = game.sound.add('bgm2', {volume: 0.2, loop: true}); if(music_enabled){music.play();}break;
+                }
+                switch(mus_id){
+                    case 3: music = game.sound.add('bgm3', {volume: 0.1, loop: true}); if(music_enabled){music.play();}break;
                 }
             },
             repeat: 0
