@@ -85,9 +85,9 @@ const textfont_superbig = { font: "bold 100px font1", fill: "#fff", align:"cente
 
 const HUD_ICON_SCALE = 0.5;
 
-const ENEMY_HEALTH = [50,300,1000,1,500,600,700,1000];
+const ENEMY_HEALTH = [50,300,800,1,500,600,700,1000];
 const ENEMY_SPEED = [1/8000,1/10000,1/15000,1/4000,1/10000,1/10000,1/10000,1/10000];
-const ENEMY_REWARD = [10,20,50,1,50,100,200,1000];
+const ENEMY_REWARD = [15,30,70,10,50,100,100,2000];
 const LEVEL_SPEED_MODIFIER = [0.7, 0.8, 0.9];
 
 let waveInProgress = false;
@@ -98,27 +98,16 @@ const CREDITS = ['InframiesTD - Space themed tower defence game\n\n Credits: \n 
                 '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nNeed for Speed III - Hydrus 606\nNeed For Speed III - Romulus 3 (Mellow Sonic 2nd Remix)\nTimesplitters Future Perfect - Spaceport\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
                 '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs for making a game framework that\'s fairly easy to work with.\n\n\n\n\nClick to continue']
 
-const WAVE_DESCRIPTION = [
-    'Welcome to InframiesTD! Select a tower from the menu on the left and click on any valid spots to place it.\n Press "next wave" when you are ready.',
-    'Killing enemies gives you money for better towers and upgrades.',
-    '',
-    '',
-    'Armored attackers incoming! Upgrading your towers is a must.',
-    '',
-    '',
-    'Quick units are attacking next wave, shotgunners are one of their many weaknesses.',
-    ];
-
 const TOWER_PRICES = [250,400,600,1000,700,600,3000,4000];
 
-const TOWER_SPEED = [700,1300,2000,3000,1400,1100,100,1000,
+const TOWER_SPEED = [700,1300,2000,3000,1000,1100,100,1000,
                     500,1000,1500,2500,700,900,70,1000];
 const TOWER_RANGE = [400,350,300,2000,300,500,500,2000,
                     600,350,400,2000,350,600,550,2000];
 const TOWER_DESCRIPTION = ['Laser - Basic and all around good tower.',
                             'Electric - Low damage, slows enemies on hit.',
                             'Rocket - Slow but lethal, explosions deal area of effect damage.',
-                            'Rail - Massive damage, slow firing rate, no range limit.',
+                            'Rail - Big damage, slow firing rate, no range limit.',
                             'Shotgunner - Low damage, multiple projectiles',
                             'Thermal - Sees hidden enemies and pierces through them.',
                             'Rapid - Expensive, but has amazing firerate.',
@@ -126,15 +115,15 @@ const TOWER_DESCRIPTION = ['Laser - Basic and all around good tower.',
 const TOWER_UPGRADE_DESCRIPTION = [ '+firerate, +range, see hidden enemies',
                                     '+firerate, enemies become even slower',
                                     '+firerate, +range, +damage, slightly bigger explosions',
-                                    '+firerate, +damage, piercing projectiles',
+                                    '+firerate, piercing projectiles',
                                     '+firerate, +range, +damage, firerate roughly doubles',
                                     '+firerate, +range',
                                     '+firerate, +range, +damage',
                                     ''];
 
 //TODO: tower balancing
-const TOWER_DAMAGE = [50,10,100,500,5,30,40,1000,
-                      80,10,200,500,10,70,80,1000,
+const TOWER_DAMAGE = [50,10,100,500,10,50,40,1000,
+                      80,10,100,500,15,80,80,1000,
                       15, 30];
 const PROJECTILE_SPEED = [900,600,500,4000,1000,800,700,1000,
                           1200,600,600,5000,1200,1000,700,1000,
@@ -198,6 +187,17 @@ let level3 =       [[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
 //debug waves
 //const waves = [[1], [4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4]];
 
+const WAVE_DESCRIPTION = [
+    'Welcome to InframiesTD! Select a tower from the menu on the left and click on any valid spots to place it.\n Press "next wave" when you are ready.',
+    'Killing enemies gives you money for better towers and upgrades.',
+    '',
+    '',
+    'Armored attackers incoming! Upgrading your towers is a must.',
+    '',
+    '',
+    'Quick units are attacking next wave, shotgunners are one of their many weaknesses.',
+];
+
 //TODO: waves
 const waves = [ [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
                 [1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,2],
@@ -205,8 +205,9 @@ const waves = [ [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0
                 [1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,2,0,1,0,2,0,1,0,2,0,1],
                 [3,0,0,0,0,1,1,1,1,0,0,0,0,3],
                 [3,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,3,0,0,0,3],
-                [1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2],
-                [4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4]
+                [3,0,0,0,3,0,0,0,3,0,0,0,3],
+                [4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4],
+                [1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2]
               ];
 
 function preload(){
@@ -1442,7 +1443,7 @@ function playSound(id){
         case 'c4': game.sound.add('charge_4', {volume: 0.4}).play();break;
         case 'f5': game.sound.add('fire_5', {volume: 0.15}).play();break;
         case 'c6': game.sound.add('charge_6', {volume: 0.2}).play();break;
-        case 'f6': game.sound.add('fire_6', {volume: 0.15}).play();break;
+        case 'f6': game.sound.add('fire_6', {volume: 0.1}).play();break;
         case 'f7': game.sound.add('fire_7', {volume: 0.05}).play();break;
     }
 }
