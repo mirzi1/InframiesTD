@@ -201,7 +201,7 @@ const WAVE_DESCRIPTION = [
 ];
 
 //TODO: waves
-const waves = [ [7],
+const waves = [ [1,0,0,0,0,0,0,7],
                 [8],
                 [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
                 [1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,2],
@@ -411,6 +411,11 @@ let Enemy = new Phaser.Class({
     startOnPath:
     function(){
         this.hp = ENEMY_HEALTH[this.id-1];
+        if(this.id>=7){
+            waveInfo.setColor('#FF0000');
+            showBossHealth();
+            waveInfo.setText('BOSS HEALTH: '+this.hp);
+        }
         this.follower.t = 0;
         path.getPoint(this.follower.t, this.follower.vec);
         this.setPosition(this.follower.vec.x, this.follower.vec.y);
@@ -428,6 +433,10 @@ let Enemy = new Phaser.Class({
             });
         }
 
+        if(this.id>=7){
+            waveInfo.setText('BOSS HEALTH: '+Math.round(this.hp));
+        }
+
         // if hp drops below 0 we deactivate this enemy
         if(this.hp <= 0) {
             MONEY+=ENEMY_REWARD[this.id-1];
@@ -437,6 +446,9 @@ let Enemy = new Phaser.Class({
             this.setActive(false);
             this.destroy();
             playSound('a'+this.id);
+            if(this.id>=7){
+                hideWaveInfo();
+            }
         }
     },
     slow:
@@ -1175,7 +1187,8 @@ function nextLevel(){
             });
             nextLevel();
             break;
-        case 1: uileft.setTint(0x3cceff);uitop.setTint(0x3cceff);selector.setTint(0xffe002);musicButton.setTint(0x3cceff);fullscreenButton.setTint(0x3cceff);nextWaveButton.setTint(0x3cceff);restartButton.setTint(0x3cceff);
+        case 1:
+            setUIColor(0x3cceff, 0xffe002, '#3cceff');
             path = new Phaser.Curves.Path(250, 40);
             path.lineTo(250, 100);
             path.lineTo(510, 150);
@@ -1192,7 +1205,8 @@ function nextLevel(){
             finish.x = 1000;
             finish.y = 40;
             break;
-        case 2: uileft.setTint(0xff0054);uitop.setTint(0xff0054);selector.setTint(0xffe002);musicButton.setTint(0xff0054);fullscreenButton.setTint(0xff0054);waveText.setColor("#ff0054");hpText.setColor("#ff0054");moneyText.setColor("#ff0054");nextWaveButton.setTint(0xff0054);restartButton.setTint(0xff0054);
+        case 2:
+            setUIColor(0xff0054, 0xffe002, '#ff0054');
             graphics.clear();
             path.destroy();
             graphics.lineStyle(3, 0x000000).alpha = 0;
@@ -1210,7 +1224,8 @@ function nextLevel(){
             finish.x = 1280;
             finish.y = 579;
             break;
-        case 3: uileft.setTint(0x00ff00);uitop.setTint(0x00ff00);selector.setTint(0xff0000);musicButton.setTint(0x00ff00);fullscreenButton.setTint(0x00ff00);waveText.setColor("#00ff00");hpText.setColor("#00ff00");moneyText.setColor("#00ff00");nextWaveButton.setTint(0x00ff00);restartButton.setTint(0x00ff00);
+        case 3:
+            setUIColor(0x00ff00, 0xff0000, '#00ff00');
             graphics.clear();
             path.destroy();
             graphics.lineStyle(3, 0xffff00).alpha = 0;
@@ -1412,6 +1427,7 @@ function generateAnims(){
 
 function updateWaveInfo(){
     waveInfo.setText(WAVE_DESCRIPTION[WAVE]);
+    waveInfo.setColor('#FFFFFF');
     waveInfo.scale = 0;
     tw.add({
         targets: waveInfo,
@@ -1527,33 +1543,32 @@ function showVictoryScreen(){
         volume: 0,
         onComplete: ()=> {
             music.stop();
-            if(music_enabled){
-                dimScreen(0.5);
-                emitter_victory.emitParticleAt(640, 360, 32);
+            if(music_enabled) {
                 fsmusic = game.sound.add('victory', {volume: 0.3});
                 fsmusic.play();
-
-                fsText.setText('LEVEL\nCOMPLETE').setDepth(3);
-                fsText.scale = 0;
-                fsText.alpha = 0;
-                tw.add({
-                    targets: fsText,
-                    duration: 300,
-                    alpha: 1,
-                    scale: 1,
-                    ease: 'Back.easeOut',
-                    onComplete: ()=> {
-                        tw.add({
-                            targets: nextWaveButton,
-                            duration: 300,
-                            alpha: 1,
-                            scale: 2,
-                            ease: 'Back.easeOut',
-                        });
-                    },
-                    repeat: 0
-                });
             }
+            dimScreen(0.5);
+            emitter_victory.emitParticleAt(640, 360, 32);
+
+            fsText.setText('LEVEL\nCOMPLETE').setDepth(3);
+            fsText.scale = 0;
+            fsText.alpha = 0;
+            tw.add({
+                targets: fsText,
+                duration: 300,
+                alpha: 1,
+                scale: 1,
+                ease: 'Back.easeOut',
+                onComplete: ()=> {
+                    tw.add({
+                        targets: nextWaveButton,
+                        duration: 300,
+                        alpha: 1,
+                        scale: 2,
+                        ease: 'Back.easeOut',
+                    });},
+                repeat: 0
+            });
         },
         repeat: 0
     });
@@ -1661,6 +1676,30 @@ function hideFsMessage(){
     nextWaveButton.x = 1099; nextWaveButton.y = 20; nextWaveButton.setTexture("button_nextwave", 0).setScale(1);
 }
 
+function showBossHealth(){
+    waveInfo.scale = 0;
+    tw.add({
+        targets: waveInfo,
+        duration: 300,
+        scale: 2,
+        ease: 'Back.easeOut',
+        repeat: 0
+    });
+}
+
+function setUIColor(color1, color2, textcolor){
+    uileft.setTint(color1);
+    uitop.setTint(color1);
+    musicButton.setTint(color1);
+    fullscreenButton.setTint(color1);
+    nextWaveButton.setTint(color1);
+    restartButton.setTint(color1);
+    waveText.setColor(textcolor);
+    hpText.setColor(textcolor);
+    moneyText.setColor(textcolor);
+    selector.setTint(color2);
+}
+
 function createGame(){
     graphics = this.add.graphics();                         //cesty
     uileft = this.add.image(55,380, 'ui_left').setDepth(1);
@@ -1727,8 +1766,8 @@ function createGame(){
     //upgrade, sell
     this.add.image(36,683, 'button_small', 1).setDepth(1).setInteractive().on('pointerdown', () => upgradeTool());
     this.add.image(72,683, 'button_small', 2).setDepth(1).setInteractive().on('pointerdown', () => sellTool());
-    this.add.image(36,683, 'button_icons', 0).setDepth(1);
-    this.add.image(72,683, 'button_icons', 1).setDepth(1);
+    this.add.image(27,671, 'button_icons', 0).setDepth(1).setOrigin(0);
+    this.add.image(63,671, 'button_icons', 1).setDepth(1).setOrigin(0);
 
     for(let i=0; i<8; i++){
         this.add.image(53,75*i+100, 'button').setDepth(1).setInteractive().on('pointerdown', () => changeSelectedTower(i+1));
