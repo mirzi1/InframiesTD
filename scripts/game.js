@@ -363,6 +363,7 @@ let Enemy = new Phaser.Class({
         this.slowed = false;
         this.unfreeze = 0;
         this.hurt = false;
+        this.setDepth(1);
         tw.add({
             targets: this,
             duration: 200,
@@ -477,6 +478,7 @@ let AnimatedObject = new Phaser.Class({
     initialize:
         function AnimatedObject(game){
             Phaser.GameObjects.Sprite.call(this,game,0,0);
+            this.setDepth(1);
         },
     doYourThing:
         function(x,y,sprite,direction){
@@ -635,7 +637,7 @@ let Tower = new Phaser.Class({
 
                 fsrect.fillColor = '0x000000';
                 nukeIcon.alpha = 0.4;
-                fsrect.setDepth(1);
+                fsrect.setDepth(2);
                 tw.add({targets: fsrect,
                     duration: 500,
                     alpha: 0.5,
@@ -756,6 +758,7 @@ let Bullet = new Phaser.Class({
             this.damage = 0;
             this.lifespan = 0;
             this.speed = 0;
+            this.setDepth(1);
         },
 
     fire: function (x, y, angle,type)
@@ -832,7 +835,7 @@ function create(){
         repeat: 0
     });
 
-    this.add.text(53,710, 'ALPHA', textfont_big).setStroke('#000000', 5).setOrigin(0.5).setDepth(2);
+    this.add.text(53,710, 'ALPHA', textfont_big).setStroke('#000000', 5).setOrigin(0.5).setDepth(3);
 
     this.input.setDefaultCursor('url(assets/graphics/ui/cursor.cur), pointer'); //kurzor
 
@@ -1532,7 +1535,7 @@ function toggleFullscreen() {
 function showVictoryScreen(){
     blinkSpaces = false;
     nextWaveButton.alpha = 0;
-    nextWaveButton.setDepth(3);
+    nextWaveButton.setDepth(4);
     nextWaveButton.x = 640;
     nextWaveButton.y = 560;
     MONEY = 0;
@@ -1550,7 +1553,7 @@ function showVictoryScreen(){
             dimScreen(0.5);
             emitter_victory.emitParticleAt(640, 360, 32);
 
-            fsText.setText('LEVEL\nCOMPLETE').setDepth(3);
+            fsText.setText('LEVEL\nCOMPLETE').setDepth(4);
             fsText.scale = 0;
             fsText.alpha = 0;
             tw.add({
@@ -1584,7 +1587,7 @@ function showDefeatScreen(){
 
     restartButton.alpha = 0;
     restartButton.scale = 1.5;
-    restartButton.setDepth(3);
+    restartButton.setDepth(4);
     restartButton.x = 640;
     restartButton.y = 560;
 
@@ -1599,7 +1602,7 @@ function showDefeatScreen(){
         repeat: 0
     });
 
-    fsText.setText('DEFEAT').setDepth(3);
+    fsText.setText('DEFEAT').setDepth(4);
     fsText.scale = 0.8;
     fsText.alpha = 0;
     fsText.y = 660;
@@ -1640,7 +1643,7 @@ function showDefeatScreen(){
 }
 
 function dimScreen(alpha){
-    fsrect.setDepth(2);
+    fsrect.setDepth(3);
     fsrect.fillColor = '0x000000';
     tw.add({
         targets: fsrect,
@@ -1661,8 +1664,8 @@ function undimScreen(){
 }
 
 function hideFsMessage(){
-    fsText.setDepth(2);
-    nextWaveButton.setDepth(1);
+    fsText.setDepth(3);
+    nextWaveButton.setDepth(2);
     tw.add({
         targets: fsText,
         duration: 600,
@@ -1702,18 +1705,18 @@ function setUIColor(color1, color2, textcolor){
 
 function createGame(){
     graphics = this.add.graphics();                         //cesty
-    uileft = this.add.image(55,380, 'ui_left').setDepth(1);
-    uitop = this.add.image(640,20, 'ui_top').setDepth(1);
+    uileft = this.add.image(55,380, 'ui_left').setDepth(2);
+    uitop = this.add.image(640,20, 'ui_top').setDepth(2);
     start = this.add.image(250,105, 'start_finish', 0);
     finish = this.add.image(1000,110, 'start_finish', 1);
-    waveText = this.add.text(87, 13, '', bigfont).setDepth(1);
-    hpText = this.add.text(191, 13, '', bigfont).setDepth(1);
-    moneyText = this.add.text(295, 13, '', bigfont).setDepth(1);
+    waveText = this.add.text(87, 13, '', bigfont).setDepth(2);
+    hpText = this.add.text(191, 13, '', bigfont).setDepth(2);
+    moneyText = this.add.text(295, 13, '', bigfont).setDepth(2);
     graphics.lineStyle(3, 0xaaaaaa).alpha = 0;
 
-    emitter_upgrade = this.add.particles('button_icons').setDepth(1);
-    emitter_enemies = this.add.particles('a3').setDepth(2);
-    emitter_victory = this.add.particles('p1').setDepth(2);
+    emitter_upgrade = this.add.particles('button_icons').setDepth(2);
+    emitter_enemies = this.add.particles('a3').setDepth(3);
+    emitter_victory = this.add.particles('p1').setDepth(3);
 
     emitter_enemies.createEmitter({
         frame: 0,
@@ -1748,62 +1751,62 @@ function createGame(){
     });
 
     //top buttons
-    nextWaveButton = this.add.image(1099,20, 'button_nextwave', 0).setDepth(1).setScale(0).setInteractive().on('pointerdown', () => nextWave());
+    nextWaveButton = this.add.image(1099,20, 'button_nextwave', 0).setDepth(2).setScale(0).setInteractive().on('pointerdown', () => nextWave());
     restartButton = this.add.image(1099,-100, 'button_nextwave', 2).setDepth(4).setScale(0).setInteractive().on('pointerdown', () => restartLevel());
-    musicButton = this.add.image(1218,20, 'topbuttons', 0).setDepth(1).setInteractive().on('pointerdown', () => toggleMusic());
-    fullscreenButton = this.add.image(1259,20, 'topbuttons', 2).setDepth(1).setInteractive().on('pointerdown', () => toggleFullscreen());
+    musicButton = this.add.image(1218,20, 'topbuttons', 0).setDepth(2).setInteractive().on('pointerdown', () => toggleMusic());
+    fullscreenButton = this.add.image(1259,20, 'topbuttons', 2).setDepth(2).setInteractive().on('pointerdown', () => toggleFullscreen());
 
     //tower info
     //this.add.image(200,50, 'button');
-    selectedImg = this.add.image(453,18,'t1', SELECTED_TOWER-1).setDepth(1);
+    selectedImg = this.add.image(453,18,'t1', SELECTED_TOWER-1).setDepth(2);
     selectedImg.setScale(HUD_ICON_SCALE);
-    selectedInfo = this.add.text(478,5,getTowerInfo(SELECTED_TOWER-1),textfont).setDepth(1);
+    selectedInfo = this.add.text(478,5,getTowerInfo(SELECTED_TOWER-1),textfont).setDepth(2);
     updateTowerInfo();
 
-    waveInfo = this.add.text(690,70,'',textfont_big).setStroke('#000000', 5).setDepth(1).setOrigin(0.5);
-    scoreText = this.add.text(1270,710,'Score: 0',textfont_big_right).setStroke('#000000', 5).setDepth(1).setOrigin(1);
+    waveInfo = this.add.text(690,70,'',textfont_big).setStroke('#000000', 5).setDepth(2).setOrigin(0.5);
+    scoreText = this.add.text(1270,710,'Score: 0',textfont_big_right).setStroke('#000000', 5).setDepth(2).setOrigin(1);
 
     //upgrade, sell
-    this.add.image(36,683, 'button_small', 1).setDepth(1).setInteractive().on('pointerdown', () => upgradeTool());
-    this.add.image(72,683, 'button_small', 2).setDepth(1).setInteractive().on('pointerdown', () => sellTool());
-    this.add.image(27,671, 'button_icons', 0).setDepth(1).setOrigin(0);
-    this.add.image(63,671, 'button_icons', 1).setDepth(1).setOrigin(0);
+    this.add.image(36,683, 'button_small', 1).setDepth(2).setInteractive().on('pointerdown', () => upgradeTool());
+    this.add.image(72,683, 'button_small', 2).setDepth(2).setInteractive().on('pointerdown', () => sellTool());
+    this.add.image(27,671, 'button_icons', 0).setDepth(2).setOrigin(0);
+    this.add.image(63,671, 'button_icons', 1).setDepth(2).setOrigin(0);
 
     for(let i=0; i<8; i++){
-        this.add.image(53,75*i+100, 'button').setDepth(1).setInteractive().on('pointerdown', () => changeSelectedTower(i+1));
+        this.add.image(53,75*i+100, 'button').setDepth(2).setInteractive().on('pointerdown', () => changeSelectedTower(i+1));
     }
 
     for(let i=0; i<7; i++){
         if(i==3){
-            this.add.image(53,75*i+98, 't'+(i+1)).setDepth(1).setScale(HUD_ICON_SCALE*0.5);
+            this.add.image(53,75*i+98, 't'+(i+1)).setDepth(2).setScale(HUD_ICON_SCALE*0.5);
         }else if(i==5) {
-            this.add.image(53, 75 * i + 98, 't6_idle').setDepth(1).setScale(HUD_ICON_SCALE*0.7);
+            this.add.image(53, 75 * i + 98, 't6_idle').setDepth(2).setScale(HUD_ICON_SCALE*0.7);
         }else if(i==6){
-            this.add.image(53,75*i+98, 't7_idle').setDepth(1).setScale(HUD_ICON_SCALE);
+            this.add.image(53,75*i+98, 't7_idle').setDepth(2).setScale(HUD_ICON_SCALE);
         }else{
-            this.add.image(53,75*i+98, 't'+(i+1)).setDepth(1).setScale(HUD_ICON_SCALE);
+            this.add.image(53,75*i+98, 't'+(i+1)).setDepth(2).setScale(HUD_ICON_SCALE);
         }
     }
 
-    nukeIcon = this.add.image(53,75*7+98, 't8').setDepth(1).setScale(HUD_ICON_SCALE);
+    nukeIcon = this.add.image(53,75*7+98, 't8').setDepth(2).setScale(HUD_ICON_SCALE);
 
     //selektor
-    selector = this.add.image(0,0,'selector').setDepth(1);
+    selector = this.add.image(0,0,'selector').setDepth(2);
     selector.x = 53;
     selector.y = 75*(SELECTED_TOWER-1)+100;
 
-    cross1 = this.add.image(53,100,'cross').setDepth(1);
-    cross2 = this.add.image(53,75+100, 'cross').setDepth(1);
-    cross3 = this.add.image(53,75*2+100, 'cross').setDepth(1);
-    cross4 = this.add.image(53,75*3+100, 'cross').setDepth(1);
-    cross5 = this.add.image(53,75*4+100, 'cross').setDepth(1);
-    cross6 = this.add.image(53,75*5+100, 'cross').setDepth(1);
-    cross7 = this.add.image(53,75*6+100, 'cross').setDepth(1);
-    cross8 = this.add.image(53,75*7+100, 'cross').setDepth(1);
+    cross1 = this.add.image(53,100,'cross').setDepth(2);
+    cross2 = this.add.image(53,75+100, 'cross').setDepth(2);
+    cross3 = this.add.image(53,75*2+100, 'cross').setDepth(2);
+    cross4 = this.add.image(53,75*3+100, 'cross').setDepth(2);
+    cross5 = this.add.image(53,75*4+100, 'cross').setDepth(2);
+    cross6 = this.add.image(53,75*5+100, 'cross').setDepth(2);
+    cross7 = this.add.image(53,75*6+100, 'cross').setDepth(2);
+    cross8 = this.add.image(53,75*7+100, 'cross').setDepth(2);
 
     //cenovky
     for(let i=0; i<8; i++){
-        this.add.text(54,75*i+127, TOWER_PRICES[i]+'$', bigfont_white).setDepth(1).setStroke('#000000', 2).setOrigin(0.5);
+        this.add.text(54,75*i+127, TOWER_PRICES[i]+'$', bigfont_white).setDepth(2).setStroke('#000000', 2).setOrigin(0.5);
     }
 
     //keyboard
