@@ -198,12 +198,11 @@ const WAVE_DESCRIPTION = [
     '',
     '',
     'Quick units are attacking next wave, shotgunners are one of their many weaknesses.',
+    ''
 ];
 
 //TODO: waves
-const waves = [ [1,0,0,0,0,0,0,7],
-                [8],
-                [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+const waves = [ [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
                 [1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,2],
                 [1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,2,0,2],
                 [1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,2,0,1,0,2,0,1,0,2,0,1],
@@ -211,7 +210,7 @@ const waves = [ [1,0,0,0,0,0,0,7],
                 [3,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,3,0,0,0,3],
                 [3,0,0,0,3,0,0,0,3,0,0,0,3],
                 [4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4],
-                [1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2],
+                [1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2]
               ];
 
 function preload(){
@@ -490,7 +489,7 @@ let AnimatedObject = new Phaser.Class({
             switch(sprite){
                 case 3: case 11: case 17: case 18: this.setActive(false);this.destroy();break;
                 case 'freespace': this.play('freespace_destroy');this.once('animationcomplete', ()=>{this.setActive(false);this.destroy(); blinkSpaces = true;});break;
-                case 'p8': this.play('p8_destroy');this.scale = 3.5;this.once('animationcomplete', ()=>{this.setActive(false);this.destroy();});break;
+                case 'p8': this.play('p8_destroy');this.scale = 3.5;this.setDepth(4);this.once('animationcomplete', ()=>{this.setActive(false);this.destroy();});break;
                 case 'a8':
                     this.play('a8_destroy1');
                     this.once('animationcomplete', ()=>{
