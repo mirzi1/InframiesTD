@@ -255,7 +255,9 @@ function preload(){
     this.load.spritesheet('a7_destroy', 'assets/graphics/attackers/a7_death.png' ,{frameHeight: 200, frameWidth: 100});
     this.load.spritesheet('a8', 'assets/graphics/attackers/a8.png' ,{frameHeight: 300, frameWidth: 200});
     this.load.spritesheet('a8_hurt', 'assets/graphics/attackers/a8_hurt.png' ,{frameHeight: 300, frameWidth: 200});
-    this.load.spritesheet('a8_destroy', 'assets/graphics/attackers/a8_death.png' ,{frameHeight: 300, frameWidth: 200});
+    this.load.spritesheet('a8_destroy1', 'assets/graphics/attackers/a8_death_1.png' ,{frameHeight: 300, frameWidth: 200});
+    this.load.spritesheet('a8_destroy2', 'assets/graphics/attackers/a8_death_2.png' ,{frameHeight: 300, frameWidth: 200});
+    this.load.spritesheet('a8_destroy3', 'assets/graphics/attackers/a8_death_3.png' ,{frameHeight: 300, frameWidth: 200});
 
     //towers
     this.load.spritesheet('t1', 'assets/graphics/towers/t1.png' ,{frameHeight: 100, frameWidth: 100});
@@ -488,8 +490,19 @@ let AnimatedObject = new Phaser.Class({
             switch(sprite){
                 case 3: case 11: case 17: case 18: this.setActive(false);this.destroy();break;
                 case 'freespace': this.play('freespace_destroy');this.once('animationcomplete', ()=>{this.setActive(false);this.destroy(); blinkSpaces = true;});break;
-                case 'p8': this.play('p8_destroy');this.scale = 3.5;this.once('animationcomplete', ()=>{this.setActive(false);this.destroy()});break;
-                default: this.play(sprite+'_destroy');this.once('animationcomplete', ()=>{this.setActive(false);this.destroy()});break;
+                case 'p8': this.play('p8_destroy');this.scale = 3.5;this.once('animationcomplete', ()=>{this.setActive(false);this.destroy();});break;
+                case 'a8':
+                    this.play('a8_destroy1');
+                    this.once('animationcomplete', ()=>{
+                        this.play('a8_destroy2');
+                        this.once('animationcomplete', ()=>{
+                            this.play('a8_destroy3');
+                            this.once('animationcomplete', ()=>{
+                                this.setActive(false);this.destroy();
+                            });
+                        });
+                    });break;
+                default: this.play(sprite+'_destroy');this.once('animationcomplete', ()=>{this.setActive(false);this.destroy();});break;
             }
         }
 });
@@ -1158,94 +1171,6 @@ function nextLevel(){
     //i am flabbergasted that this abomination actually works
     LEVEL++;
     gameInProgress = false;
-    switch(LEVEL){
-        case -1:
-            background.scale = 1.2;
-            tw.add({
-                targets: background,
-                duration: 500,
-                scale: 1,
-                alpha: 1,
-                ease: 'Sine.easeOut',
-                onComplete: ()=> {creditsText.alpha = 1;},
-                repeat: 0
-            });
-            tw.add({
-                targets: creditsText,
-                duration: 500,
-                scale: 0.8,
-                alpha: 0,
-                ease: 'Sine.easeOut',
-                onComplete: ()=> {},
-                repeat: 0
-            });
-            music.play();
-            break;
-        case 0:
-            fsrect.setActive(false);
-            tw.add({
-                targets: fsrect,
-                duration: 200,
-                alpha: 0,
-                ease: 'Sine.easeOut',
-                onComplete: ()=> {fsrect.alpha = 0;creditsText.destroy();},
-                repeat: 0
-            });
-            nextLevel();
-            break;
-        case 1:
-            path = new Phaser.Curves.Path(250, 40);
-            path.lineTo(250, 100);
-            path.lineTo(510, 150);
-            path.lineTo(250, 200);
-            path.lineTo(510, 250);
-            path.lineTo(250, 300);
-            path.lineTo(510, 350);
-            path.lineTo(250, 400);
-            path.lineTo(510, 450);
-            path.lineTo(1000, 450);
-            path.lineTo(1000, 40);
-            start.x = 250;
-            start.y = 40;
-            finish.x = 1000;
-            finish.y = 40;
-            break;
-        case 2:
-            graphics.clear();
-            path.destroy();
-            graphics.lineStyle(3, 0x000000).alpha = 0;
-            path = new Phaser.Curves.Path(300, 40);
-            path.lineTo(285, 567);
-            path.lineTo(494, 589);
-            path.lineTo(576, 158);
-            path.lineTo(1090, 146);
-            path.lineTo(1063, 309);
-            path.lineTo(868, 380);
-            path.lineTo(850, 597);
-            path.lineTo(1280, 579);
-            start.x = 300;
-            start.y = 40;
-            finish.x = 1280;
-            finish.y = 579;
-            break;
-        case 3:
-            graphics.clear();
-            path.destroy();
-            graphics.lineStyle(3, 0xffff00).alpha = 0;
-            path = new Phaser.Curves.Path(300, 40);
-            path.lineTo(300, 570);
-            path.lineTo(1130, 570);
-            path.lineTo(1130, 370);
-            path.lineTo(810, 370);
-            path.lineTo(810, 200);
-            path.lineTo(615, 200);
-            path.lineTo(524, 290);
-            start.x = 300;
-            start.y = 40;
-            finish.x = 524;
-            finish.y = 290;
-            break;
-    }
     if(LEVEL > 0 && LEVEL<=3){
         WAVE = 0;
         MONEY = 0;
@@ -1258,6 +1183,10 @@ function nextLevel(){
         undimScreen();
         hideFsMessage();
         updateWaveText();
+        try{
+            graphics.clear();
+            path.destroy();
+        }catch (e) {/*i'm lazy*/}
         //background anim
         tw.add({
             targets: fsrect,
@@ -1320,9 +1249,103 @@ function nextLevel(){
             }
         }
 
-        path.draw(graphics);
+
     }
+    switch(LEVEL){
+        case -1:
+            background.scale = 1.2;
+            tw.add({
+                targets: background,
+                duration: 500,
+                scale: 1,
+                alpha: 1,
+                ease: 'Sine.easeOut',
+                onComplete: ()=> {creditsText.alpha = 1;},
+                repeat: 0
+            });
+            tw.add({
+                targets: creditsText,
+                duration: 500,
+                scale: 0.8,
+                alpha: 0,
+                ease: 'Sine.easeOut',
+                onComplete: ()=> {},
+                repeat: 0
+            });
+            music.play();
+            break;
+        case 0:
+            fsrect.setActive(false);
+            tw.add({
+                targets: fsrect,
+                duration: 200,
+                alpha: 0,
+                ease: 'Sine.easeOut',
+                onComplete: ()=> {fsrect.alpha = 0;creditsText.destroy();},
+                repeat: 0
+            });
+            nextLevel();
+            break;
+        case 1:
+            graphics.lineStyle(3, 0x999999).alpha = 0;
+            path = new Phaser.Curves.Path(250, 40);
+            path.lineTo(250, 100);
+            path.lineTo(510, 150);
+            path.lineTo(250, 200);
+            path.lineTo(510, 250);
+            path.lineTo(250, 300);
+            path.lineTo(510, 350);
+            path.lineTo(250, 400);
+            path.lineTo(510, 450);
+            path.lineTo(1000, 450);
+            path.lineTo(1000, 40);
+            start.x = 250;
+            start.y = 40;
+            finish.x = 1000;
+            finish.y = 40;
+            path.draw(graphics);
+            break;
+        case 2:
+            graphics.lineStyle(3, 0x000000).alpha = 0;
+            path = new Phaser.Curves.Path(300, 40);
+            path.lineTo(285, 567);
+            path.lineTo(494, 589);
+            path.lineTo(576, 158);
+            path.lineTo(1090, 146);
+            path.lineTo(1063, 309);
+            path.lineTo(868, 380);
+            path.lineTo(850, 597);
+            path.lineTo(1280, 579);
+            start.x = 300;
+            start.y = 40;
+            finish.x = 1280;
+            finish.y = 579;
+            path.draw(graphics);
+            break;
+        case 3:
+            graphics.lineStyle(3, 0xffff00).alpha = 0;
+            path = new Phaser.Curves.Path(300, 40);
+            path.lineTo(300, 570);
+            path.lineTo(1130, 570);
+            path.lineTo(1130, 370);
+            path.lineTo(810, 370);
+            path.lineTo(810, 200);
+            path.lineTo(615, 200);
+            path.lineTo(524, 290);
+            start.x = 300;
+            start.y = 40;
+            finish.x = 524;
+            finish.y = 290;
+            path.draw(graphics);
+            break;
+    }
+
     playMusic(LEVEL);
+}
+
+function jumpToLevel(level){
+    if(level>0 && level<=3){LEVEL = level-1;nextLevel();}
+    else{console.error('nope');}
 }
 
 function restartLevel(){
@@ -1379,7 +1402,10 @@ function generateAnims(){
     game.anims.create({key: "a7_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a7_destroy",{start:0, end:23}), repeat: 0});
     game.anims.create({key: "a8_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a8",{start:0, end:15}), repeat: -1});
     game.anims.create({key: "a8_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a8_hurt",{start:0, end:15}), repeat: 0});
-    game.anims.create({key: "a8_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a8_destroy",{start:0, end:42}), repeat: 0});
+    game.anims.create({key: "a8_destroy1", frameRate: 15, frames: game.anims.generateFrameNumbers("a8_destroy1",{start:0, end:15}), repeat: 0});
+    game.anims.create({key: "a8_destroy2", frameRate: 15, frames: game.anims.generateFrameNumbers("a8_destroy2",{start:0, end:15}), repeat: 0});
+    game.anims.create({key: "a8_destroy3", frameRate: 15, frames: game.anims.generateFrameNumbers("a8_destroy3",{start:0, end:10}), repeat: 0});
+
     //towers
     game.anims.create({key: "t1_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t1",{start:8, end:0}), repeat: 0});
     game.anims.create({key: "t2_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t2",{start:9, end:0}), repeat: 0});
