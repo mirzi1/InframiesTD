@@ -637,7 +637,6 @@ let Tower = new Phaser.Class({
 
                 fsrect.fillColor = '0x000000';
                 nukeIcon.alpha = 0.4;
-                fsrect.setDepth(2);
                 tw.add({targets: fsrect,
                     duration: 500,
                     alpha: 0.5,
@@ -809,11 +808,11 @@ let Bullet = new Phaser.Class({
 function create(){
     //zaklad
     fsText.alpha = 0;
-    background = this.add.image(640, 360, 'itdMenu');           //background bude vzdy naspodku
+    background = this.add.image(640, 360, 'itdMenu').setDepth(3);           //background bude vzdy naspodku
     background.alpha = 0;
 
     //don't mind me
-    fsrect = this.add.rectangle(640, 360, 1280, 720, 0x000000).setInteractive().on('pointerdown', () => {if(fsrect.active === true){if(LEVEL==-1){createGame.call(this);}nextLevel();}});;
+    fsrect = this.add.rectangle(640, 360, 1280, 720, 0x000000).setDepth(3).setInteractive().on('pointerdown', () => {if(fsrect.active === true){if(LEVEL==-1){createGame.call(this);}nextLevel();}});;
     fsrect.alpha = 0.01;
 
     music = this.sound.add('intro', {volume: 0.3, loop: true});             //bgm
@@ -1079,6 +1078,26 @@ function getTowerInfo(type){
     */
 }
 
+function updateWaveText(){
+    tw.add({
+        targets: waveText,
+        duration: 200,
+        scaleX: 0,
+        ease: 'Sine.easeIn',
+        onComplete: ()=> {
+            waveText.setText(WAVE);
+            tw.add({
+                targets: waveText,
+                duration: 200,
+                scaleX: 1,
+                ease: 'Sine.easeOut',
+                repeat: 0
+            });
+        },
+        repeat: 0
+    });
+}
+
 function updateHpText(){
     hpText.y = 6;
     if(HEALTH <= 0){
@@ -1122,23 +1141,7 @@ function nextWave(){
         waveInProgress=true;
         waveIndex = 0;
         hideWaveInfo();
-
-        tw.add({
-            targets: waveText,
-            duration: 200,
-            scaleX: 0,
-            ease: 'Sine.easeIn',
-            onComplete: ()=> {
-                waveText.setText(WAVE);
-                tw.add({
-                    targets: waveText,
-                    duration: 200,
-                    scaleX: 1,
-                    ease: 'Sine.easeOut',
-                    repeat: 0
-            });},
-            repeat: 0
-        });
+        updateWaveText();
         nextWaveButton.visible = false;
         graphics.alpha = 0.3;
         start.alpha = 0;
@@ -1191,7 +1194,6 @@ function nextLevel(){
             nextLevel();
             break;
         case 1:
-            setUIColor(0x3cceff, 0xffe002, '#3cceff');
             path = new Phaser.Curves.Path(250, 40);
             path.lineTo(250, 100);
             path.lineTo(510, 150);
@@ -1209,7 +1211,6 @@ function nextLevel(){
             finish.y = 40;
             break;
         case 2:
-            setUIColor(0xff0054, 0xffe002, '#ff0054');
             graphics.clear();
             path.destroy();
             graphics.lineStyle(3, 0x000000).alpha = 0;
@@ -1228,7 +1229,6 @@ function nextLevel(){
             finish.y = 579;
             break;
         case 3:
-            setUIColor(0x00ff00, 0xff0000, '#00ff00');
             graphics.clear();
             path.destroy();
             graphics.lineStyle(3, 0xffff00).alpha = 0;
@@ -1257,11 +1257,38 @@ function nextLevel(){
         //fsrect anim
         undimScreen();
         hideFsMessage();
+        updateWaveText();
         //background anim
+        tw.add({
+            targets: fsrect,
+            duration: 500,
+            alpha: 1,
+            ease: 'Sine.easeIn',
+            onComplete: ()=> {
+                tw.add({
+                    targets: fsrect,
+                    duration: 500,
+                    alpha: 0,
+                    ease: 'Sine.easeOut',
+                });
+                background.setDepth(-1);
+                //change ui color
+                switch(LEVEL){
+                    case 1: setUIColor(0x3cceff, 0xffe002, '#3cceff');break;
+                    case 2: setUIColor(0xff0054, 0xffe002, '#ff0054');break;
+                    case 3: setUIColor(0x00ff00, 0xff0000, '#00ff00');break;
+                }
+                blinkSpaces = true;
+                MONEY = STARTMONEY;
+                HEALTH = STARTHEALTH;
+                updateMoneyText();
+                updateHpText();
+            }
+        });
+
         tw.add({
             targets: background,
             duration: 500,
-            alpha: 0,
             scale: 2,
             ease: 'Sine.easeIn',
             onComplete: ()=> {
@@ -1273,7 +1300,6 @@ function nextLevel(){
                 tw.add({
                     targets: background,
                     duration: 500,
-                    alpha: 1,
                     scale: 1,
                     ease: 'Sine.easeOut',
                     onComplete: ()=> {graphics.alpha = 0.8;start.alpha = 1;finish.alpha = 1;gameInProgress = true;updateWaveInfo();},
@@ -1282,29 +1308,7 @@ function nextLevel(){
             },
             repeat: 0
         });
-        //update values
-        tw.add({
-            targets: waveText,
-            duration: 200,
-            scaleX: 0,
-            ease: 'Sine.easeIn',
-            onComplete: ()=> {
-                waveText.setText(WAVE);
-                tw.add({
-                    targets: waveText,
-                    duration: 200,
-                    scaleX: 1,
-                    ease: 'Sine.easeOut',
-                    repeat: 0
-                });
-                blinkSpaces = true;
-                MONEY = STARTMONEY;
-                HEALTH = STARTHEALTH;
-                updateMoneyText();
-                updateHpText();
-                },
-            repeat: 0
-        });
+
         //delete towers
         if(LEVEL>=1){
             let towers_placed = Towers.getChildren();
@@ -1540,6 +1544,8 @@ function showVictoryScreen(){
     nextWaveButton.y = 560;
     MONEY = 0;
 
+    killAllEnemies();
+
     tw.add({
         targets: music,
         duration: 2000,
@@ -1626,15 +1632,7 @@ function showDefeatScreen(){
         repeat: 0
     });
 
-    let enemyUnits = enemies.getChildren();
-    while(enemyUnits.length>0) {
-        for (let i = 0; i < enemyUnits.length; i++) {
-            if (enemyUnits[i].id <= 6) {
-                enemyUnits[i].setActive(false);
-                enemyUnits[i].destroy();
-            }
-        }
-    }
+    killAllEnemies();
 
     if(music_enabled){
         fsmusic = game.sound.add('defeat', {volume: 0.3});
@@ -1642,8 +1640,17 @@ function showDefeatScreen(){
     }
 }
 
+function killAllEnemies(){
+    let enemyUnits = enemies.getChildren();
+    while(enemyUnits.length>0) {
+        for (let i = 0; i < enemyUnits.length; i++) {
+            enemyUnits[i].setActive(false);
+            enemyUnits[i].destroy();
+        }
+    }
+}
+
 function dimScreen(alpha){
-    fsrect.setDepth(3);
     fsrect.fillColor = '0x000000';
     tw.add({
         targets: fsrect,
