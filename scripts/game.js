@@ -79,6 +79,7 @@ const WAVE_SPEED = 100;
 const bigfont = { font: " 16px font1", fill: "#3CCEFF", boundsAlignH: "center", boundsAlignV: "middle" };
 const bigfont_white = { font: "16px font1", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 const textfont = { font: "bold 11px sans-serif", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+const textfont_big_left = { font: "bold 18px sans-serif", fill: "#fff", align:"left",boundsAlignH: "center", boundsAlignV: "middle" };
 const textfont_big = { font: "bold 18px sans-serif", fill: "#fff", align:"center",boundsAlignH: "center", boundsAlignV: "middle" };
 const textfont_big_right = { font: "bold 18px sans-serif", fill: "#fff", align:"right",boundsAlignH: "center", boundsAlignV: "middle" };
 const textfont_superbig = { font: "bold 100px font1", fill: "#fff", align:"center",boundsAlignH: "center", boundsAlignV: "middle" };
@@ -214,10 +215,39 @@ const waves = [ [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0
               ];
 
 function preload(){
-    fsText = this.add.text(640,360, 'Loading...', textfont_superbig).setOrigin(0.5);
+    background = this.add.image(640, 360).setDepth(3);           //background bude vzdy naspodku
+    background.alpha = 0;
+    fsText = this.add.text(640,360, '', textfont_superbig).setOrigin(0.5);
+    temptext = this.add.text(10,670, '', textfont_big_left);
+    temploadrect_bg = this.add.rectangle(640, 500, 400, 20, 0x333333).setOrigin(0.5);
+    temploadrect = this.add.rectangle(440, 500, 0, 20, 0xffffff).setOrigin(0.5);
+
+    this.load.on('fileprogress', function(file){
+        temptext.setText("Loading asset: "+file.key+"\n"+file.src);
+    });
+
+    this.load.on('progress', function(value){
+        fsText.setText(Math.round(value*100)+"%");
+        temploadrect.width = (Math.round((value*100)))*4;
+        background.setTexture("mirzi");
+
+        if(value === 1){
+            background.alpha = 1;
+            fsText.setText('');
+            temptext.setText('\nGenerating anims...');
+            temploadrect.destroy();
+            temploadrect_bg.destroy();
+            generateAnims();    //generovanie animacii
+        }
+    });
+
+    this.load.on('complete', function(file){
+        temptext.destroy();
+    });
 
     //nacitanie spritov
     //ui
+    this.load.image('mirzi', 'assets/graphics/ui/mirzilogo.png');
     this.load.image('ui_top', 'assets/graphics/ui/UI_top.png');
     this.load.image('ui_left', 'assets/graphics/ui/UI_left.png');
     this.load.image('button', 'assets/graphics/ui/button.png');
@@ -820,7 +850,6 @@ let Bullet = new Phaser.Class({
 function create(){
     //zaklad
     fsText.alpha = 0;
-    background = this.add.image(640, 360, 'itdMenu').setDepth(3);           //background bude vzdy naspodku
     background.alpha = 0;
 
     //don't mind me
@@ -849,8 +878,6 @@ function create(){
     this.add.text(53,710, 'ALPHA', textfont_big).setStroke('#000000', 5).setOrigin(0.5).setDepth(3);
 
     this.input.setDefaultCursor('url(assets/graphics/ui/cursor.cur), pointer'); //kurzor
-
-    generateAnims();                    //generovanie animacii
 
     camera = this.cameras.main.setBounds(0, 0, 1280, 720);   //camera pre shake effect
 
@@ -1252,6 +1279,7 @@ function nextLevel(){
     }
     switch(LEVEL){
         case -1:
+            background.setTexture('itdMenu');
             background.scale = 1.2;
             tw.add({
                 targets: background,
