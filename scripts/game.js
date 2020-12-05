@@ -297,10 +297,9 @@ function preload(){
             fsText.setText('').setOrigin(0.5);
             fsText.x = 640;
             fsText.y = 360;
-            temptext.setText('\nGenerating anims...');
+            temptext.setText('\nPlease wait...');
             temploadrect.destroy();
             temploadrect_bg.destroy();
-            generateAnims();    //generovanie animacii
         }
     });
 
@@ -922,6 +921,7 @@ let Bullet = new Phaser.Class({
 
 function create(){
     //zaklad
+    generateAnims();
     fsText.alpha = 0;
     background.alpha = 0;
 
