@@ -23,6 +23,10 @@
             font-family: font1;
             src: url('assets/fonts/hachicro.ttf');
         }
+        @font-face {
+            font-family: font2;
+            src: url('assets/fonts/Orbitron.ttf');
+        }
     </style>
 </head>
 <body>

@@ -78,11 +78,12 @@ const WAVE_SPEED = 100;
 
 const bigfont = { font: " 16px font1", fill: "#3CCEFF", boundsAlignH: "center", boundsAlignV: "middle" };
 const bigfont_white = { font: "16px font1", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
-const textfont = { font: "bold 11px sans-serif", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
-const textfont_big_left = { font: "bold 18px sans-serif", fill: "#fff", align:"left",boundsAlignH: "center", boundsAlignV: "middle" };
-const textfont_big = { font: "bold 18px sans-serif", fill: "#fff", align:"center",boundsAlignH: "center", boundsAlignV: "middle" };
-const textfont_big_right = { font: "bold 18px sans-serif", fill: "#fff", align:"right",boundsAlignH: "center", boundsAlignV: "middle" };
-const textfont_superbig = { font: "bold 100px font1", fill: "#fff", align:"center",boundsAlignH: "center", boundsAlignV: "middle" };
+const textfont = { font: "bold 12px font2", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+const selectedfont = { font: "bold 12px font2", fill: "#fff", align:"center", boundsAlignH: "center", boundsAlignV: "middle" };
+const textfont_big_left = { font: "bold 18px font2", fill: "#fff", align:"left",boundsAlignH: "center", boundsAlignV: "middle" };
+const textfont_big = { font: "bold 18px font2,sans-serif", fill: "#fff", align:"center", boundsAlignH: "center", boundsAlignV: "middle" };
+const textfont_big_right = { font: "bold 18px font2", fill: "#fff", align:"right", boundsAlignH: "center", boundsAlignV: "middle" };
+const textfont_superbig = { font: "100px font1", fill: "#fff", align:"center", boundsAlignH: "center", boundsAlignV: "middle" };
 
 const HUD_ICON_SCALE = 0.5;
 
@@ -1895,7 +1896,7 @@ function createGame(){
     //this.add.image(200,50, 'button');
     selectedImg = this.add.image(453,18,'t1', SELECTED_TOWER-1).setDepth(2);
     selectedImg.setScale(HUD_ICON_SCALE);
-    selectedInfo = this.add.text(478,5,getTowerInfo(SELECTED_TOWER-1),textfont).setDepth(2);
+    selectedInfo = this.add.text(736,19,getTowerInfo(SELECTED_TOWER-1),selectedfont).setDepth(2).setOrigin(0.5);
     updateTowerInfo();
 
     waveInfo = this.add.text(690,70,'',textfont_big).setStroke('#000000', 5).setDepth(2).setOrigin(0.5);
