@@ -97,7 +97,7 @@ let waveIndex = 0;
 
 const CREDITS = ['InframiesTD - Space themed tower defence game\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
                 '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nNeed for Speed III - Hydrus 606\nNeed For Speed III - Romulus 3 (Mellow Sonic 2nd Remix)\nTimesplitters Future Perfect - Spaceport\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
-                '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs for making a game framework that\'s fairly easy to work with.\n\n\n\n\nClick to continue']
+                '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs for making a game framework that\'s fairly easy to work with.\n\n\n\n']
 
 const TOWER_PRICES = [250,400,600,1000,700,600,3000,4000];
 
@@ -110,10 +110,10 @@ const TOWER_DESCRIPTION = ['Laser - Basic and all around good tower.',
                             'Rocket - Slow but lethal, explosions deal area of effect damage.',
                             'Rail - Big damage, slow firing rate, no range limit.',
                             'Shotgunner - Low damage, multiple projectiles',
-                            'Thermal - Sees hidden enemies and pierces through them.',
+                            'Thermal - Deals damage to shielded enemies and pierces through them.',
                             'Rapid - Expensive, but has amazing firerate.',
                             'Nuke - Vaporizes everything except bosses, 30 second cooldown'];
-const TOWER_UPGRADE_DESCRIPTION = [ '+firerate, +range, see hidden enemies',
+const TOWER_UPGRADE_DESCRIPTION = [ '+firerate, +range, damage shielded enemies',
                                     '+firerate, enemies become even slower',
                                     '+firerate, +range, +damage, slightly bigger explosions',
                                     '+firerate, piercing projectiles',
@@ -192,35 +192,97 @@ const MAXWAVES = [30, 40, 50];
 
 const WAVE_DESCRIPTION = [
     'Welcome to InframiesTD! Select a tower from the menu on the left and click on any valid spots to place it.\n Press "next wave" when you are ready.',
-    'Killing enemies gives you money for better towers and upgrades.',
+    'Earn money for better towers and upgrades by killing enemies. Tougher enemies = bigger rewards!',
     '',
     '',
-    'Armored attackers incoming! Upgrading your towers is a must.',
+    'Armored attackers incoming!',
     '',
     '',
     'Quick units are attacking next wave, shotgunners are one of their many weaknesses.',
-    ''
+    'Let\'s up the ante for the next level, shall we?',
+    '',
+    '',
+    '',
+    '',
+    'A huge swarm of quick enemies is coming!',
+    'Shielded enemies can only take damage from Thermal or upgraded Laser towers.',
+    'Shielded enemies are very dangerous, make sure you have a few towers that are capable of taking them down.\nOtherwise you may have a few problems in later waves.',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
 ];
 
 //TODO: waves
+/*
+enemies:
+1 - default
+2 - strong
+3 - armored
+4 - quick
+5 - strong shielded
+6 - armored shielded
+7 - boss 1
+8 - final boss
+ */
 const waves = [ [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
                 [1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,2],
                 [1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,2,0,2],
-                [1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,2,0,1,0,2,0,1,0,2,0,1],
+                [1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,2,0,1,0,2,0,1,0,2,0],
                 [3,0,0,0,0,1,1,1,1,0,0,0,0,3],
-                [3,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,3,0,0,0,3],
-                [3,0,0,0,3,0,0,0,3,0,0,0,3],
-                [4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4],
-                [1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2]
+                [3,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,3,0,0,0,3],
+                [3,0,0,0,3,0,0,0,3,0,0,0,3,0,0,0,3,0,0,0,3],
+                [4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4],
+                [1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2],
+                [2,2,0,0,2,2,0,0,2,2,0,0,2,2,0,0,2,2,0,0,2,2,0,0,2,2,0,0,2,2,0,0,2,2],
+                [3,0,3,0,3,0,3,0,3,0,3,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [2,2,1,2,2,1,2,2,1,2,2,1,2,2,1,2,2,1,2,2,1,2,2,1,2,2,1,2,2,1,2,2],
+                [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+                [5,6],
+                [3,3,1,2,3,4,1,2,3,4,1,2,3,4,3,3,3,3],
+
               ];
 
 function preload(){
     background = this.add.image(640, 360).setDepth(3);           //background bude vzdy naspodku
     background.alpha = 0;
-    fsText = this.add.text(640,360, '', textfont_superbig).setOrigin(0.5);
-    temptext = this.add.text(10,670, '', textfont_big_left);
-    temploadrect_bg = this.add.rectangle(640, 500, 400, 20, 0x333333).setOrigin(0.5);
-    temploadrect = this.add.rectangle(440, 500, 0, 20, 0xffffff).setOrigin(0.5);
+    fsText = this.add.text(1280,700, '', textfont_superbig).setOrigin(1);
+    creditsText = this.add.text(640,360,CREDITS,textfont_big).setStroke('#000000', 5).setOrigin(0.5);
+    temptext = this.add.text(10,660, '', textfont_big_left);
+    temploadrect_bg = this.add.rectangle(640, 716, 1280, 10, 0x333333).setOrigin(0.5);
+    temploadrect = this.add.rectangle(0, 716, 0, 10, 0xffffff).setOrigin(0.5);
 
     this.load.on('fileprogress', function(file){
         temptext.setText("Loading asset: "+file.key+"\n"+file.src);
@@ -228,12 +290,13 @@ function preload(){
 
     this.load.on('progress', function(value){
         fsText.setText(Math.round(value*100)+"%");
-        temploadrect.width = (Math.round((value*100)))*4;
-        background.setTexture("mirzi");
+        temploadrect.width = (Math.round((value*100)))*12.8;
 
         if(value === 1){
             background.alpha = 1;
-            fsText.setText('');
+            fsText.setText('').setOrigin(0.5);
+            fsText.x = 640;
+            fsText.y = 360;
             temptext.setText('\nGenerating anims...');
             temploadrect.destroy();
             temploadrect_bg.destroy();
@@ -241,13 +304,14 @@ function preload(){
         }
     });
 
-    this.load.on('complete', function(file){
+    this.load.on('complete', function(){
         temptext.destroy();
+        creditsText.setText(CREDITS+'Click to continue...');
+        game.sound.add('upgrade', {volume: 0.3, loop: true});
     });
 
     //nacitanie spritov
     //ui
-    this.load.image('mirzi', 'assets/graphics/ui/mirzilogo.png');
     this.load.image('ui_top', 'assets/graphics/ui/UI_top.png');
     this.load.image('ui_left', 'assets/graphics/ui/UI_left.png');
     this.load.image('button', 'assets/graphics/ui/button.png');
@@ -279,6 +343,12 @@ function preload(){
     this.load.spritesheet('a4', 'assets/graphics/attackers/a4.png' ,{frameHeight: 40, frameWidth: 40});
     this.load.spritesheet('a4_hurt', 'assets/graphics/attackers/a4_hurt.png' ,{frameHeight: 40, frameWidth: 40});
     this.load.spritesheet('a4_destroy', 'assets/graphics/attackers/a4_death.png' ,{frameHeight: 40, frameWidth: 40});
+    this.load.spritesheet('a5', 'assets/graphics/attackers/a5.png' ,{frameHeight: 50, frameWidth: 50});
+    this.load.spritesheet('a5_hurt', 'assets/graphics/attackers/a5_hurt.png' ,{frameHeight: 50, frameWidth: 50});
+    this.load.spritesheet('a5_destroy', 'assets/graphics/attackers/a5_death.png' ,{frameHeight: 50, frameWidth: 50});
+    this.load.spritesheet('a6', 'assets/graphics/attackers/a6.png' ,{frameHeight: 96, frameWidth: 55});
+    this.load.spritesheet('a6_hurt', 'assets/graphics/attackers/a6_hurt.png' ,{frameHeight: 96, frameWidth: 54});
+    this.load.spritesheet('a6_destroy', 'assets/graphics/attackers/a6_death.png' ,{frameHeight: 100, frameWidth: 100});
     this.load.spritesheet('a7', 'assets/graphics/attackers/a7.png' ,{frameHeight: 200, frameWidth: 100});
     this.load.spritesheet('a7_hurt', 'assets/graphics/attackers/a7_hurt.png' ,{frameHeight: 200, frameWidth: 100});
     this.load.spritesheet('a7_destroy', 'assets/graphics/attackers/a7_death.png' ,{frameHeight: 200, frameWidth: 100});
@@ -334,7 +404,6 @@ function preload(){
     this.load.spritesheet('p15_destroy', 'assets/graphics/projectiles/p15_destroy.png' ,{frameHeight: 20, frameWidth: 20});
 
     //sounds
-    this.load.audio('3beeps', ['assets/sounds/3beeps.ogg']);
     this.load.audio('blip', ['assets/sounds/blip.ogg']);
     this.load.audio('transition', ['assets/sounds/transition.ogg']);
     this.load.audio('denied', ['assets/sounds/denied.ogg']);
@@ -383,6 +452,10 @@ let Enemy = new Phaser.Class({
     initialize:
     function Enemy(game){
         this.id = nextEnemy;
+        this.shield = false;
+        if(this.id == 5 || this.id == 6){
+            this.shield = true;
+        }
         //console.log("spawning "+nextEnemy);
         Phaser.GameObjects.Sprite.call(this,game,0,0,'a'+this.id);
         this.play('a'+this.id+'_normal');
@@ -862,21 +935,6 @@ function create(){
 
     tw = this.tweens;       //tween manager
 
-    creditsText = this.add.text(640,360,CREDITS,textfont_big).setStroke('#000000', 5).setOrigin(0.5);
-    creditsText.scale = 0.8;
-    creditsText.alpha = 0;
-
-    tw.add({
-        targets: creditsText,
-        duration: 200,
-        scale: 1,
-        alpha: 1,
-        ease: 'Sine.easeOut',
-        repeat: 0
-    });
-
-    this.add.text(53,710, 'ALPHA', textfont_big).setStroke('#000000', 5).setOrigin(0.5).setDepth(3);
-
     this.input.setDefaultCursor('url(assets/graphics/ui/cursor.cur), pointer'); //kurzor
 
     camera = this.cameras.main.setBounds(0, 0, 1280, 720);   //camera pre shake effect
@@ -994,21 +1052,33 @@ function damageEnemy(enemy, bullet) {
     if (enemy.active === true && bullet.active === true) {
         // we remove the bullet right away
         //let bounceangle = Phaser.Math.Angle.Between(bullet.x, bullet.y, enemy.x, enemy.y);
-        switch (bullet.type){
-            case 2: enemy.slow(0); createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
-            case 10: enemy.slow(1); createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
-            case 3: addBullet(bullet.x, bullet.y, 0, 17);break;
-            case 11: addBullet(bullet.x, bullet.y, 0, 18);break;
-            case 17: case 18: break;
-            default: createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
+
+        if(enemy.shield === false){
+            switch (bullet.type){
+                case 2: enemy.slow(0); createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
+                case 10: enemy.slow(1); createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
+                case 3: addBullet(bullet.x, bullet.y, 0, 17);break;
+                case 11: addBullet(bullet.x, bullet.y, 0, 18);break;
+                case 17: case 18: break;
+                default: createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
+            }
+            enemy.receiveDamage(bullet.damage);
+            switch(bullet.type){
+                case 17: case 18: break;
+                case 6: case 14: case 12: bullet.damage /= 1.5;break;
+                default:bullet.setActive(false);bullet.destroy();break;
+            }
         }
-
-        enemy.receiveDamage(bullet.damage);
-
-        switch(bullet.type){
-            case 17: case 18: break;
-            case 6: case 14: case 12: bullet.damage /= 1.5;break;
-            default:bullet.setActive(false);bullet.destroy();break;
+        else{
+            if(bullet.type == 6 || bullet.type == 9 || bullet.type == 14){
+                enemy.receiveDamage(bullet.damage);
+                switch(bullet.type){
+                    case 1: case 9: bullet.setActive(false);bullet.destroy();break;
+                    case 6: case 14: bullet.damage /= 1.5;break;
+                    default: break;
+                }
+                createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);
+            }
         }
     }
 }
@@ -1423,7 +1493,12 @@ function generateAnims(){
     game.anims.create({key: "a4_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a4",{start:0, end:9}), repeat: -1});
     game.anims.create({key: "a4_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a4_hurt",{start:0, end:9}), repeat: 0});
     game.anims.create({key: "a4_destroy", frameRate: 24, frames: game.anims.generateFrameNumbers("a4_destroy",{start:0, end:13}), repeat: 0});
-
+    game.anims.create({key: "a5_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a5",{start:0, end:6}), repeat: -1});
+    game.anims.create({key: "a5_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a5_hurt",{start:1, end:10}), repeat: 0});
+    game.anims.create({key: "a5_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a5_destroy",{start:4, end:10}), repeat: 0});
+    game.anims.create({key: "a6_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a6",{start:0, end:9}), repeat: -1});
+    game.anims.create({key: "a6_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a6_hurt",{start:0, end:9}), repeat: 0});
+    game.anims.create({key: "a6_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a6_destroy",{start:3, end:10}), repeat: 0});
     game.anims.create({key: "a7_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a7",{start:0, end:19}), repeat: -1});
     game.anims.create({key: "a7_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a7_hurt",{start:0, end:19}), repeat: 0});
     game.anims.create({key: "a7_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a7_destroy",{start:0, end:23}), repeat: 0});
