@@ -69,7 +69,7 @@ let LEVEL = -2;
 let WAVE = 0;
 let HEALTH;
 let MONEY;
-const STARTHEALTH = 100;
+const STARTHEALTH = 50;
 const STARTMONEY = 250;
 const WAVE_REWARD = 100;
 let SELECTED_TOWER = 1;
@@ -89,7 +89,7 @@ const HUD_ICON_SCALE = 0.5;
 
 const ENEMY_HEALTH = [50,300,800,1,300,800,70000,150000];
 const ENEMY_SPEED = [1/8000,1/10000,1/15000,1/4000,1/10000,1/15000,1/16000,1/20000];
-const ENEMY_REWARD = [10,20,40,5,40,80,1000,2000];
+const ENEMY_REWARD = [10,20,40,5,40,80,2000,10000];
 const LEVEL_SPEED_MODIFIER = [0.7, 0.8, 0.9];
 
 let waveInProgress = false;
@@ -213,7 +213,6 @@ const WAVE_DESCRIPTION = [
     'And they don\'t stop comming... And they don\'t stop comming... And they don\'t stop comming...\n And they don\'t stop comming... And they don\'t stop comming... And they don\'t stop comming...',
     '',
     '',
-    '',
     'Here, have a freebie.',
     '',
     '',
@@ -221,8 +220,9 @@ const WAVE_DESCRIPTION = [
     'Holy cow, you actually made it!',
     '',
     '',
+    '',
     'This is the last wave for level 1. Prepare for a boss battle!',
-    'wave31',
+    'Good job!',
     '',
     '',
     '',
@@ -521,7 +521,7 @@ let Enemy = new Phaser.Class({
             this.setActive(false);
             this.destroy();
             HEALTH--;
-            if(this.id >= 7)HEALTH-=100;
+            if(this.id >= 7)HEALTH-=49;
             updateHpText();
         }
     },
@@ -1257,7 +1257,8 @@ function updateMoneyText(){
 }
 
 function nextWave(){
-    if(WAVE<waves.length){
+    console.log(WAVE);
+    if(WAVE !== MAXWAVES[LEVEL-1] && WAVE<waves.length){
         WAVE++;
         //console.log('starting wave '+ WAVE);
         waveInProgress=true;
