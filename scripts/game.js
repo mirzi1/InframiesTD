@@ -74,11 +74,11 @@ const STARTMONEY = 250;
 const WAVE_REWARD = 100;
 let SELECTED_TOWER = 1;
 
-const WAVE_SPEED = 100;
+let WAVE_SPEED = 150;
 
 const bigfont = { font: " 16px font1", fill: "#3CCEFF", boundsAlignH: "center", boundsAlignV: "middle" };
 const bigfont_white = { font: "16px font1", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
-const textfont = { font: "bold 12px font2", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+//const textfont = { font: "bold 12px font2", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 const selectedfont = { font: "bold 12px font2", fill: "#fff", align:"center", boundsAlignH: "center", boundsAlignV: "middle" };
 const textfont_big_left = { font: "bold 18px font2", fill: "#fff", align:"left",boundsAlignH: "center", boundsAlignV: "middle" };
 const textfont_big = { font: "bold 18px font2,sans-serif", fill: "#fff", align:"center", boundsAlignH: "center", boundsAlignV: "middle" };
@@ -87,9 +87,9 @@ const textfont_superbig = { font: "100px font1", fill: "#fff", align:"center", b
 
 const HUD_ICON_SCALE = 0.5;
 
-const ENEMY_HEALTH = [50,300,800,1,500,600,20000,50000];
-const ENEMY_SPEED = [1/8000,1/10000,1/15000,1/4000,1/10000,1/10000,1/16000,1/20000];
-const ENEMY_REWARD = [15,30,70,10,50,100,100,2000];
+const ENEMY_HEALTH = [50,300,800,1,300,800,70000,150000];
+const ENEMY_SPEED = [1/8000,1/10000,1/15000,1/4000,1/10000,1/15000,1/16000,1/20000];
+const ENEMY_REWARD = [10,20,40,5,40,80,1000,2000];
 const LEVEL_SPEED_MODIFIER = [0.7, 0.8, 0.9];
 
 let waveInProgress = false;
@@ -116,7 +116,7 @@ const TOWER_DESCRIPTION = ['Laser - Basic and all around good tower.',
                             'Nuke - Vaporizes everything except bosses, 30 second cooldown'];
 const TOWER_UPGRADE_DESCRIPTION = [ '+firerate, +range, damage shielded enemies',
                                     '+firerate, enemies become even slower',
-                                    '+firerate, +range, +damage, slightly bigger explosions',
+                                    '+firerate, +range, +damage, damage shielded enemies',
                                     '+firerate, piercing projectiles',
                                     '+firerate, +range, +damage, firerate roughly doubles',
                                     '+firerate, +range',
@@ -209,20 +209,20 @@ const WAVE_DESCRIPTION = [
     'Shielded enemies can only take damage from Thermal or upgraded Laser towers.',
     'Shielded enemies are very dangerous, make sure you have a few towers that are capable of taking them down.\nOtherwise you may have a few problems in later waves.',
     '',
+    'A bunch of shielded enemies are attacking. Prepare for doom!',
+    'And they don\'t stop comming... And they don\'t stop comming... And they don\'t stop comming...\n And they don\'t stop comming... And they don\'t stop comming... And they don\'t stop comming...',
     '',
     '',
     '',
+    'Here, have a freebie.',
     '',
     '',
+    'The next wave is gonna be the end of you.',
+    'Holy cow, you actually made it!',
     '',
     '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
+    'This is the last wave for level 1. Prepare for a boss battle!',
+    'wave31',
     '',
     '',
     '',
@@ -261,20 +261,34 @@ const waves = [ [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0
                 [1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,2],
                 [1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,2,0,2],
                 [1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,2,0,1,0,2,0,1,0,2,0],
-                [3,0,0,0,0,1,1,1,1,0,0,0,0,3],
+                [3,0,0,0,0,1,1,3,1,1,0,0,0,0,3],
                 [3,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,3,0,0,0,3],
                 [3,0,0,0,3,0,0,0,3,0,0,0,3,0,0,0,3,0,0,0,3],
                 [4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4],
-                [1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0,1,2],
                 [2,2,0,0,2,2,0,0,2,2,0,0,2,2,0,0,2,2,0,0,2,2,0,0,2,2,0,0,2,2,0,0,2,2],
                 [3,0,3,0,3,0,3,0,3,0,3,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
                 [2,2,1,2,2,1,2,2,1,2,2,1,2,2,1,2,2,1,2,2,1,2,2,1,2,2,1,2,2,1,2,2],
                 [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
                 [5,6],
-                [3,3,1,2,3,4,1,2,3,4,1,2,3,4,3,3,3,3]
-
-              ];
+                [3,3,0,0,0,0,1,2,3,4,0,0,0,0,1,2,3,4,0,0,0,0,1,2,3,4,0,0,0,0,3,3,3,0,0,0,0,3,0,0,0,0,3,3,0,0,0,0,1,2,3,4,0,0,0,0,1,2,3,4,0,0,0,0,1,2,3,4,0,0,0,0,3,3,3,3],
+                [3,4,3,4,0,0,0,0,3,4,3,4,0,0,0,0,3,4,3,4,0,0,0,0,3,4,3,4,0,0,0,0,3,4,3,4,0,0,0,0,3,4,3,4,0,0,0,0,3,4,3,4,0,0,0,0,3,4,3,4,0,0,0,0,3,4,3,4,0,0,0,0,3,4,3,4,0,0,0,0,3,4,3,4,3,4],
+                [5,0,0,5,0,0,5,0,0,5,0,0,5,0,0,5,0,0,5,0,0,5,0,0,6,0,0,6,0,0,6,0,0,6,0,0,6,0,0,6,0,0,6,0,0,6],
+                [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+                [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+                [1,1,1,1,1,1,1,1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,3,3,3,3,3,3,3],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [3,6,3,6,0,0,0,0,3,6,3,6,3,6,0,0,0,0,3,6,3,6,3,6,3,6,3,6,3,6],
+                [5,6,5,6,0,0,0,0,0,0,0,0,5,6,5,6,5,6,5,6,5,6,0,0,0,0,0,0,0,0,0,0,0,0,5,6,5,6,5,6,5,6,5,6,5,6,5,6,5,6,5,6,5,6,5,6,5,6,5,6,5,6,5,6],
+                [6,6,6,6,0,0,0,0,6,6,6,6,6,6,6,6,0,0,0,0,0,0,0,0,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,],
+                [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+                [2,5,3,4,6,0,0,0,2,5,3,4,6,0,0,0,2,5,3,4,6,0,0,0,2,5,3,4,6,0,0,0,2,5,3,4,6,0,0,0,2,5,3,4,6,0,0,0,2,5,3,4,6,0,0,0,2,5,3,4,6,0,0,0,2,5,3,4,6,0,0,0,2,5,3,4,6,0,0,0],
+                [3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3],
+                [5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6],
+                [1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3],
+                [5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]
+];
 
 function preload(){
     background = this.add.image(640, 360).setDepth(3);           //background bude vzdy naspodku
@@ -452,10 +466,8 @@ let Enemy = new Phaser.Class({
     initialize:
     function Enemy(game){
         this.id = nextEnemy;
-        this.shield = false;
-        if(this.id == 5 || this.id == 6){
-            this.shield = true;
-        }
+
+        this.shield = this.id === 5 || this.id === 6;
         //console.log("spawning "+nextEnemy);
         Phaser.GameObjects.Sprite.call(this,game,0,0,'a'+this.id);
         this.play('a'+this.id+'_normal');
@@ -558,7 +570,7 @@ let Enemy = new Phaser.Class({
     },
     slow:
     function(type) {
-        if (type == 0) {
+        if (type === 0) {
             this.speed = ENEMY_SPEED[this.id - 1] / 2;
             this.unfreeze = globalTime + TOWER_FREEZETIME;
             this.tint = 0xff55ff;
@@ -619,11 +631,11 @@ let Tower = new Phaser.Class({
             Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 't'+SELECTED_TOWER);
             this.nextTic = 0;
             this.TowerType = SELECTED_TOWER;
-            if(this.TowerType != 8){
+            if(this.TowerType !== 8){
                 this.setInteractive().on('pointerdown', () => {
-                if(SELECTED_TOWER == 0 && this.active === true){
+                if(SELECTED_TOWER === 0 && this.active === true){
                     this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
-                    if(this.TowerType%8 != 4 && this.TowerType%8 != 6){
+                    if(this.TowerType%8 !== 4 && this.TowerType%8 !== 6){
                         this.setActive(false);
                         if(this.TowerType <8){MONEY+=TOWER_PRICES[this.TowerType-1]/2;}
                         else{MONEY+=TOWER_PRICES[(this.TowerType%8)-1];}
@@ -669,7 +681,7 @@ let Tower = new Phaser.Class({
                         });
                     }
                 }
-                if(SELECTED_TOWER == -2 && this.TowerType<8 && this.active === true){
+                if(SELECTED_TOWER === -2 && this.TowerType<8 && this.active === true){
                     //if there is enough money for an upgrade
                     if(MONEY>=TOWER_PRICES[this.TowerType-1]*2){
                         MONEY-=TOWER_PRICES[(this.TowerType%8)-1]
@@ -694,7 +706,7 @@ let Tower = new Phaser.Class({
         },
     place: function(i, j) {
         //polozenie - pozicia a typ
-        if(SELECTED_TOWER != 0 && SELECTED_TOWER != -2 && this.TowerType != 8){
+        if(SELECTED_TOWER !== 0 && SELECTED_TOWER !== -2 && this.TowerType !== 8){
             this.y = i * GRID_H + GRID_H/2;
             this.x = j * GRID_W + GRID_W/2;
             switch(LEVEL){
@@ -703,10 +715,10 @@ let Tower = new Phaser.Class({
                 case 3: level3[i][j] = this.TowerType;break;
             }
             this.alpha = 0;
-            if(this.TowerType%8 == 7){
+            if(this.TowerType%8 === 7){
                 this.play('t7_idle');
             }
-            if(this.TowerType%8 == 4){
+            if(this.TowerType%8 === 4){
                 this.setTexture('t4', 22);
                 this.scale = 1;
                 tw.add({
@@ -717,7 +729,7 @@ let Tower = new Phaser.Class({
                     ease: 'Bounce.easeOut',
                     repeat: 0
                 });
-            }else if(this.TowerType%8 == 6){
+            }else if(this.TowerType%8 === 6){
                 this.play('t6_idle');
                 this.scale = 1.5;
                 tw.add({
@@ -743,7 +755,7 @@ let Tower = new Phaser.Class({
         }
 
         //duki nuki
-        if(this.TowerType == 8 && nukeReady === true){
+        if(this.TowerType === 8 && nukeReady === true){
             if(nukeReady){
                 this.x = i; this.y = j;
                 nukeReady = false;
@@ -806,7 +818,7 @@ let Tower = new Phaser.Class({
             let angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
             //default a podobne
             //iba t4
-            if(this.TowerType%8 == 4 || this.TowerType%8 == 6){
+            if(this.TowerType%8 === 4 || this.TowerType%8 === 6){
                 //charging turrets animation
                 this.play('t'+this.TowerType%8+'_charge');
                 playSound('c'+this.TowerType%8);
@@ -820,7 +832,7 @@ let Tower = new Phaser.Class({
                     this.play('t'+this.TowerType%8+'_fire');
                     playSound('f'+this.TowerType%8);
                     addBullet(this.x, this.y, angle, this.TowerType)
-                    if(this.TowerType%8 == 6){
+                    if(this.TowerType%8 === 6){
                         //return to idle anim
                         this.once('animationcomplete', ()=>{
                             this.play('t'+this.TowerType%8+'_idle');
@@ -830,7 +842,7 @@ let Tower = new Phaser.Class({
             }
             else{addBullet(this.x, this.y, angle, this.TowerType);this.play('t'+this.TowerType%8+'_fire');playSound('f'+this.TowerType%8);}
             //t5 multishot
-            if(this.TowerType%8 == 5){
+            if(this.TowerType%8 === 5){
                 addBullet(this.x, this.y, angle-0.1, this.TowerType);
                 addBullet(this.x, this.y, angle-0.2, this.TowerType);
                 addBullet(this.x, this.y, angle-0.3, this.TowerType);
@@ -842,7 +854,7 @@ let Tower = new Phaser.Class({
             switch(this.TowerType){
                 case 1: case 3: case 5: case 6: case 7: case 9: case 11: case 13: case 15: this.angle = ((angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG );break;
             }
-            if(this.TowerType%8 == 7){
+            if(this.TowerType%8 === 7){
                 this.once('animationcomplete', ()=>{
                     this.play('t'+this.TowerType%8+'_idle');
                 });
@@ -927,7 +939,7 @@ function create(){
     background.alpha = 0;
 
     //don't mind me
-    fsrect = this.add.rectangle(640, 360, 1280, 720, 0x000000).setDepth(3).setInteractive().on('pointerdown', () => {if(fsrect.active === true){if(LEVEL==-1){createGame.call(this);}nextLevel();}});;
+    fsrect = this.add.rectangle(640, 360, 1280, 720, 0x000000).setDepth(3).setInteractive().on('pointerdown', () => {if(fsrect.active === true){if(LEVEL===-1){createGame.call(this);}nextLevel();}});
     fsrect.alpha = 0.01;
 
     music = this.sound.add('intro', {volume: 0.3, loop: true});             //bgm
@@ -958,7 +970,7 @@ function update(time, delta){
         if (time > this.nextEnemy){
             if(waveIndex<waves[WAVE-1].length){
                 nextEnemy=waves[WAVE-1][waveIndex];
-                if(nextEnemy != 0){
+                if(nextEnemy !== 0){
                     let enemy = enemies.get();
                     if (enemy){
                         enemy.setActive(true);
@@ -969,9 +981,9 @@ function update(time, delta){
                     }
                 }
                 waveIndex++;
-            }else if(enemies.countActive() == 0){
+            }else if(enemies.countActive() === 0){
                 /*console.log('end of wave '+WAVE+' reached');*/MONEY+=WAVE_REWARD;updateMoneyText();waveInProgress=false;nextWaveButton.visible = true;graphics.alpha = 0.8;start.alpha = 1;finish.alpha =1;
-                if(WAVE == MAXWAVES[LEVEL-1] || WAVE == waves.length){showVictoryScreen();nextWaveButton.setTexture("button_nextwave", 1);}
+                if(WAVE === MAXWAVES[LEVEL-1] || WAVE === waves.length){showVictoryScreen();nextWaveButton.setTexture("button_nextwave", 1);}
                 updateWaveInfo();
             }
             this.nextEnemy = time + WAVE_SPEED;
@@ -981,7 +993,7 @@ function update(time, delta){
 }
 
 function placeTower(pointer) {
-    if(pointer.x>100 && pointer.y>40 && SELECTED_TOWER != 0 && SELECTED_TOWER != -2 && SELECTED_TOWER != 8) {
+    if(pointer.x>100 && pointer.y>40 && SELECTED_TOWER !== 0 && SELECTED_TOWER !== -2 && SELECTED_TOWER !== 8) {
             let i = Math.floor(pointer.y / GRID_H);
             let j = Math.floor(pointer.x / GRID_W);
             if (canPlaceTower(i, j)) {
@@ -1001,7 +1013,7 @@ function placeTower(pointer) {
                 blinkAvailableSpaces();
             }
         }
-    if(pointer.x>100 && pointer.y>40 && SELECTED_TOWER == 8 && waveInProgress && nukeReady) {
+    if(pointer.x>100 && pointer.y>40 && SELECTED_TOWER === 8 && waveInProgress && nukeReady) {
             if(MONEY-TOWER_PRICES[SELECTED_TOWER-1]>=0) {
                 MONEY -= TOWER_PRICES[SELECTED_TOWER - 1];
                 updateMoneyText();
@@ -1071,7 +1083,7 @@ function damageEnemy(enemy, bullet) {
             }
         }
         else{
-            if(bullet.type == 6 || bullet.type == 9 || bullet.type == 14){
+            if(bullet.type === 6 || bullet.type === 9 || bullet.type === 14 || bullet.type === 11){
                 enemy.receiveDamage(bullet.damage);
                 switch(bullet.type){
                     case 1: case 9: bullet.setActive(false);bullet.destroy();break;
@@ -1110,19 +1122,19 @@ function blinkAvailableSpaces(){
             case 1:
                 for(let i = 0; i<level1.length; i++){
                     for(let j = 0; j<level1[i].length; j++){
-                        if(level1[i][j]==0){createAnimated(25+GRID_H*j,25+GRID_W*i,'freespace', false);}
+                        if(level1[i][j]===0){createAnimated(25+GRID_H*j,25+GRID_W*i,'freespace', false);}
                     }
                 }break;
             case 2:
                 for(let i = 0; i<level2.length; i++){
                     for(let j = 0; j<level2[i].length; j++){
-                        if(level2[i][j]==0){createAnimated(25+GRID_H*j,25+GRID_W*i,'freespace', false);}
+                        if(level2[i][j]===0){createAnimated(25+GRID_H*j,25+GRID_W*i,'freespace', false);}
                     }
                 }break;
             case 3:
                 for(let i = 0; i<level3.length; i++){
                     for(let j = 0; j<level3[i].length; j++){
-                        if(level3[i][j]==0){createAnimated(25+GRID_H*j,25+GRID_W*i,'freespace', false);}
+                        if(level3[i][j]===0){createAnimated(25+GRID_H*j,25+GRID_W*i,'freespace', false);}
                     }
                 }break;
         }
@@ -1166,15 +1178,15 @@ function upgradeTool(){
 
 function updateTowerInfo(){
     selectedImg.setTexture('t'+(SELECTED_TOWER)).setScale(0.25);
-    if(SELECTED_TOWER == 4){selectedImg.setScale(0.1)};
-    if(SELECTED_TOWER == 6){selectedImg.setScale(0.17)};
+    if(SELECTED_TOWER === 4){selectedImg.setScale(0.1)}
+    if(SELECTED_TOWER === 6){selectedImg.setScale(0.17)}
     selectedInfo.setText(getTowerInfo(SELECTED_TOWER-1));
     game.input.setDefaultCursor('url(assets/graphics/ui/cursor.cur), pointer');
 }
 
 function getTowerInfo(type){
 
-    if(type == 7){return TOWER_DESCRIPTION[type];}
+    if(type === 7){return TOWER_DESCRIPTION[type];}
     return TOWER_DESCRIPTION[type]+'\nUpgrade: '+TOWER_UPGRADE_DESCRIPTION[type]+' - '+TOWER_PRICES[type]*2+'$';
 
     //old info used for debugging stuff
@@ -1228,14 +1240,14 @@ function updateMoneyText(){
     scoreText.setText("Score: "+SCORE);
     moneyText.y = 6;
 
-    if(MONEY >= TOWER_PRICES[0]){cross1.visible = false;}else{cross1.visible = true;}
-    if(MONEY >= TOWER_PRICES[1]){cross2.visible = false;}else{cross2.visible = true;}
-    if(MONEY >= TOWER_PRICES[2]){cross3.visible = false;}else{cross3.visible = true;}
-    if(MONEY >= TOWER_PRICES[3]){cross4.visible = false;}else{cross4.visible = true;}
-    if(MONEY >= TOWER_PRICES[4]){cross5.visible = false;}else{cross5.visible = true;}
-    if(MONEY >= TOWER_PRICES[5]){cross6.visible = false;}else{cross6.visible = true;}
-    if(MONEY >= TOWER_PRICES[6]){cross7.visible = false;}else{cross7.visible = true;}
-    if(MONEY >= TOWER_PRICES[7]){cross8.visible = false;}else{cross8.visible = true;}
+    cross1.visible = MONEY < TOWER_PRICES[0];
+    cross2.visible = MONEY < TOWER_PRICES[1];
+    cross3.visible = MONEY < TOWER_PRICES[2];
+    cross4.visible = MONEY < TOWER_PRICES[3];
+    cross5.visible = MONEY < TOWER_PRICES[4];
+    cross6.visible = MONEY < TOWER_PRICES[5];
+    cross7.visible = MONEY < TOWER_PRICES[6];
+    cross8.visible = MONEY < TOWER_PRICES[7];
     tw.add({
         targets: moneyText,
         duration: 100,
@@ -1250,16 +1262,22 @@ function nextWave(){
         //console.log('starting wave '+ WAVE);
         waveInProgress=true;
         waveIndex = 0;
+        if(WAVE_SPEED>15)WAVE_SPEED-=5;
         hideWaveInfo();
         updateWaveText();
         nextWaveButton.visible = false;
         graphics.alpha = 0.3;
         start.alpha = 0;
         finish.alpha = 0;
-        if(WAVE==waves.length){
+        if(WAVE===waves.length || WAVE===MAXWAVES[LEVEL-1]){
             playMusic(4);
         }
     }else{nextLevel();/*console.log('no more waves in array!')*/}
+}
+
+function jumpToWave(wave){
+    WAVE = wave-1;
+    nextWave();
 }
 
 function nextLevel(){
@@ -1452,19 +1470,19 @@ function restartLevel(){
         case 1:
             for(let i = 0; i<level1.length; i++){
                 for(let j = 0; j<level1[i].length; j++){
-                    if(level1[i][j]!=-1){level1[i][j]=0;}
+                    if(level1[i][j]!==-1){level1[i][j]=0;}
                 }
             }break;
         case 2:
             for(let i = 0; i<level2.length; i++){
                 for(let j = 0; j<level2[i].length; j++){
-                    if(level2[i][j]!=-1){level2[i][j]=0;}
+                    if(level2[i][j]!==-1){level2[i][j]=0;}
                 }
             }break;
         case 3:
             for(let i = 0; i<level3.length; i++){
                 for(let j = 0; j<level3[i].length; j++){
-                    if(level3[i][j]!=-1){level3[i][j]=0;}
+                    if(level3[i][j]!==-1){level3[i][j]=0;}
                 }
             }break;
     }
@@ -1913,11 +1931,11 @@ function createGame(){
     }
 
     for(let i=0; i<7; i++){
-        if(i==3){
+        if(i===3){
             this.add.image(53,75*i+98, 't'+(i+1)).setDepth(2).setScale(HUD_ICON_SCALE*0.5);
-        }else if(i==5) {
+        }else if(i===5) {
             this.add.image(53, 75 * i + 98, 't6_idle').setDepth(2).setScale(HUD_ICON_SCALE*0.7);
-        }else if(i==6){
+        }else if(i===6){
             this.add.image(53,75*i+98, 't7_idle').setDepth(2).setScale(HUD_ICON_SCALE);
         }else{
             this.add.image(53,75*i+98, 't'+(i+1)).setDepth(2).setScale(HUD_ICON_SCALE);
