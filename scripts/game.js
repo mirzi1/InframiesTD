@@ -418,46 +418,46 @@ function preload(){
     this.load.spritesheet('p15_destroy', 'assets/graphics/projectiles/p15_destroy.png' ,{frameHeight: 20, frameWidth: 20});
 
     //sounds
-    this.load.audio('blip', ['assets/sounds/blip.ogg']);
-    this.load.audio('transition', ['assets/sounds/transition.ogg']);
-    this.load.audio('denied', ['assets/sounds/denied.ogg']);
-    this.load.audio('upgrade', ['assets/sounds/upgrade.ogg']);
-    this.load.audio('sell', ['assets/sounds/sell.ogg']);
+    this.load.audio('blip', ['assets/sounds/blip.ogg','assets/sounds/blip.mp3']);
+    this.load.audio('transition', ['assets/sounds/transition.ogg','assets/sounds/transition.mp3']);
+    this.load.audio('denied', ['assets/sounds/denied.ogg','assets/sounds/denied.mp3']);
+    this.load.audio('upgrade', ['assets/sounds/upgrade.ogg','assets/sounds/upgrade.mp3']);
+    this.load.audio('sell', ['assets/sounds/sell.ogg','assets/sounds/sell.mp3']);
 
-    this.load.audio('fire_1', ['assets/sounds/fire_laser.ogg']);
-    this.load.audio('fire_2', ['assets/sounds/fire_electric.ogg']);
-    this.load.audio('fire_3', ['assets/sounds/fire_rocket.ogg']);
-    this.load.audio('charge_4', ['assets/sounds/charge_rail.ogg']);
-    this.load.audio('fire_4', ['assets/sounds/fire_rail.ogg']);
-    this.load.audio('fire_5', ['assets/sounds/fire_multi.ogg']);
-    this.load.audio('charge_6', ['assets/sounds/charge_thermal.ogg']);
-    this.load.audio('fire_6', ['assets/sounds/fire_thermal.ogg']);
-    this.load.audio('fire_7', ['assets/sounds/fire_rapid.ogg']);
-    this.load.audio('fire_8', ['assets/sounds/fire_nuke.ogg']);
-    this.load.audio('death_7', ['assets/sounds/a7_death.ogg']);
-    this.load.audio('death_8', ['assets/sounds/a8_death.ogg']);
+    this.load.audio('fire_1', ['assets/sounds/fire_laser.ogg','assets/sounds/fire_laser.mp3']);
+    this.load.audio('fire_2', ['assets/sounds/fire_electric.ogg','assets/sounds/fire_electric.mp3']);
+    this.load.audio('fire_3', ['assets/sounds/fire_rocket.ogg','assets/sounds/fire_rocket.mp3']);
+    this.load.audio('charge_4', ['assets/sounds/charge_rail.ogg','assets/sounds/charge_rail.mp3']);
+    this.load.audio('fire_4', ['assets/sounds/fire_rail.ogg','assets/sounds/fire_rail.mp3']);
+    this.load.audio('fire_5', ['assets/sounds/fire_multi.ogg','assets/sounds/fire_multi.mp3']);
+    this.load.audio('charge_6', ['assets/sounds/charge_thermal.ogg','assets/sounds/charge_thermal.mp3']);
+    this.load.audio('fire_6', ['assets/sounds/fire_thermal.ogg','assets/sounds/fire_thermal.mp3']);
+    this.load.audio('fire_7', ['assets/sounds/fire_rapid.ogg','assets/sounds/fire_rapid.mp3']);
+    this.load.audio('fire_8', ['assets/sounds/fire_nuke.ogg','assets/sounds/fire_nuke.mp3']);
+    this.load.audio('death_7', ['assets/sounds/a7_death.ogg','assets/sounds/a7_death.mp3']);
+    this.load.audio('death_8', ['assets/sounds/a8_death.ogg','assets/sounds/a8_death.mp3']);
 
     //music
     this.load.audio('intro', [
-        'assets/music/Timesplitters 2 - Astrolander.ogg'
+        'assets/music/Timesplitters 2 - Astrolander.ogg', 'assets/music/Timesplitters 2 - Astrolander.mp3'
     ]);
     this.load.audio('victory', [
-        'assets/music/Timesplitters 2 - Mission Success.ogg'
+        'assets/music/Timesplitters 2 - Mission Success.ogg', 'assets/music/Timesplitters 2 - Mission Success.mp3'
     ]);
     this.load.audio('defeat', [
-        'assets/music/Timesplitters 2 - Mission Failed.ogg'
+        'assets/music/Timesplitters 2 - Mission Failed.ogg', 'assets/music/Timesplitters 2 - Mission Failed.mp3'
     ]);
     this.load.audio('bgm1', [
-        'assets/music/Unreal Tournament - Foregone Destruction.ogg'
+        'assets/music/Unreal Tournament - Foregone Destruction.ogg','assets/music/Unreal Tournament - Foregone Destruction.mp3'
     ]);
     this.load.audio('bgm2', [
-        'assets/music/Need for Speed III - Hydrus 606.ogg'
+        'assets/music/Need for Speed III - Hydrus 606.ogg','assets/music/Need for Speed III - Hydrus 606.mp3'
     ]);
     this.load.audio('bgm3', [
-        'assets/music/Need For Speed III - Romulus 3 (Mellow Sonic 2nd Remix).ogg'
+        'assets/music/Need For Speed III - Romulus 3 (Mellow Sonic 2nd Remix).ogg','assets/music/Need For Speed III - Romulus 3 (Mellow Sonic 2nd Remix).mp3'
     ]);
     this.load.audio('bgm4', [
-        'assets/music/Timesplitters Future Perfect - Spaceport.ogg'
+        'assets/music/Timesplitters Future Perfect - Spaceport.ogg','assets/music/Timesplitters Future Perfect - Spaceport.mp3'
     ]);
 }
 
