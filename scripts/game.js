@@ -79,10 +79,10 @@ let WAVE_SPEED = 150;
 const bigfont = { font: " 16px font1", fill: "#3CCEFF", boundsAlignH: "center", boundsAlignV: "middle" };
 const bigfont_white = { font: "16px font1", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 //const textfont = { font: "bold 12px font2", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
-const selectedfont = { font: "bold 12px font2", fill: "#fff", align:"center", boundsAlignH: "center", boundsAlignV: "middle" };
-const textfont_big_left = { font: "bold 18px font2", fill: "#fff", align:"left",boundsAlignH: "center", boundsAlignV: "middle" };
-const textfont_big = { font: "bold 18px font2,sans-serif", fill: "#fff", align:"center", boundsAlignH: "center", boundsAlignV: "middle" };
-const textfont_big_right = { font: "bold 18px font2", fill: "#fff", align:"right", boundsAlignH: "center", boundsAlignV: "middle" };
+const selectedfont = { font: "12px font2", fill: "#fff", align:"center", boundsAlignH: "center", boundsAlignV: "middle" };
+const textfont_big_left = { font: "18px font2", fill: "#fff", align:"left",boundsAlignH: "center", boundsAlignV: "middle" };
+const textfont_big = { font: "18px font2,sans-serif", fill: "#fff", align:"center", boundsAlignH: "center", boundsAlignV: "middle" };
+const textfont_big_right = { font: "18px font2", fill: "#fff", align:"right", boundsAlignH: "center", boundsAlignV: "middle" };
 const textfont_superbig = { font: "100px font1", fill: "#fff", align:"center", boundsAlignH: "center", boundsAlignV: "middle" };
 
 const HUD_ICON_SCALE = 0.5;
