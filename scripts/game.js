@@ -1371,6 +1371,12 @@ function nextLevel(){
         case -1:
             background.setTexture('itdMenu');
             background.scale = 1.2;
+
+            //check if mobile device
+            if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
+                toggleFullscreen();
+            }
+
             tw.add({
                 targets: background,
                 duration: 500,
@@ -1677,10 +1683,27 @@ function toggleMusic(){
 function toggleFullscreen() {
     if (!game.scale.isFullscreen){
         game.scale.startFullscreen();
-        fullscreenButton.setTexture('topbuttons', 3);
+        try{
+            screen.orientation.lock("portrait");
+        }catch (e) {
+            console.warn("Device orientation is unsupported");
+        }
+
+        try{
+            fullscreenButton.setTexture('topbuttons', 3);
+        }catch (e) {/* im dum */}
+
     }else{
         game.scale.stopFullscreen();
-        fullscreenButton.setTexture('topbuttons', 2);
+        try{
+            screen.orientation.unlock();
+        }catch (e) {
+            console.warn("Device orientation is unsupported");
+        }
+
+        try{
+            fullscreenButton.setTexture('topbuttons', 2);
+        }catch (e) {/* im dum */}
     }
 }
 
@@ -1908,8 +1931,8 @@ function createGame(){
     //top buttons
     nextWaveButton = this.add.image(1099,20, 'button_nextwave', 0).setDepth(2).setScale(0).setInteractive().on('pointerdown', () => nextWave());
     restartButton = this.add.image(1099,-100, 'button_nextwave', 2).setDepth(4).setScale(0).setInteractive().on('pointerdown', () => restartLevel());
-    musicButton = this.add.image(1218,20, 'topbuttons', 0).setDepth(2).setInteractive().on('pointerdown', () => toggleMusic());
     fullscreenButton = this.add.image(1259,20, 'topbuttons', 2).setDepth(2).setInteractive().on('pointerdown', () => toggleFullscreen());
+    musicButton = this.add.image(1218,20, 'topbuttons', 0).setDepth(2).setInteractive().on('pointerdown', () => toggleMusic());
 
     //tower info
     //this.add.image(200,50, 'button');
