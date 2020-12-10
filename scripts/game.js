@@ -1684,7 +1684,7 @@ function toggleFullscreen() {
     if (!game.scale.isFullscreen){
         game.scale.startFullscreen();
         try{
-            screen.orientation.lock("portrait");
+            screen.orientation.lock("landscape");
         }catch (e) {
             console.warn("Device orientation is unsupported");
         }
