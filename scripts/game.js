@@ -1257,7 +1257,6 @@ function updateMoneyText(){
 }
 
 function nextWave(){
-    console.log(WAVE);
     if(WAVE !== MAXWAVES[LEVEL-1] && WAVE<waves.length){
         WAVE++;
         //console.log('starting wave '+ WAVE);
@@ -1371,11 +1370,6 @@ function nextLevel(){
         case -1:
             background.setTexture('itdMenu');
             background.scale = 1.2;
-
-            //check if mobile device
-            if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
-                toggleFullscreen();
-            }
 
             tw.add({
                 targets: background,
@@ -1683,27 +1677,10 @@ function toggleMusic(){
 function toggleFullscreen() {
     if (!game.scale.isFullscreen){
         game.scale.startFullscreen();
-        try{
-            screen.orientation.lock("landscape");
-        }catch (e) {
-            console.warn("Device orientation is unsupported");
-        }
-
-        try{
-            fullscreenButton.setTexture('topbuttons', 3);
-        }catch (e) {/* im dum */}
-
+        fullscreenButton.setTexture('topbuttons', 3);
     }else{
         game.scale.stopFullscreen();
-        try{
-            screen.orientation.unlock();
-        }catch (e) {
-            console.warn("Device orientation is unsupported");
-        }
-
-        try{
-            fullscreenButton.setTexture('topbuttons', 2);
-        }catch (e) {/* im dum */}
+        fullscreenButton.setTexture('topbuttons', 2);
     }
 }
 
