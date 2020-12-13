@@ -33,8 +33,13 @@
     <!-- game -->
     <div id="main-game">
     </div>
+
+    <!-- php only -->
+    <div id="hsForm">
+    </div>
+
     <button>
-    <a href="http://localhost/inframiesTD/highScoreMain.php" target="_blank">High Score !</a>
+    <a href="http://localhost/inframiesTD/highScoreMain.php" target="_blank">High Score!</a>
     </button>
 </body>
 </html>

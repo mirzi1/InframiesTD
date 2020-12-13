@@ -37,6 +37,7 @@ let uitop;
 let uileft;
 let blinkSpaces = false;
 let tw;
+let add;
 let start;
 let finish;
 let globalTime;
@@ -54,15 +55,9 @@ let music_enabled = true;
 let emitter_upgrade;
 let emitter_enemies;
 let emitter_victory;
+let emitter_end;
 
-let cross1;
-let cross2;
-let cross3;
-let cross4;
-let cross5;
-let cross6;
-let cross7;
-let cross8;
+let cross = [];
 
 let SCORE = 0;
 let LEVEL = -2;
@@ -83,22 +78,23 @@ const selectedfont = { font: "12px font2", fill: "#fff", align:"center", boundsA
 const textfont_big_left = { font: "18px font2", fill: "#fff", align:"left",boundsAlignH: "center", boundsAlignV: "middle" };
 const textfont_big = { font: "18px font2,sans-serif", fill: "#fff", align:"center", boundsAlignH: "center", boundsAlignV: "middle" };
 const textfont_big_right = { font: "18px font2", fill: "#fff", align:"right", boundsAlignH: "center", boundsAlignV: "middle" };
+const textfont_bigger = { font: "50px font1", fill: "#fff", align:"center", boundsAlignH: "center", boundsAlignV: "middle" };
 const textfont_superbig = { font: "100px font1", fill: "#fff", align:"center", boundsAlignH: "center", boundsAlignV: "middle" };
 
 const HUD_ICON_SCALE = 0.5;
 
 const ENEMY_HEALTH = [50,300,800,1,300,800,70000,150000];
 const ENEMY_SPEED = [1/8000,1/10000,1/15000,1/4000,1/10000,1/15000,1/16000,1/20000];
-const ENEMY_REWARD = [10,20,40,5,40,80,2000,10000];
+const ENEMY_REWARD = [5,15,25,1,20,30,2000,10000];
 const LEVEL_SPEED_MODIFIER = [0.7, 0.8, 0.9];
 
 let waveInProgress = false;
 let nextEnemy = 0;
 let waveIndex = 0;
 
-const CREDITS = ['InframiesTD - Space themed tower defence game\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
-                '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nNeed for Speed III - Hydrus 606\nNeed For Speed III - Romulus 3 (Mellow Sonic 2nd Remix)\nTimesplitters Future Perfect - Spaceport\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
-                '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs for making a game framework that\'s fairly easy to work with.\n\n\n\n']
+const CREDITS = ['InframiesTD v1.0\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
+                '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nNeed for Speed III - Hydrus 606\nNeed For Speed III - Romulus 3 (Mellow Sonic 2nd Remix)\nTimesplitters Future Perfect - Spaceport\nTimesplitters 2 - Ice Station\nRe-Volt - Credits\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
+                '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs. This game wouldn\'t be a reality without their game framework.\n\n']
 
 const TOWER_PRICES = [250,400,600,1000,700,600,3000,4000];
 
@@ -186,9 +182,6 @@ let level3 =       [[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
                     [-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1],
                     [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]];
 
-//debug waves
-//const waves = [[1], [4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4,0,0,4]];
-
 const MAXWAVES = [30, 40, 50];
 
 const WAVE_DESCRIPTION = [
@@ -200,24 +193,24 @@ const WAVE_DESCRIPTION = [
     '',
     '',
     'Quick units are attacking next wave, shotgunners are one of their many weaknesses.',
-    'Let\'s up the ante for the next level, shall we?',
     '',
+    'Time to up the ante!',
     '',
     '',
     '',
     'A huge swarm of quick enemies is coming!',
-    'Shielded enemies can only take damage from Thermal or upgraded Laser towers.',
+    'Shielded enemies can only take damage from Thermal or upgraded Laser and Rocket towers.',
     'Shielded enemies are very dangerous, make sure you have a few towers that are capable of taking them down.\nOtherwise you may have a few problems in later waves.',
     '',
     'A bunch of shielded enemies are attacking. Prepare for doom!',
     'And they don\'t stop comming... And they don\'t stop comming... And they don\'t stop comming...\n And they don\'t stop comming... And they don\'t stop comming... And they don\'t stop comming...',
     '',
     '',
-    'Here, have a freebie.',
+    'Have a freebie.',
     '',
     '',
-    'The next wave is gonna be the end of you.',
-    'Holy cow, you actually made it!',
+    '',
+    '',
     '',
     '',
     '',
@@ -332,12 +325,15 @@ function preload(){
     this.load.image('selector', 'assets/graphics/ui/selector.png');
     this.load.image('cross', 'assets/graphics/ui/disabled.png');
     this.load.image('itdMenu', 'assets/graphics/ui/menu.jpg');
+    this.load.image('hs_submit', 'assets/graphics/ui/hs_submit.png');
+    this.load.spritesheet('star', 'assets/graphics/ui/star.png',{frameHeight: 4, frameWidth: 4});
     this.load.spritesheet('button_nextwave', 'assets/graphics/ui/button_nextwave.png',{frameHeight: 40, frameWidth: 197});
     this.load.spritesheet('topbuttons', 'assets/graphics/ui/topbuttons.png',{frameHeight: 40, frameWidth: 41});
     this.load.spritesheet('start_finish', 'assets/graphics/ui/start_finish.png' ,{frameHeight: 100, frameWidth: 100});
     this.load.spritesheet('button_small', 'assets/graphics/ui/button_small.png' ,{frameHeight: 35, frameWidth: 35});
     this.load.spritesheet('button_icons', 'assets/graphics/ui/button_icons.png' ,{frameHeight: 25, frameWidth: 19});
     this.load.spritesheet('freespace', 'assets/graphics/ui/freespace.png' ,{frameHeight: 50, frameWidth: 50});
+    this.load.spritesheet('hs_updown', 'assets/graphics/ui/hs_updown.png' ,{frameHeight: 50, frameWidth: 80});
 
     //pozadia
     this.load.image('bg1', 'assets/graphics/levels/bg1.png');
@@ -441,6 +437,9 @@ function preload(){
     this.load.audio('intro', [
         'assets/music/Timesplitters 2 - Astrolander.ogg', 'assets/music/Timesplitters 2 - Astrolander.mp3'
     ]);
+    this.load.audio('highscore', [
+        'assets/music/Re-Volt - Credits.ogg','assets/music/Re-Volt - Credits.mp3'
+    ]);
     this.load.audio('victory', [
         'assets/music/Timesplitters 2 - Mission Success.ogg', 'assets/music/Timesplitters 2 - Mission Success.mp3'
     ]);
@@ -458,6 +457,9 @@ function preload(){
     ]);
     this.load.audio('bgm4', [
         'assets/music/Timesplitters Future Perfect - Spaceport.ogg','assets/music/Timesplitters Future Perfect - Spaceport.mp3'
+    ]);
+    this.load.audio('bgm5', [
+        'assets/music/Timesplitters 2 - Ice Station.ogg','assets/music/Timesplitters 2 - Ice Station.mp3'
     ]);
 }
 
@@ -947,6 +949,7 @@ function create(){
     //music.play();
 
     tw = this.tweens;       //tween manager
+    add = this.add;
 
     this.input.setDefaultCursor('url(assets/graphics/ui/cursor.cur), pointer'); //kurzor
 
@@ -1240,14 +1243,10 @@ function updateMoneyText(){
     scoreText.setText("Score: "+SCORE);
     moneyText.y = 6;
 
-    cross1.visible = MONEY < TOWER_PRICES[0];
-    cross2.visible = MONEY < TOWER_PRICES[1];
-    cross3.visible = MONEY < TOWER_PRICES[2];
-    cross4.visible = MONEY < TOWER_PRICES[3];
-    cross5.visible = MONEY < TOWER_PRICES[4];
-    cross6.visible = MONEY < TOWER_PRICES[5];
-    cross7.visible = MONEY < TOWER_PRICES[6];
-    cross8.visible = MONEY < TOWER_PRICES[7];
+    for(let i = 0; i<8; i++){
+        cross[i].visible = MONEY < TOWER_PRICES[i]
+    }
+
     tw.add({
         targets: moneyText,
         duration: 100,
@@ -1461,7 +1460,7 @@ function nextLevel(){
 }
 
 function jumpToLevel(level){
-    if(level>0 && level<=3){LEVEL = level-1;nextLevel();}
+    if(level>0 && level<=3){LEVEL = level-1;nextLevel();restartLevel();}
     else{console.error('nope');}
 }
 
@@ -1633,6 +1632,9 @@ function playMusic(mus_id){
                 switch(mus_id){
                     case 4: music = game.sound.add('bgm4', {volume: 0.3, loop: true}); if(music_enabled){music.play();}break;
                 }
+                switch(mus_id){
+                    case 5: music = game.sound.add('bgm5', {volume: 0.3, loop: true}); if(music_enabled){music.play();}break;
+                }
             },
             repeat: 0
         });
@@ -1699,33 +1701,37 @@ function showVictoryScreen(){
         duration: 2000,
         volume: 0,
         onComplete: ()=> {
-            music.stop();
-            if(music_enabled) {
-                fsmusic = game.sound.add('victory', {volume: 0.3});
-                fsmusic.play();
-            }
-            dimScreen(0.5);
-            emitter_victory.emitParticleAt(640, 360, 32);
+            if(LEVEL < 3){
+                music.stop();
+                if(music_enabled) {
+                    fsmusic = game.sound.add('victory', {volume: 0.3});
+                    fsmusic.play();
+                }
+                dimScreen(0.5, 500);
+                emitter_victory.emitParticleAt(640, 360, 32);
 
-            fsText.setText('LEVEL\nCOMPLETE').setDepth(4);
-            fsText.scale = 0;
-            fsText.alpha = 0;
-            tw.add({
-                targets: fsText,
-                duration: 300,
-                alpha: 1,
-                scale: 1,
-                ease: 'Back.easeOut',
-                onComplete: ()=> {
-                    tw.add({
-                        targets: nextWaveButton,
-                        duration: 300,
-                        alpha: 1,
-                        scale: 2,
-                        ease: 'Back.easeOut',
-                    });},
-                repeat: 0
-            });
+                fsText.setText('LEVEL\nCOMPLETE').setDepth(4);
+                fsText.scale = 0;
+                fsText.alpha = 0;
+                tw.add({
+                    targets: fsText,
+                    duration: 300,
+                    alpha: 1,
+                    scale: 1,
+                    ease: 'Back.easeOut',
+                    onComplete: ()=> {
+                        tw.add({
+                            targets: nextWaveButton,
+                            duration: 300,
+                            alpha: 1,
+                            scale: 2,
+                            ease: 'Back.easeOut',
+                        });},
+                    repeat: 0
+                });
+            }else{
+                showEndScreen();
+            }
         },
         repeat: 0
     });
@@ -1745,7 +1751,7 @@ function showDefeatScreen(){
     restartButton.x = 640;
     restartButton.y = 560;
 
-    dimScreen(0.8);
+    dimScreen(0.8, 500);
     tw.add({
         targets: music,
         duration: 1000,
@@ -1788,6 +1794,96 @@ function showDefeatScreen(){
     }
 }
 
+function showEndScreen(){
+    music.stop();
+    if(music_enabled) {
+        fsmusic = game.sound.add('highscore', {volume: 0.3, loop: true});
+        fsmusic.play();
+    }
+
+    dimScreen(1, 2000);
+
+    emitter_end.x = 640;
+    emitter_end.y = 360;
+
+    emitter_end.createEmitter({
+        frame: 0,
+        angle: { min: 0, max: 360 },
+        speed: { min: 50, max: 400 },
+        lifespan: { min: 3000, max: 10000 },
+        alpha: { start: 0, end: 1 },
+        scale: { start: 0.2, end: 1 },
+        on: true
+    });
+
+    //yep
+    let hsTitle = add.text(640, -100, 'VICTORY', textfont_superbig).setOrigin(0.5).setDepth(5).setScale(0.5).setColor('#deae36');
+    let hsText1 = add.text(640, 180, 'Your defenses have proven to be impenetrable by the enemy forces.\nWith their Leader in ashes, the robot army has surrendered!\n\nCongratulations!', textfont_big).setOrigin(0.5).setDepth(5).setScale(0.8);
+    let playerScoreText;
+    let playerNameText = [];
+    let nameCharacters = [0,0,0];
+    let nameButtons = [];
+    const characters = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+    let submitButton;
+    hsText1.alpha = 0;
+    tw.add({
+        targets: hsTitle,
+        duration: 2000,
+        y: 100,
+        scale: 1,
+        ease: 'Sine.easeOut',
+        onComplete: ()=>{
+            tw.add({
+                targets: hsText1,
+                duration: 1000,
+                y: 230,
+                alpha: 1,
+                scale: 1,
+                ease: 'Sine.easeOut',
+                onComplete: ()=>{
+                    playerScoreText = add.text(640, 320, "SCORE: "+SCORE, textfont_bigger).setOrigin(0.5).setDepth(5);
+                    for(let i = 0; i<3; i++){
+                        playerNameText[i] = add.text(540+i*100, 500, "A", textfont_superbig).setOrigin(0.5).setDepth(5);
+                    }
+                    updatePlayerNameText();
+                    for(let i = 0; i<3; i++){
+                        nameButtons[i] = add.image(534+i*100, 420, 'hs_updown').setDepth(5).setInteractive().on('pointerdown', () => {incLetter(i); updatePlayerNameText();} );
+                    }
+                    for(let i = 3; i<6; i++){
+                        nameButtons[i] = add.image(534+(i-3)*100, 580, 'hs_updown',1).setDepth(5).setInteractive().on('pointerdown', () => {decLetter(i-3); updatePlayerNameText();} );
+                    }
+                    submitButton = add.image(634, 650, 'hs_submit').setDepth(5).setInteractive().on('pointerdown', () => {submitScore();});
+                },
+                repeat: 0
+            });
+        },
+        repeat: 0
+    });
+
+    function updatePlayerNameText(){
+        for(let i = 0; i<3; i++){
+            playerNameText[i].setText(characters[nameCharacters[i]]);
+        }
+    }
+    function incLetter(letter){
+        if(nameCharacters[letter]<characters.length-1)nameCharacters[letter]++;
+        else nameCharacters[letter] = 0;
+    }
+    function decLetter(letter){
+        if(nameCharacters[letter]>0)nameCharacters[letter]--;
+        else nameCharacters[letter] = characters.length-1;
+    }
+    function submitScore(){
+        let PLAYERNAME = "";
+        for(let i = 0; i<3; i++){
+            PLAYERNAME += (characters[nameCharacters[i]]);
+        }
+        console.log(PLAYERNAME+", "+SCORE);
+        document.getElementById("hsForm").innerHTML = "<form name='highScoreForm'><input type='hidden' name='playerScore' value='"+SCORE+"'><input type='hidden' name='playerName' value='"+PLAYERNAME+"'></form>";
+        document.forms["highScoreForm"].submit();
+    }
+}
+
 function killAllEnemies(){
     let enemyUnits = enemies.getChildren();
     while(enemyUnits.length>0) {
@@ -1798,13 +1894,12 @@ function killAllEnemies(){
     }
 }
 
-function dimScreen(alpha){
+function dimScreen(alpha, time){
     fsrect.fillColor = '0x000000';
     tw.add({
         targets: fsrect,
-        duration: 500,
+        duration: time,
         alpha: alpha,
-        volume: 0,
         repeat: 0
     });
 }
@@ -1871,7 +1966,8 @@ function createGame(){
 
     emitter_upgrade = this.add.particles('button_icons').setDepth(2);
     emitter_enemies = this.add.particles('a3').setDepth(3);
-    emitter_victory = this.add.particles('p1').setDepth(3);
+    emitter_victory = this.add.particles('star').setDepth(3);
+    emitter_end = this.add.particles('star').setDepth(3);
 
     emitter_enemies.createEmitter({
         frame: 0,
@@ -1884,11 +1980,11 @@ function createGame(){
     });
 
     emitter_victory.createEmitter({
-        frame: 4,
+        frame: 0,
         angle: { min: 0, max: 360, steps: 32 },
         speed: 300,
         lifespan: 3000,
-        alpha: { start: 1, end: 0 },
+        alpha: { start: 0, end: 1 },
         scale: { start: 1, end: 6 },
         on: false
     });
@@ -1950,19 +2046,16 @@ function createGame(){
     selector.x = 53;
     selector.y = 75*(SELECTED_TOWER-1)+100;
 
-    cross1 = this.add.image(53,100,'cross').setDepth(2);
-    cross2 = this.add.image(53,75+100, 'cross').setDepth(2);
-    cross3 = this.add.image(53,75*2+100, 'cross').setDepth(2);
-    cross4 = this.add.image(53,75*3+100, 'cross').setDepth(2);
-    cross5 = this.add.image(53,75*4+100, 'cross').setDepth(2);
-    cross6 = this.add.image(53,75*5+100, 'cross').setDepth(2);
-    cross7 = this.add.image(53,75*6+100, 'cross').setDepth(2);
-    cross8 = this.add.image(53,75*7+100, 'cross').setDepth(2);
+    for(let i = 0; i<8; i++){
+        cross[i] = this.add.image(53,75*i+100,'cross').setDepth(2);
+    }
 
     //cenovky
     for(let i=0; i<8; i++){
         this.add.text(54,75*i+127, TOWER_PRICES[i]+'$', bigfont_white).setDepth(2).setStroke('#000000', 2).setOrigin(0.5);
     }
+
+    setUIColor(0x000000, 0x000000, '#000000');
 
     //keyboard
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE)  .on('down', function() {changeSelectedTower(1)}, this);
@@ -1973,8 +2066,8 @@ function createGame(){
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SIX)  .on('down', function() {changeSelectedTower(6)}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SEVEN).on('down', function() {changeSelectedTower(7)}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.EIGHT).on('down', function() {changeSelectedTower(8)}, this);
-    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.NINE).on('down', function() {upgradeTool()}, this);
-    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ZERO).on('down', function() {sellTool()}, this);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.NINE) .on('down', function() {upgradeTool()}, this);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ZERO) .on('down', function() {sellTool()}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)    .on('down', function() {toggleFullscreen()}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M)    .on('down', function() {toggleMusic()}, this);
 }
