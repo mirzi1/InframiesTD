@@ -1120,7 +1120,7 @@ function moveSelector(position){
 function blinkAvailableSpaces(){
     if(blinkSpaces){
         blinkSpaces=false;
-        game.sound.add('denied', {volume: 0.4}).play();
+        playDeniedSound();
         switch(LEVEL){
             case 1:
                 for(let i = 0; i<level1.length; i++){
@@ -1795,6 +1795,7 @@ function showDefeatScreen(){
 }
 
 function showEndScreen(){
+    gameInProgress = false;
     music.stop();
     if(music_enabled) {
         fsmusic = game.sound.add('highscore', {volume: 0.3, loop: true});
@@ -1818,7 +1819,7 @@ function showEndScreen(){
 
     //yep
     let hsTitle = add.text(640, -100, 'VICTORY', textfont_superbig).setOrigin(0.5).setDepth(5).setScale(0.5).setColor('#deae36');
-    let hsText1 = add.text(640, 180, 'Your defenses have proven to be impenetrable by the enemy forces.\nWith their Leader in ashes, the robot army has surrendered!\n\nCongratulations!', textfont_big).setOrigin(0.5).setDepth(5).setScale(0.8);
+    let hsText1 = add.text(640, 180, 'Your defenses have proven to be impenetrable by the enemy forces.\nWith their Leader in ashes, the robot army has surrendered.\n\nCongratulations!', textfont_big).setOrigin(0.5).setDepth(5).setScale(0.8);
     let playerScoreText;
     let playerNameText = [];
     let nameCharacters = [0,0,0];
@@ -1884,7 +1885,7 @@ function showEndScreen(){
         }
         submitButton.destroy();
 
-        add.text(640, 580, 'Thanks for submitting your high score!\n\n\n\n\n\n\n\n\n\n(This feature doesn\'t work on the GitHub version)', textfont_big).setOrigin(0.5).setDepth(5);
+        add.text(640, 580, 'Thanks for submitting your high score!\n\n\n\n\n\n\n\n\n\n(This feature doesn\'t work in the GitHub version)', textfont_big).setOrigin(0.5).setDepth(5);
 
         let PLAYERNAME = "";
         for(let i = 0; i<3; i++){
