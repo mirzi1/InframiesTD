@@ -1874,6 +1874,18 @@ function showEndScreen(){
         else nameCharacters[letter] = characters.length-1;
     }
     function submitScore(){
+        playerScoreText.destroy();
+
+        for(let i=0; i<3; i++){
+            playerNameText[i].destroy();
+        }
+        for(let i=0; i<6; i++){
+            nameButtons[i].destroy();
+        }
+        submitButton.destroy();
+
+        add.text(640, 580, 'Thanks for submitting your high score!\n\n\n\n\n\n\n\n\n\n(This feature doesn\'t work on the GitHub version)', textfont_big).setOrigin(0.5).setDepth(5);
+
         let PLAYERNAME = "";
         for(let i = 0; i<3; i++){
             PLAYERNAME += (characters[nameCharacters[i]]);
