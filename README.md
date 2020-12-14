@@ -23,3 +23,29 @@ The high score database only works if you have a database server running. This c
 * Open up a web browser
 * Go to localhost/InframiesTD/index
 * Take in the smell of spaghetti code
+
+# Credits
+**Developers:**
+* [mirzi](https://github.com/mirzi1) - Game programming
+* [Eldii](https://github.com/UKF-MarekKosznovszki) - Database and backend programming
+* [ROGERsvk](https://github.com/ukf-jozefkosut) - Graphic design, UI design
+
+
+**Music:**
+* Timesplitters 2 - Astrolander
+* Unreal Tournament - Foregone Destruction
+* Need for Speed III - Hydrus 606
+* Need For Speed III - Romulus 3 (Mellow Sonic 2nd Remix)
+* Timesplitters Future Perfect - Spaceport
+* Timesplitters 2 - Ice Station
+* Re-Volt - Credits
+* Timesplitters 2 - Mission Success
+* Timesplitters 2 - Mission Failed
+
+
+**Sound effects:**
+* [freesound.org](https://freesound.org/)
+
+
+**Game engine:**
+* [Phaser 3](http://phaser.io/)
