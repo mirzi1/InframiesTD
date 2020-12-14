@@ -18,7 +18,7 @@
         die("Connection failed: ". $conn-> connect_error);
     }
 
-    $sql = "SELECT meno, score FROM top10 ORDER BY score DESC LIMIT 10";
+    $sql = "SELECT meno, score FROM hs ORDER BY score DESC LIMIT 10";
     $result = $conn -> query($sql);
 
     if ($result -> num_rows > 0) {
