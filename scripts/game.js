@@ -1936,7 +1936,7 @@ function showEndScreen(){
             PLAYERNAME += (characters[nameCharacters[i]]);
         }
         console.log(PLAYERNAME+", "+SCORE);
-        document.getElementById("hsForm").innerHTML = "<form name='highScoreForm'><input type='hidden' name='playerScore' value='"+SCORE+"'><input type='hidden' name='playerName' value='"+PLAYERNAME+"'></form>";
+        document.getElementById("hsForm").innerHTML = "<form name='highScoreForm' method='POST' action='submit.inc.php'><input type='hidden' name='playerScore' value='"+SCORE+"'><input type='hidden' name='playerName' value='"+PLAYERNAME+"'></form>";
         document.forms["highScoreForm"].submit();
     }
 }
