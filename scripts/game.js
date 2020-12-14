@@ -1317,7 +1317,7 @@ function nextLevel(){
         start.alpha = 0;
         finish.alpha = 0;
         hideWaveInfo();
-        playSound('trantision');
+        playSound('transition');
         //fsrect anim
         undimScreen();
         hideFsMessage();
