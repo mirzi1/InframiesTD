@@ -1,39 +1,65 @@
 body {
-    background: #b1b4c4;
-    font-family: "Courier New";
-    font-size: 35px;
+    background: #000;
+    font-family: "font1";
+    font-size: 28px;
+    color: #FFF;
 }
 .main_table {
     margin-left: auto;
     margin-right: auto;
-    margin-top: 14vh;
     border-collapse: collapse;
 }
+.title{
+    text-align: center;
+    animation: blink 3s infinite;
+}
+.center{
+    text-align:center;
+}
+.small{
+
+}
+@keyframes blink{
+    0%, 100% {text-shadow: 0px 0px 20px goldenrod, 0px 0px 20px goldenrod, 0px 0px 20px goldenrod}
+    50%      {text-shadow: 0px 0px 0px goldenrod}
+}
+@keyframes blink_box{
+    0%, 100% {box-shadow: 0px 0px 20px goldenrod, 0px 0px 20px goldenrod, 0px 0px 20px goldenrod}
+    50%      {box-shadow: 0px 0px 0px goldenrod}
+}
  table, th, td, tr {
-     border: 2px solid #b1b4c4;
      color: white;
+     text-shadow: 0px 2px 5px black;
+     padding: 5px;
  }
 th {
-    background-color: black;
+    background-color: #444;
     color: white;
-    border-radius: 15px;
 }
 td {
-    border-radius: 15px;
     text-align: center;
 }
-tr:hover {
-    background: black !important;
-    transition-duration: 0.1s;
-}
 tr:nth-child(odd) {
-    background-color: #343d46;
-    transition-duration: 0.5s;
+    background-color: #444;
 }
 tr:nth-child(even) {
-    background-color: #4f5b66;
-    transition-duration: 0.5s;
+    background-color: #222;
+}
+tr:nth-child(2) {
+    background-color: gold;
+    animation: blink_box 3s infinite;
+    color: black;
+}
+tr:nth-child(3) {
+    background-color: silver;
+}
+tr:nth-child(4) {
+    background-color: #ac6a35;
 }
  .table_th {
      width: 180px;
  }
+@font-face {
+    font-family: font1;
+    src: url('assets/fonts/hachicro.ttf');
+}
