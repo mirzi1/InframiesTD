@@ -21,7 +21,7 @@ The high score database only works if you have a database server running. This c
 * Clone the entire repository into C:\xampp\htdocs or \opt\lampp\htdocs
 * Start Apache and MySQL server
 * Open up a web browser
-* Go to localhost/InframiesTD/index
+* Go to localhost/InframiesTD/index.php
 * Take in the smell of spaghetti code
 
 # Credits
