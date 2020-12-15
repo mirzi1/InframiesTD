@@ -1429,6 +1429,7 @@ function nextLevel(){
             break;
         case 1:
             graphics.lineStyle(3, 0x999999).alpha = 0;
+            WAVE_SPEED = 150;
             path = new Phaser.Curves.Path(250, 40);
             path.lineTo(250, 100);
             path.lineTo(510, 150);
@@ -1448,6 +1449,7 @@ function nextLevel(){
             break;
         case 2:
             graphics.lineStyle(3, 0x000000).alpha = 0;
+            WAVE_SPEED = 125;
             path = new Phaser.Curves.Path(300, 40);
             path.lineTo(285, 567);
             path.lineTo(494, 589);
@@ -1465,6 +1467,7 @@ function nextLevel(){
             break;
         case 3:
             graphics.lineStyle(3, 0xffff00).alpha = 0;
+            WAVE_SPEED = 100;
             path = new Phaser.Curves.Path(300, 40);
             path.lineTo(300, 570);
             path.lineTo(1130, 570);
