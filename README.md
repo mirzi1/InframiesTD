@@ -17,8 +17,8 @@ The game features:
 # How to play offline
 The high score database only works if you have a database server running. This can be done locally with xampp.
 
-* Install XAMPP (or one of the many alternatives)
-* Clone the entire repository into \(xampp directory)\htdocs
+* Install [XAMPP](https://www.apachefriends.org/index.html) (or one of the many alternatives)
+* Clone the entire repository into C:\xampp\htdocs or \opt\lampp\htdocs
 * Start Apache and MySQL server
 * Open up a web browser
 * Go to localhost/InframiesTD/index
