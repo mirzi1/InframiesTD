@@ -78,7 +78,6 @@ let WAVE_SPEED = 150;
 
 const bigfont = { font: " 16px font1", fill: "#3CCEFF", boundsAlignH: "center", boundsAlignV: "middle" };
 const bigfont_white = { font: "16px font1", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
-//const textfont = { font: "bold 12px font2", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 const selectedfont = { font: "12px font2", fill: "#fff", align:"center", boundsAlignH: "center", boundsAlignV: "middle" };
 const textfont_big_left = { font: "18px font2", fill: "#fff", align:"left",boundsAlignH: "center", boundsAlignV: "middle" };
 const textfont_big = { font: "18px font2,sans-serif", fill: "#fff", align:"center", boundsAlignH: "center", boundsAlignV: "middle" };
@@ -124,7 +123,6 @@ const TOWER_UPGRADE_DESCRIPTION = [ '+firerate, +range, damage shielded enemies'
                                     '+firerate, +range, +damage',
                                     ''];
 
-//TODO: tower balancing
 const TOWER_DAMAGE = [50,10,100,500,10,50,40,1000,
                       80,10,100,500,15,80,80,1000,
                       15, 30];
@@ -243,7 +241,6 @@ const WAVE_DESCRIPTION = [
         'gg'
 ];
 
-//TODO: waves
 /*
 enemies:
 1 - default
@@ -517,11 +514,8 @@ let Enemy = new Phaser.Class({
     update:
     function(time, delta){
 
-        // move the t point along the path, 0 is the start and 0 is the end
         this.follower.t += this.speed * delta * LEVEL_SPEED_MODIFIER[LEVEL-1];
-        // get the new x and y coordinates in vec
         path.getPoint(this.follower.t, this.follower.vec);
-        // update enemy x and y to the newly obtained x and y
         this.setPosition(this.follower.vec.x, this.follower.vec.y);
 
         //prevratenie podla smeru
@@ -580,7 +574,6 @@ let Enemy = new Phaser.Class({
             waveInfo.setText('BOSS HEALTH: '+Math.round(this.hp));
         }
 
-        // if hp drops below 0 we deactivate this enemy
         if(this.hp <= 0) {
             MONEY+=ENEMY_REWARD[this.id-1];
             SCORE+=Math.round(ENEMY_REWARD[this.id-1]*(1-this.follower.t));
@@ -842,7 +835,6 @@ let Tower = new Phaser.Class({
         if(enemy) {
             //vytvorime bullet
             let angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
-            //default a podobne
             //iba t4
             if(this.TowerType%8 === 4 || this.TowerType%8 === 6){
                 //charging turrets animation
@@ -930,7 +922,6 @@ let Bullet = new Phaser.Class({
             default: this.scale = 2;break;
         }
 
-        //  we don't need to rotate the bullets as they are round
         switch(this.type%8){
             case 3: case 4: case 6: case 7: this.setRotation(angle);
         }
@@ -970,10 +961,9 @@ function create(){
 
     music = this.sound.add('intro', {volume: 0.3, loop: true});             //bgm
     fsmusic = this.sound.add('blip', {volume: 0.1, loop: false});
-    //music.play();
 
     tw = this.tweens;       //tween manager
-    add = this.add;
+    add = this.add;         //add hack
 
     this.input.setDefaultCursor('url(assets/graphics/ui/cursor.cur), pointer'); //kurzor
 
@@ -1088,9 +1078,7 @@ function createAnimated(x, y, sprite, direction){
 }
 
 function damageEnemy(enemy, bullet) {
-    // only if both enemy and bullet are alive
     if (enemy.active === true && bullet.active === true) {
-        // we remove the bullet right away
         //let bounceangle = Phaser.Math.Angle.Between(bullet.x, bullet.y, enemy.x, enemy.y);
 
         if(enemy.shield === false){
@@ -1216,7 +1204,7 @@ function getTowerInfo(type){
     if(type === 7){return TOWER_DESCRIPTION[type];}
     return TOWER_DESCRIPTION[type]+'\nUpgrade: '+TOWER_UPGRADE_DESCRIPTION[type]+' - '+TOWER_PRICES[type]*2+'$';
 
-    //old info used for debugging stuff
+    //old info
     /*
     if(type == 7){return TOWER_DESCRIPTION[type]}
     if(type == 3){return TOWER_DESCRIPTION[type]+'\ndmg: '+TOWER_DAMAGE[type]+', fir: '+TOWER_SPEED[type]+ ', ran: '+TOWER_RANGE[type]+ ', spd: '+PROJECTILE_SPEED[type]+ ', pls: '+PROJECTILE_LIFESPAN[type]
@@ -1938,7 +1926,7 @@ function showEndScreen(){
         for(let i = 0; i<3; i++){
             PLAYERNAME += (characters[nameCharacters[i]]);
         }
-        console.log(PLAYERNAME+", "+SCORE);
+        //console.log(PLAYERNAME+", "+SCORE);
         document.getElementById("hsForm").innerHTML = "<form name='highScoreForm' method='POST' action='submit.inc.php' target='_blank'><input type='hidden' name='playerScore' value='"+SCORE+"'><input type='hidden' name='playerName' value='"+PLAYERNAME+"'></form>";
         document.forms["highScoreForm"].submit();
     }
@@ -2070,7 +2058,6 @@ function createGame(){
     soundButton = this.add.image(1177,20, 'topbuttons', 4).setDepth(2).setInteractive().on('pointerdown', () => toggleSound());
 
     //tower info
-    //this.add.image(200,50, 'button');
     selectedImg = this.add.image(453,18,'t1', SELECTED_TOWER-1).setDepth(2);
     selectedImg.setScale(HUD_ICON_SCALE);
     selectedInfo = this.add.text(736,19,getTowerInfo(SELECTED_TOWER-1),selectedfont).setDepth(2).setOrigin(0.5);
