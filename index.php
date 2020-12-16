@@ -38,8 +38,11 @@
     <div id="hsForm">
     </div>
 
-    <button>
-    <a href="http://localhost/inframiesTD/highScoreMain.php" target="_blank">High Score!</a>
+    <br>
+    <button style='text-decoration:none; color:black; padding: 5px;'>
+    <a style='text-decoration:none; color:black; padding: 5px;' href="http://localhost/inframiesTD/highScoreMain.php" target="_blank">HALL OF FAME</a>
     </button>
+    <br>
+    <br>
 </body>
 </html>

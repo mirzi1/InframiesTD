@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hostiteľ: 127.0.0.1
--- Čas generovania: Po 14.Dec 2020, 19:46
+-- Čas generovania: St 16.Dec 2020, 16:43
 -- Verzia serveru: 10.4.16-MariaDB
 -- Verzia PHP: 7.4.12
 
@@ -42,7 +42,7 @@ INSERT INTO `hs` (`id`, `meno`, `score`) VALUES
 (6, 'JOZ', 8000),
 (7, 'MAR', 9000),
 (8, 'MIR', 10000),
-(11, 'SUP', 1337);
+(11, 'UKF', 1337);
 
 --
 -- Kľúče pre exportované tabuľky
@@ -62,7 +62,7 @@ ALTER TABLE `hs`
 -- AUTO_INCREMENT pre tabuľku `hs`
 --
 ALTER TABLE `hs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
