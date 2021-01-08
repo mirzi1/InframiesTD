@@ -15,6 +15,20 @@ The game features:
 * High score database
 
 # I am planning to rewrite some parts of the code for better performance, less bugs, and also add a few needed features. Version 1.0 will still be available in a separate repo.
+TODO:
+* Rewrite how the levels are handled - load images, maps and waves into arrays from a text file - possibility of custom maps?
+* Extend enemy and tower classes instead of the current spaghetti mess that's tanking performance
+* Make upgrades a separate thing - upgrade tokens drop every 50 enemy kills or so
+* Make armored enemies not targetable by non-piercing turrets
+* Add 3 difficulty options
+* Add option to speed up time / automatically jump to next wave
+* Make the game more customizable - change enemy and tower stats in a menu for a custom campaign
+* Add and change sound effects
+* Add an easter egg or two
+* Add more enemy types
+* Make towers display their range when placed / hovering with mouse
+* Add a mobile friendly user interface
+* Replay system?
 
 # How to play offline
 The high score database only works if you have a database server running. This can be done locally with xampp.
