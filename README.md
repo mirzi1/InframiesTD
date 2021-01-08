@@ -14,6 +14,8 @@ The game features:
 * 8 types of enemies
 * High score database
 
+# I am planning to rewrite some parts of the code for better performance, less bugs, and also add a few needed features. Version 1.0 will still be available in a separate repo.
+
 # How to play offline
 The high score database only works if you have a database server running. This can be done locally with xampp.
 
