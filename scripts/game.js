@@ -60,6 +60,8 @@ let sound_enabled = true;
 let emitter_upgrade;
 let emitter_enemies;
 let emitter_victory;
+let emitter_thermal;
+let emitter_thermal2;
 let emitter_end;
 
 let cross = [];
@@ -1087,6 +1089,8 @@ function damageEnemy(enemy, bullet) {
                 case 10: enemy.slow(1); createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
                 case 3: addBullet(bullet.x, bullet.y, 0, 17);break;
                 case 11: addBullet(bullet.x, bullet.y, 0, 18);break;
+                case 6: if(emitter_thermal.emitters.first.alive.length < 10){emitter_thermal.emitParticleAt(bullet.x, bullet.y);}break;
+                case 14: if(emitter_thermal2.emitters.first.alive.length < 10){emitter_thermal2.emitParticleAt(bullet.x, bullet.y);}break;
                 case 17: case 18: break;
                 default: createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
             }
@@ -1101,11 +1105,11 @@ function damageEnemy(enemy, bullet) {
             if(bullet.type === 6 || bullet.type === 9 || bullet.type === 14 || bullet.type === 11){
                 enemy.receiveDamage(bullet.damage);
                 switch(bullet.type){
-                    case 1: case 9: case 11: bullet.setActive(false);bullet.destroy();break;
-                    case 6: case 14: bullet.damage /= 1.5;break;
-                    default: break;
+                    case 1: case 9: case 11: bullet.setActive(false);bullet.destroy();createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
+                    case 6: if(emitter_thermal.emitters.first.alive.length < 10){emitter_thermal.emitParticleAt(bullet.x, bullet.y);}bullet.damage /= 1.5;break;
+                    case 14: if(emitter_thermal2.emitters.first.alive.length < 10){emitter_thermal2.emitParticleAt(bullet.x, bullet.y)}bullet.damage /= 1.5;break;
+                    default: createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
                 }
-                createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);
             }
         }
     }
@@ -2013,10 +2017,33 @@ function createGame(){
     moneyText = this.add.text(295, 13, '', bigfont).setDepth(2);
     graphics.lineStyle(3, 0xaaaaaa).alpha = 0;
 
-    emitter_upgrade = this.add.particles('button_icons').setDepth(2);
+    emitter_upgrade = this.add.particles('button_icons').setDepth(1);
     emitter_enemies = this.add.particles('a3').setDepth(3);
     emitter_victory = this.add.particles('star').setDepth(3);
     emitter_end = this.add.particles('star').setDepth(3);
+
+    emitter_thermal = this.add.particles('p4_destroy').setDepth(1);
+    emitter_thermal2 = this.add.particles('p12_destroy').setDepth(1);
+
+    emitter_thermal.createEmitter({
+        frame: 0,
+        angle: { min: 0, max: 360 },
+        speed: { min: 20, max: 200 },
+        lifespan: { min: 100, max: 500 },
+        alpha: { start: 1, end: 0 },
+        scale: { start: 1, end: 3 },
+        on: false
+    });
+
+    emitter_thermal2.createEmitter({
+        frame: 0,
+        angle: { min: 0, max: 360 },
+        speed: { min: 20, max: 200 },
+        lifespan: { min: 100, max: 500 },
+        alpha: { start: 1, end: 0 },
+        scale: { start: 1, end: 3 },
+        on: false
+    });
 
     emitter_enemies.createEmitter({
         frame: 0,
