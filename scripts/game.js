@@ -335,7 +335,7 @@ function preload(){
     this.load.on('complete', function(){
         temptext.destroy();
         creditsText.setText(CREDITS+'Click to continue...');
-        playSound('upgrade');
+        playSound('blip');
     });
 
     //nacitanie spritov
@@ -702,7 +702,7 @@ let Tower = new Phaser.Class({
                 }
                 if(SELECTED_TOWER === -2 && this.TowerType<8 && this.active === true){
                     //if there is enough money for an upgrade
-                    if(MONEY>=TOWER_PRICES[this.TowerType-1]*2){
+                    if(MONEY>=TOWER_PRICES[this.TowerType-1]){
                         MONEY-=TOWER_PRICES[(this.TowerType%8)-1]
                         this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
                         playSound('upgrade');
@@ -1676,7 +1676,7 @@ function playSound(id){
             case 'denied': game.sound.add('denied', {volume: 0.5}).play();break;
             case 'transition': game.sound.add('transition', {volume: 0.5}).play();break;
             case 'blip': game.sound.add('blip', {volume: 0.3, loop: false}).play();break;
-            case 'upgrade': game.sound.add('upgrade', {volume: 0.3, loop: true});break;
+            case 'upgrade': game.sound.add('upgrade', {volume: 0.3, loop: false}).play();break;
             case 'sell': game.sound.add('sell', {volume: 0.3}).play();break;
         }
     }
