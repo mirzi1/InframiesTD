@@ -96,12 +96,10 @@ let waveInProgress = false;
 let nextEnemy = 0;
 let waveIndex = 0;
 
-const CREDITS = 'InframiesTD development version\nThis is a development version. Expect missing features and bugs.\n\n';
-
-/*const CREDITS = 'InframiesTD v1.0\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
+const CREDITS = ['InframiesTD v1.0\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
                 '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nNeed for Speed III - Hydrus 606\nNeed For Speed III - Romulus 3 (Mellow Sonic 2nd Remix)\nTimesplitters Future Perfect - Spaceport\nTimesplitters 2 - Ice Station\nRe-Volt - Credits\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
-                '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs. This game wouldn\'t be a reality without their game framework.\n\n';
-*/
+                '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs. This game wouldn\'t be a reality without their game framework.\n\n']
+
 const TOWER_PRICES = [250,400,450,1000,700,600,3000,4000];
 
 const TOWER_SPEED = [700,1300,2000,3000,1000,1100,100,1000,
@@ -457,7 +455,6 @@ function preload(){
     this.load.audio('death_8', ['assets/sounds/a8_death.ogg','assets/sounds/a8_death.mp3']);
 
     //music
-    /*
     this.load.audio('intro', [
         'assets/music/Timesplitters 2 - Astrolander.ogg', 'assets/music/Timesplitters 2 - Astrolander.mp3'
     ]);
@@ -485,7 +482,6 @@ function preload(){
     this.load.audio('bgm5', [
         'assets/music/Timesplitters 2 - Ice Station.ogg','assets/music/Timesplitters 2 - Ice Station.mp3'
     ]);
-    */
 }
 
 let Enemy = new Phaser.Class({
@@ -963,8 +959,8 @@ function create(){
     fsrect = this.add.rectangle(640, 360, 1280, 720, 0x000000).setDepth(3).setInteractive().on('pointerdown', () => {if(fsrect.active === true){if(LEVEL===-1){createGame.call(this);}nextLevel();}});
     fsrect.alpha = 0.01;
 
-    music = this.sound.add('blip', {volume: 0, loop: true});             //bgm
-    fsmusic = this.sound.add('blip', {volume: 0, loop: false});          //other music
+    music = this.sound.add('intro', {volume: 0.3, loop: true});             //bgm
+    fsmusic = this.sound.add('blip', {volume: 0.1, loop: false});
 
     tw = this.tweens;       //tween manager
     add = this.add;         //add hack
@@ -1640,7 +1636,6 @@ function playMusic(mus_id){
             volume: 0,
             onComplete: ()=>{
                 music.stop();
-                /*
                 switch(mus_id){
                     case 1: music = game.sound.add('bgm1', {volume: 0.35, loop: true}); if(music_enabled){music.play();}break;
                 }
@@ -1656,7 +1651,6 @@ function playMusic(mus_id){
                 switch(mus_id){
                     case 5: music = game.sound.add('bgm5', {volume: 0.35, loop: true}); if(music_enabled){music.play();}break;
                 }
-                */
             },
             repeat: 0
         });
@@ -1746,9 +1740,8 @@ function showVictoryScreen(){
             if(LEVEL < 3){
                 music.stop();
                 if(music_enabled) {
-                    //TODO replace victory music
-                    //fsmusic = game.sound.add('victory', {volume: 0.3});
-                    //fsmusic.play();
+                    fsmusic = game.sound.add('victory', {volume: 0.3});
+                    fsmusic.play();
                 }
                 dimScreen(0.5, 500);
                 emitter_victory.emitParticleAt(640, 360, 32);
@@ -1832,9 +1825,8 @@ function showDefeatScreen(){
     killAllEnemies();
 
     if(music_enabled){
-        //TODO replace defeat music
-        //fsmusic = game.sound.add('defeat', {volume: 0.3});
-        //fsmusic.play();
+        fsmusic = game.sound.add('defeat', {volume: 0.3});
+        fsmusic.play();
     }
 }
 
@@ -1842,9 +1834,8 @@ function showEndScreen(){
     gameInProgress = false;
     music.stop();
     if(music_enabled) {
-        //TODO add highscore music
-        //fsmusic = game.sound.add('highscore', {volume: 0.5, loop: true});
-        //fsmusic.play();
+        fsmusic = game.sound.add('highscore', {volume: 0.5, loop: true});
+        fsmusic.play();
     }
 
     dimScreen(1, 2000);
