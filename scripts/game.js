@@ -98,7 +98,7 @@ let waveInProgress = false;
 let nextEnemy = 0;
 let waveIndex = 0;
 
-const CREDITS = ['InframiesTD v1.0\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
+const CREDITS = ['InframiesTD v1.0.1\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
                 '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nNeed for Speed III - Hydrus 606\nNeed For Speed III - Romulus 3 (Mellow Sonic 2nd Remix)\nTimesplitters Future Perfect - Spaceport\nTimesplitters 2 - Ice Station\nRe-Volt - Credits\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
                 '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs. This game wouldn\'t be a reality without their game framework.\n\n']
 
@@ -1008,8 +1008,7 @@ function update(time, delta){
             this.nextEnemy = time + WAVE_SPEED;
         }
     }
-    globalTime = time; //sorry
-}
+    globalTime += delta;
 
 function placeTower(pointer) {
     if(pointer.x>100 && pointer.y>40 && SELECTED_TOWER !== 0 && SELECTED_TOWER !== -2 && SELECTED_TOWER !== 8) {
