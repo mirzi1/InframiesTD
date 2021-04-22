@@ -1177,7 +1177,7 @@ function sellTool(){
 function upgradeTool(){
     SELECTED_TOWER = -2;
     selectedImg.setTexture('button_icons', 0).setScale(1);
-    selectedInfo.setText('Upgrade (Costs twice as much as the tower)');
+    selectedInfo.setText('Upgrade (Costs as much as the tower)');
     game.input.setDefaultCursor('url(assets/graphics/ui/cursor_upgrade.cur), pointer');
 
     tw.add({
