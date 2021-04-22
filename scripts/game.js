@@ -958,7 +958,7 @@ function create(){
     background.alpha = 0;
 
     //don't mind me
-    fsrect = this.add.rectangle(640, 360, 1280, 720, 0x000000).setDepth(3).setInteractive().on('pointerdown', () => {if(fsrect.active === true){if(LEVEL===-1){createGame.call(this);}nextLevel();}});
+    fsrect = this.add.rectangle(640, 360, 1280, 720, 0x000000).setDepth(3).setInteractive().on('pointerdown', () => {if(fsrect.active === true){if(LEVEL===-1){createGame.call(this);}nextLevel();globalTime = 0;}});
     fsrect.alpha = 0.01;
 
     music = this.sound.add('intro', {volume: 0.3, loop: true});             //bgm
@@ -1840,6 +1840,7 @@ function showDefeatScreen(){
 
 function showEndScreen(){
     gameInProgress = false;
+    let finalTime = globalTime;
     music.stop();
     if(music_enabled) {
         fsmusic = game.sound.add('highscore', {volume: 0.5, loop: true});
@@ -1885,7 +1886,7 @@ function showEndScreen(){
                 scale: 1,
                 ease: 'Sine.easeOut',
                 onComplete: ()=>{
-                    playerScoreText = add.text(640, 320, "SCORE: "+SCORE, textfont_bigger).setOrigin(0.5).setDepth(5);
+                    playerScoreText = add.text(640, 320, "SCORE: "+SCORE+"\nTIME: " + (new Date(finalTime).toISOString().slice(11, -1)), textfont_big).setOrigin(0.5).setDepth(5);
                     for(let i = 0; i<3; i++){
                         playerNameText[i] = add.text(540+i*100, 500, "A", textfont_superbig).setOrigin(0.5).setDepth(5);
                     }
@@ -1918,7 +1919,7 @@ function showEndScreen(){
         else nameCharacters[letter] = characters.length-1;
     }
     function submitScore(){
-        playerScoreText.destroy();
+        //playerScoreText.destroy();
 
         for(let i=0; i<3; i++){
             playerNameText[i].destroy();
