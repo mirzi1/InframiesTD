@@ -337,7 +337,7 @@ function preload(){
     this.load.on('complete', function(){
         temptext.destroy();
         creditsText.setText(CREDITS+'Click to continue...');
-        playSound('blip');
+        //playSound('blip');
     });
 
     //nacitanie spritov
@@ -1009,6 +1009,7 @@ function update(time, delta){
         }
     }
     globalTime += delta;
+}
 
 function placeTower(pointer) {
     if(pointer.x>100 && pointer.y>40 && SELECTED_TOWER !== 0 && SELECTED_TOWER !== -2 && SELECTED_TOWER !== 8) {
@@ -1239,35 +1240,39 @@ function updateWaveText(){
 }
 
 function updateHpText(){
-    hpText.y = 6;
+    //hpText.y = 6;
     if(HEALTH <= 0){
         HEALTH = 0;
         showDefeatScreen();
     }
     hpText.setText(HEALTH);
+    /*
     tw.add({
         targets: hpText,
         duration: 100,
         y: 13,
         repeat: 0
     });
+    */
 }
 
 function updateMoneyText(){
     moneyText.setText(MONEY);
     scoreText.setText("Score: "+SCORE);
-    moneyText.y = 6;
+    //moneyText.y = 6;
 
     for(let i = 0; i<8; i++){
         cross[i].visible = MONEY < TOWER_PRICES[i]
     }
 
+    /*
     tw.add({
         targets: moneyText,
         duration: 100,
         y: 13,
         repeat: 0
     });
+    */
 }
 
 function nextWave(){
