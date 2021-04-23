@@ -1,5 +1,5 @@
 # InframiesTD
-This is a space themed tower defence game that uses Phaser 3 as the framework.
+This is a space themed tower defence game powered by the Phaser 3 framework.
 
 [Try it out here](https://mirzi1.github.io/InframiesTD/)
 
@@ -12,14 +12,14 @@ The game features:
 * 3 levels
 * 8 towers with upgrades
 * 8 types of enemies
-* High score database
-
+* 
 # How to play offline
 The high score database only works if you have a database server running. This can be done locally with xampp.
 
 * Install [XAMPP](https://www.apachefriends.org/index.html) (or one of the many alternatives)
 * Clone the entire repository into C:\xampp\htdocs or \opt\lampp\htdocs
 * Start Apache and MySQL server
+* Import the highscore.sql file to a database called 'highscore'
 * Open up a web browser
 * Go to localhost/InframiesTD/index.php
 * Take in the smell of spaghetti code
