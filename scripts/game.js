@@ -1752,7 +1752,7 @@ function showVictoryScreen(){
                     fsmusic.play();
                 }
                 dimScreen(0.5, 500);
-                emitter_victory.emitParticleAt(640, 360, 32);
+                emitter_victory.emitParticleAt(640, 360);
 
                 fsText.setText('LEVEL\nCOMPLETE').setDepth(4);
                 fsText.scale = 0;
@@ -2062,6 +2062,7 @@ function createGame(){
 
     emitter_victory.createEmitter({
         frame: 0,
+        quantity: 32,
         angle: { min: 0, max: 360, steps: 32 },
         speed: 300,
         lifespan: 3000,
