@@ -98,7 +98,7 @@ let waveInProgress = false;
 let nextEnemy = 0;
 let waveIndex = 0;
 
-const CREDITS = ['InframiesTD v1.0.2\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
+const CREDITS = ['InframiesTD v1.0.3\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
                 '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nNeed for Speed III - Hydrus 606\nNeed For Speed III - Romulus 3 (Mellow Sonic 2nd Remix)\nTimesplitters Future Perfect - Spaceport\nTimesplitters 2 - Ice Station\nRe-Volt - Credits\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
                 '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs. This game wouldn\'t be a reality without their game framework.\n\n']
 
@@ -528,7 +528,7 @@ let Enemy = new Phaser.Class({
         }
 
         if(this.slowed){
-            if(time > this.unfreeze) {
+            if(globalTime > this.unfreeze) {
                 this.speed = ENEMY_SPEED[this.id-1];
                 this.tint = 0xffffff;
                 this.slowed = false;
@@ -884,9 +884,9 @@ let Tower = new Phaser.Class({
     },
     update: function (time, delta)
     {
-        if(time > this.nextTic) {
+        if(globalTime > this.nextTic) {
             this.fire();
-            this.nextTic = time + TOWER_SPEED[this.TowerType - 1];
+            this.nextTic = globalTime + TOWER_SPEED[this.TowerType - 1];
         }
     }
 });
@@ -986,7 +986,7 @@ function create(){
 function update(time, delta){
     // spawn utocnika podla arrayu kazdych n milisekund
     if(waveInProgress){
-        if (time > this.nextEnemy){
+        if (globalTime > this.nextEnemy){
             if(waveIndex<waves[WAVE-1].length){
                 nextEnemy=waves[WAVE-1][waveIndex];
                 if(nextEnemy !== 0){
@@ -1005,7 +1005,7 @@ function update(time, delta){
                 if(WAVE === MAXWAVES[LEVEL-1] || WAVE === waves.length){showVictoryScreen();nextWaveButton.setTexture("button_nextwave", 1);}
                 updateWaveInfo();
             }
-            this.nextEnemy = time + WAVE_SPEED;
+            this.nextEnemy = globalTime + WAVE_SPEED;
         }
     }
     globalTime += delta;
