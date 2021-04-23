@@ -59,7 +59,7 @@ let sound_enabled = true;
 
 let emitter_upgrade;
 let emitter_enemies;
-let emitter_victory;
+//let emitter_victory;
 let emitter_thermal;
 let emitter_thermal2;
 let emitter_end;
@@ -1752,7 +1752,7 @@ function showVictoryScreen(){
                     fsmusic.play();
                 }
                 dimScreen(0.5, 500);
-                emitter_victory.emitParticleAt(640, 360);
+                //emitter_victory.emitParticleAt(640, 360);
 
                 fsText.setText('LEVEL\nCOMPLETE').setDepth(4);
                 fsText.scale = 0;
@@ -2024,7 +2024,7 @@ function createGame(){
 
     emitter_upgrade = this.add.particles('button_icons').setDepth(1);
     emitter_enemies = this.add.particles('a3').setDepth(3);
-    emitter_victory = this.add.particles('star').setDepth(3);
+    //emitter_victory = this.add.particles('star').setDepth(3);
     emitter_end = this.add.particles('star').setDepth(3);
 
     emitter_thermal = this.add.particles('p4_destroy').setDepth(1);
@@ -2060,6 +2060,7 @@ function createGame(){
         on: false
     });
 
+    /*
     emitter_victory.createEmitter({
         frame: 0,
         quantity: 32,
@@ -2070,6 +2071,7 @@ function createGame(){
         scale: { start: 1, end: 6 },
         on: false
     });
+    */
 
     emitter_upgrade.createEmitter({
         frame: 0,
