@@ -12,7 +12,7 @@ The game features:
 * 3 levels
 * 8 towers with upgrades
 * 8 types of enemies
-* 
+
 # How to play offline
 The high score database only works if you have a database server running. This can be done locally with xampp.
 
