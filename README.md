@@ -27,7 +27,7 @@ The high score database only works if you have a database server running. This c
 # Credits
 **Developers:**
 * [mirzi](https://github.com/mirzi1) - Game programming
-* [Eldii](https://github.com/UKF-MarekKosznovszki) - Database and backend programming
+* [ELdiii](https://github.com/ELdiii) - Database and backend programming
 * [ROGERsvk](https://github.com/ukf-jozefkosut) - Graphic design, UI design
 
 
