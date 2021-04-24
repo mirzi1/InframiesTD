@@ -52,6 +52,7 @@ let nukeIcon;
 let nukeReady = true;
 let camera;
 let gameInProgress = false;
+let canGoToNextLevel = true;
 let music;
 let fsmusic;
 let music_enabled = true;
@@ -98,7 +99,7 @@ let waveInProgress = false;
 let nextEnemy = 0;
 let waveIndex = 0;
 
-const CREDITS = ['InframiesTD v1.0.3\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
+const CREDITS = ['InframiesTD v1.0.4\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
                 '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nNeed for Speed III - Hydrus 606\nNeed For Speed III - Romulus 3 (Mellow Sonic 2nd Remix)\nTimesplitters Future Perfect - Spaceport\nTimesplitters 2 - Ice Station\nRe-Volt - Credits\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
                 '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs. This game wouldn\'t be a reality without their game framework.\n\n']
 
@@ -1732,6 +1733,7 @@ function toggleFullscreen() {
 
 function showVictoryScreen(){
     blinkSpaces = false;
+    canGoToNextLevel = false;
     nextWaveButton.alpha = 0;
     nextWaveButton.setDepth(4);
     nextWaveButton.x = 640;
@@ -1770,6 +1772,9 @@ function showVictoryScreen(){
                             alpha: 1,
                             scale: 2,
                             ease: 'Back.easeOut',
+                            onComplete: ()=>{
+                                canGoToNextLevel = true;
+                            }
                         });},
                     repeat: 0
                 });
@@ -2152,7 +2157,7 @@ function createGame(){
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.EIGHT).on('down', function() {changeSelectedTower(8)}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.NINE) .on('down', function() {upgradeTool()}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ZERO) .on('down', function() {sellTool()}, this);
-    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).on('down', function() {if(!waveInProgress)nextWave()}, this);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).on('down', function() {if(!waveInProgress && canGoToNextLevel)nextWave()}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)    .on('down', function() {toggleFullscreen()}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N)    .on('down', function() {toggleSound()}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M)    .on('down', function() {toggleMusic()}, this);
