@@ -188,6 +188,12 @@ let level3 =       [[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
                     [-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1],
                     [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]];
 
+let times = [];
+let prevtime = 0;
+
+let prevwavetime = 0;
+let timestring = "";
+
 const MAXWAVES = [30, 40, 50];
 
 const WAVE_DESCRIPTION = [
@@ -1004,6 +1010,7 @@ function update(time, delta){
             }else if(enemies.countActive() === 0){
                 /*console.log('end of wave '+WAVE+' reached');*/MONEY+=WAVE_REWARD;updateMoneyText();waveInProgress=false;nextWaveButton.visible = true;graphics.alpha = 0.8;start.alpha = 1;finish.alpha =1;
                 if(WAVE === MAXWAVES[LEVEL-1] || WAVE === waves.length){showVictoryScreen();nextWaveButton.setTexture("button_nextwave", 1);}
+                updateScoreText();
                 updateWaveInfo();
             }
             this.nextEnemy = globalTime + WAVE_SPEED;
@@ -1258,8 +1265,8 @@ function updateHpText(){
 }
 
 function updateMoneyText(){
+    updateScoreText();
     moneyText.setText(MONEY);
-    scoreText.setText("Score: "+SCORE);
     //moneyText.y = 6;
 
     for(let i = 0; i<8; i++){
@@ -1274,6 +1281,14 @@ function updateMoneyText(){
         repeat: 0
     });
     */
+}
+
+function updateScoreText(){
+    scoreText.setText("Score: "+SCORE+timestring);
+}
+
+function updateTimeString(){
+    timestring = "\nWave: " + (new Date(globalTime-prevwavetime).toISOString().slice(11, -1)) + "\nTime: " + (new Date(globalTime).toISOString().slice(11, -1));
 }
 
 function nextWave(){
@@ -1293,7 +1308,14 @@ function nextWave(){
             if(LEVEL!=3)playMusic(4);
             else playMusic(5);
         }
-    }else{nextLevel();/*console.log('no more waves in array!')*/}
+        updateTimeString();
+        prevwavetime = globalTime;
+        updateScoreText();
+    }else{
+        times.push(globalTime-prevtime);
+        prevtime = globalTime;
+        nextLevel();/*console.log('no more waves in array!')*/
+    }
 }
 
 function jumpToWave(wave){
@@ -1384,8 +1406,6 @@ function nextLevel(){
                 }
             }
         }
-
-
     }
     switch(LEVEL){
         case -1:
@@ -1846,6 +1866,11 @@ function showDefeatScreen(){
 function showEndScreen(){
     gameInProgress = false;
     let finalTime = globalTime;
+
+    //console.log(globalTime-prevtime);
+    times.push(globalTime-prevtime);
+    prevtime = globalTime;
+
     music.stop();
     if(music_enabled) {
         fsmusic = game.sound.add('highscore', {volume: 0.5, loop: true});
@@ -1891,7 +1916,14 @@ function showEndScreen(){
                 scale: 1,
                 ease: 'Sine.easeOut',
                 onComplete: ()=>{
-                    playerScoreText = add.text(640, 320, "SCORE: "+SCORE+"\nTIME: " + (new Date(finalTime).toISOString().slice(11, -1)), textfont_big).setOrigin(0.5).setDepth(5);
+                    let playerTimeString = "T: " + (new Date(finalTime).toISOString().slice(11, -1));
+
+                    for(let i = 0; i<times.length; i++){
+                        playerTimeString += "\n"+ (i+1) +": "+ (new Date(times[i]).toISOString().slice(11, -1));
+                    }
+
+                    playerScoreText = add.text(640, 320, "SCORE: "+SCORE , textfont_bigger).setOrigin(0.5).setDepth(5);
+                    add.text(1270,710,playerTimeString,textfont_big_right).setStroke('#000000', 5).setDepth(5).setOrigin(1);
                     for(let i = 0; i<3; i++){
                         playerNameText[i] = add.text(540+i*100, 500, "A", textfont_superbig).setOrigin(0.5).setDepth(5);
                     }
@@ -2104,7 +2136,9 @@ function createGame(){
     updateTowerInfo();
 
     waveInfo = this.add.text(690,70,'',textfont_big).setStroke('#000000', 5).setDepth(2).setOrigin(0.5);
-    scoreText = this.add.text(1270,710,'Score: 0',textfont_big_right).setStroke('#000000', 5).setDepth(2).setOrigin(1);
+    scoreText = this.add.text(1270,710,'',textfont_big_right).setStroke('#000000', 5).setDepth(2).setOrigin(1);
+    timestring = "\nWave: " + (new Date(0).toISOString().slice(11, -1)) + "\nTime: " + (new Date(0).toISOString().slice(11, -1));
+    scoreText.setText("Score: "+SCORE+"\n"+timestring);
 
     //upgrade, sell
     this.add.image(36,683, 'button_small', 1).setDepth(2).setInteractive().on('pointerdown', () => upgradeTool());
