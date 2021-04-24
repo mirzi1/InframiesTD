@@ -2152,6 +2152,8 @@ function createGame(){
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.EIGHT).on('down', function() {changeSelectedTower(8)}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.NINE) .on('down', function() {upgradeTool()}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ZERO) .on('down', function() {sellTool()}, this);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).on('down', function() {if(!waveInProgress)nextWave()}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)    .on('down', function() {toggleFullscreen()}, this);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N)    .on('down', function() {toggleSound()}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M)    .on('down', function() {toggleMusic()}, this);
 }
