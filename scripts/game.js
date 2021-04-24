@@ -1214,7 +1214,7 @@ function updateTowerInfo(){
 function getTowerInfo(type){
 
     if(type === 7){return TOWER_DESCRIPTION[type];}
-    return TOWER_DESCRIPTION[type]+'\nUpgrade: '+TOWER_UPGRADE_DESCRIPTION[type]+' - '+TOWER_PRICES[type]*2+'$';
+    return TOWER_DESCRIPTION[type]+'\nUpgrade: '+TOWER_UPGRADE_DESCRIPTION[type]/*+' - '+TOWER_PRICES[type]*2+'$'*/;
 
     //old info
     /*
