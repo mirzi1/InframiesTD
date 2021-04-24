@@ -2180,6 +2180,18 @@ function createGame(){
 
     setUIColor(0x000000, 0x000000, '#000000');
 
+    this.input.on('wheel', function (pointer, gameObjects, deltaX, deltaY, deltaZ) {
+        if(deltaY>0){
+            if(SELECTED_TOWER < 8 && SELECTED_TOWER >= 1)changeSelectedTower(SELECTED_TOWER+1);
+            else if(SELECTED_TOWER == 8)upgradeTool();
+            else if(SELECTED_TOWER == -2)sellTool();
+        }else{
+            if(SELECTED_TOWER <= 8 && SELECTED_TOWER > 1) changeSelectedTower(SELECTED_TOWER-1);
+            else if(SELECTED_TOWER == -2)changeSelectedTower(8);
+            else if(SELECTED_TOWER == 0)upgradeTool();
+        }
+    });
+
     //keyboard
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE)  .on('down', function() {changeSelectedTower(1)}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO)  .on('down', function() {changeSelectedTower(2)}, this);
