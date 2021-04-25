@@ -72,11 +72,12 @@ let LEVEL = -2;
 let WAVE = 0;
 let HEALTH;
 let MONEY;
-const STARTHEALTH = 50;
+let STARTHEALTH = 50;
 const STARTMONEY = 250;
 const WAVE_REWARD = 300;
 let SELECTED_TOWER = 1;
 
+let WAVE_SPEEDS = [150, 125, 100];
 let WAVE_SPEED = 150;
 
 const bigfont = { font: " 16px font1", fill: "#3CCEFF", boundsAlignH: "center", boundsAlignV: "middle" };
@@ -93,22 +94,24 @@ const HUD_ICON_SCALE = 0.5;
 const ENEMY_HEALTH = [50,300,800,1,300,800,70000,150000];
 const ENEMY_SPEED = [1/8000,1/10000,1/15000,1/4000,1/10000,1/15000,1/16000,1/20000];
 const ENEMY_REWARD = [8,18,28,1,22,32,2000,10000];
-const LEVEL_SPEED_MODIFIER = [0.7, 0.8, 0.9];
+let LEVEL_SPEED_MODIFIER = [0.7, 0.8, 0.9];
 
 let waveInProgress = false;
 let nextEnemy = 0;
 let waveIndex = 0;
 
-const CREDITS = ['InframiesTD v1.0.5\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
+const CREDITS = ['InframiesTD v1.1\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
                 '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nNeed for Speed III - Hydrus 606\nNeed For Speed III - Romulus 3 (Mellow Sonic 2nd Remix)\nTimesplitters Future Perfect - Spaceport\nTimesplitters 2 - Ice Station\nRe-Volt - Credits\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
                 '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs. This game wouldn\'t be a reality without their game framework.\n\n']
 
 const TOWER_PRICES = [250,400,450,1000,700,600,3000,4000];
 
+let UPGRADE_MULTIPLIER = 1;
+
 const TOWER_SPEED = [700,1300,2000,3000,1000,1100,100,1000,
                     500,1000,1500,2500,700,900,70,1000];
 const TOWER_RANGE = [400,350,300,2000,300,500,500,2000,
-                    600,350,400,2000,350,600,550,2000];
+                    450,350,400,2000,350,600,550,2000];
 const TOWER_DESCRIPTION = ['Laser - Basic and all around good tower.',
                             'Electric - Low damage, slows enemies on hit.',
                             'Rocket - Slow but lethal, explosions deal area of effect damage.',
@@ -127,13 +130,13 @@ const TOWER_UPGRADE_DESCRIPTION = [ '+firerate, +range, damage shielded enemies'
                                     ''];
 
 const TOWER_DAMAGE = [50,10,100,500,10,50,40,1000,
-                      80,10,100,500,15,80,80,1000,
+                      70,10,100,500,15,80,80,1000,
                       15, 30];
 const PROJECTILE_SPEED = [900,600,500,4000,1000,800,700,1000,
-                          1200,600,600,5000,1200,1000,700,1000,
+                          900,600,600,5000,1200,1000,700,1000,
                           0, 0];
-const PROJECTILE_LIFESPAN = [500,500,1500,1000,300,500,600,500,
-                             500,500,1500,1000,300,500,600,500,
+const PROJECTILE_LIFESPAN = [400,500,1500,1000,300,500,600,500,
+                             400,500,1500,1000,300,500,600,500,
                              500, 500];
 const TOWER_FREEZETIME = 2000;
 
@@ -356,6 +359,7 @@ function preload(){
     this.load.image('cross', 'assets/graphics/ui/disabled.png');
     this.load.image('itdMenu', 'assets/graphics/ui/menu.jpg');
     this.load.image('hs_submit', 'assets/graphics/ui/hs_submit.png');
+    this.load.spritesheet('menu_buttons', 'assets/graphics/ui/menu_buttons.png',{frameHeight: 60, frameWidth: 280});
     this.load.spritesheet('star', 'assets/graphics/ui/star.png',{frameHeight: 4, frameWidth: 4});
     this.load.spritesheet('button_nextwave', 'assets/graphics/ui/button_nextwave.png',{frameHeight: 40, frameWidth: 156});
     this.load.spritesheet('topbuttons', 'assets/graphics/ui/topbuttons.png',{frameHeight: 40, frameWidth: 41});
@@ -557,11 +561,13 @@ let Enemy = new Phaser.Class({
     startOnPath:
     function(){
         this.hp = ENEMY_HEALTH[this.id-1];
+        /*
+        //TODO new boss health bars
         if(this.id>=7){
             waveInfo.setColor('#FF0000');
             showBossHealth();
             waveInfo.setText('BOSS HEALTH: '+this.hp);
-        }
+        }*/
         this.follower.t = 0;
         path.getPoint(this.follower.t, this.follower.vec);
         this.setPosition(this.follower.vec.x, this.follower.vec.y);
@@ -591,9 +597,12 @@ let Enemy = new Phaser.Class({
             this.setActive(false);
             this.destroy();
             playSound('a'+this.id);
+            /*
+            //TODO 2
             if(this.id>=7){
                 hideWaveInfo();
             }
+            */
         }
     },
     slow:
@@ -711,8 +720,8 @@ let Tower = new Phaser.Class({
                 }
                 if(SELECTED_TOWER === -2 && this.TowerType<8 && this.active === true){
                     //if there is enough money for an upgrade
-                    if(MONEY>=TOWER_PRICES[this.TowerType-1]){
-                        MONEY-=TOWER_PRICES[(this.TowerType%8)-1]
+                    if(MONEY>=TOWER_PRICES[this.TowerType-1]*UPGRADE_MULTIPLIER){
+                        MONEY-=TOWER_PRICES[(this.TowerType%8)-1]*UPGRADE_MULTIPLIER;
                         this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
                         playSound('upgrade');
                         updateMoneyText();
@@ -964,8 +973,65 @@ function create(){
     fsText.alpha = 0;
     background.alpha = 0;
 
+    let difficulty = 0;
+
+    let difficultybutton = this.add.image(420,580, 'menu_buttons', 1).setDepth(3).setInteractive().on('pointerdown', () => {
+        difficulty++;
+        if(difficulty === 3) difficulty = 0;
+        switch(difficulty){
+            case 0: difficultybutton.setTexture("menu_buttons", 1);break;
+            case 1: difficultybutton.setTexture("menu_buttons", 2);break;
+            case 2: difficultybutton.setTexture("menu_buttons", 3);break;
+        }
+    });
+    difficultybutton.alpha = 0;
+
+    let startbutton = this.add.image(300,500, 'menu_buttons').setDepth(3).setInteractive().on('pointerdown', () => {
+        if(LEVEL===-1){
+            createGame.call(this);
+        }
+        switch(difficulty){
+            case 0:
+                WAVE_SPEEDS = [150,125,100];
+                LEVEL_SPEED_MODIFIER = [0.7, 0.8, 0.9];
+                STARTHEALTH = 50;
+                UPGRADE_MULTIPLIER = 1;
+                break;
+            case 1:
+                WAVE_SPEEDS = [125,100,90];
+                LEVEL_SPEED_MODIFIER = [0.75, 0.85, 0.95];
+                STARTHEALTH = 30;
+                UPGRADE_MULTIPLIER = 2;
+                break;
+            case 2:
+                WAVE_SPEEDS = [100,90,80];
+                LEVEL_SPEED_MODIFIER = [0.8, 0.9, 1];
+                STARTHEALTH = 10;
+                UPGRADE_MULTIPLIER = 2;
+                break;
+        }
+        nextLevel();
+        globalTime = 0;
+        startbutton.destroy();
+        difficultybutton.destroy();
+    });
+    startbutton.alpha = 0;
+
     //don't mind me
-    fsrect = this.add.rectangle(640, 360, 1280, 720, 0x000000).setDepth(3).setInteractive().on('pointerdown', () => {if(fsrect.active === true){if(LEVEL===-1){createGame.call(this);}nextLevel();globalTime = 0;}});
+    fsrect = this.add.rectangle(640, 360, 1280, 720, 0x000000).setDepth(3).setInteractive().on('pointerdown', () => {
+        if(fsrect.active === true){
+            nextLevel();
+            fsrect.alpha = 0;
+            tw.add({
+                targets: [startbutton, difficultybutton],
+                alpha: 1,
+                duration: 500,
+                x: 360,
+                ease: 'Sine.easeOut',
+                repeat: 0
+            });
+        }
+    });
     fsrect.alpha = 0.01;
 
     music = this.sound.add('intro', {volume: 0.3, loop: true});             //bgm
@@ -1193,7 +1259,7 @@ function sellTool(){
 function upgradeTool(){
     SELECTED_TOWER = -2;
     selectedImg.setTexture('button_icons', 0).setScale(1);
-    selectedInfo.setText('Upgrade (Costs as much as the tower)');
+    selectedInfo.setText('Upgrade ('+UPGRADE_MULTIPLIER+'x the cost of the tower)');
     game.input.setDefaultCursor('url(assets/graphics/ui/cursor_upgrade.cur), pointer');
 
     tw.add({
@@ -1252,20 +1318,21 @@ function updateWaveText(){
 }
 
 function updateHpText(){
-    //hpText.y = 6;
+    hpText.scale = 1.5;
+    hpText.y = 9;
     if(HEALTH <= 0){
         HEALTH = 0;
         showDefeatScreen();
     }
     hpText.setText(HEALTH);
-    /*
+
     tw.add({
         targets: hpText,
         duration: 100,
+        scale: 1,
         y: 13,
         repeat: 0
     });
-    */
 }
 
 function updateMoneyText(){
@@ -1415,6 +1482,7 @@ function nextLevel(){
         case -1:
             background.setTexture('itdMenu');
             background.scale = 1.2;
+            fsrect.setActive(false);
 
             tw.add({
                 targets: background,
@@ -1437,7 +1505,6 @@ function nextLevel(){
             music.play();
             break;
         case 0:
-            fsrect.setActive(false);
             tw.add({
                 targets: fsrect,
                 duration: 200,
@@ -1450,7 +1517,7 @@ function nextLevel(){
             break;
         case 1:
             graphics.lineStyle(3, 0x999999).alpha = 0;
-            WAVE_SPEED = 150;
+            WAVE_SPEED = WAVE_SPEEDS[LEVEL-1];
             path = new Phaser.Curves.Path(250, 40);
             path.lineTo(250, 100);
             path.lineTo(510, 150);
@@ -1470,7 +1537,7 @@ function nextLevel(){
             break;
         case 2:
             graphics.lineStyle(3, 0x000000).alpha = 0;
-            WAVE_SPEED = 125;
+            WAVE_SPEED = WAVE_SPEEDS[LEVEL-1];
             path = new Phaser.Curves.Path(300, 40);
             path.lineTo(285, 567);
             path.lineTo(494, 589);
@@ -1488,7 +1555,7 @@ function nextLevel(){
             break;
         case 3:
             graphics.lineStyle(3, 0xffff00).alpha = 0;
-            WAVE_SPEED = 100;
+            WAVE_SPEED = WAVE_SPEEDS[LEVEL-1];
             path = new Phaser.Curves.Path(300, 40);
             path.lineTo(300, 570);
             path.lineTo(1130, 570);
@@ -1631,23 +1698,29 @@ function generateAnims(){
 function updateWaveInfo(){
     waveInfo.setText(WAVE_DESCRIPTION[WAVE]);
     waveInfo.setColor('#FFFFFF');
-    waveInfo.scale = 0;
+    waveInfo.x = 590;
+    waveInfo.scale = 1.5;
+    waveInfo.alpha = 0;
     tw.add({
         targets: waveInfo,
         duration: 300,
+        x: 690,
         scale: 1,
-        ease: 'Back.easeOut',
+        alpha: 1,
+        ease: 'Sine.easeOut',
         repeat: 0
     });
 }
 
 function hideWaveInfo(){
-    waveInfo.scale = 1;
+    waveInfo.x = 690;
     tw.add({
         targets: waveInfo,
         duration: 300,
-        scale : 0,
-        ease: 'Back.easeIn',
+        x: 790,
+        alpha : 0,
+        scale: 1.2,
+        ease: 'Sine.easeIn',
         repeat: 0
     });
 }
@@ -1774,11 +1847,11 @@ function showVictoryScreen(){
                     fsmusic = game.sound.add('victory', {volume: 0.3});
                     fsmusic.play();
                 }
-                dimScreen(0.5, 500);
+                dimScreen(0.5, 300);
                 //emitter_victory.emitParticleAt(640, 360);
 
                 fsText.setText('LEVEL\nCOMPLETE').setDepth(4);
-                fsText.scale = 0;
+                fsText.scale = 2;
                 fsText.alpha = 0;
                 tw.add({
                     targets: fsText,
@@ -2025,12 +2098,16 @@ function hideFsMessage(){
 }
 
 function showBossHealth(){
-    waveInfo.scale = 0;
+    waveInfo.x = 590;
+    waveInfo.scale = 1.5;
+    waveInfo.alpha = 0;
     tw.add({
         targets: waveInfo,
         duration: 300,
-        scale: 2,
-        ease: 'Back.easeOut',
+        x: 690,
+        scale: 1,
+        alpha: 1,
+        ease: 'Sine.easeOut',
         repeat: 0
     });
 }
