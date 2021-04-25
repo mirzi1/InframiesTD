@@ -79,6 +79,7 @@ let SELECTED_TOWER = 1;
 
 let WAVE_SPEEDS = [150, 125, 100];
 let WAVE_SPEED = 150;
+let MIN_WAVE_SPEED = 20;
 
 const bigfont = { font: " 16px font1", fill: "#3CCEFF", boundsAlignH: "center", boundsAlignV: "middle" };
 const bigfont_white = { font: "16px font1", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
@@ -996,18 +997,21 @@ function create(){
                 LEVEL_SPEED_MODIFIER = [0.7, 0.8, 0.9];
                 STARTHEALTH = 50;
                 UPGRADE_MULTIPLIER = 1;
+                MIN_WAVE_SPEED = 30;
                 break;
             case 1:
                 WAVE_SPEEDS = [125,100,90];
                 LEVEL_SPEED_MODIFIER = [0.75, 0.85, 0.95];
                 STARTHEALTH = 30;
                 UPGRADE_MULTIPLIER = 2;
+                MIN_WAVE_SPEED = 20;
                 break;
             case 2:
                 WAVE_SPEEDS = [100,90,80];
                 LEVEL_SPEED_MODIFIER = [0.8, 0.9, 1];
                 STARTHEALTH = 10;
                 UPGRADE_MULTIPLIER = 2;
+                MIN_WAVE_SPEED = 10;
                 break;
         }
         nextLevel();
@@ -1368,7 +1372,7 @@ function nextWave(){
         //console.log('starting wave '+ WAVE);
         waveInProgress=true;
         waveIndex = 0;
-        if(WAVE_SPEED>20)WAVE_SPEED-=5;
+        if(WAVE_SPEED>MIN_WAVE_SPEED)WAVE_SPEED-=5;
         hideWaveInfo();
         updateWaveText();
         nextWaveButton.visible = false;
