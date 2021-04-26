@@ -98,9 +98,9 @@ const textfont_superbig = { font: "100px font1", fill: "#fff", align:"center", b
 
 const HUD_ICON_SCALE = 0.5;
 
-const ENEMY_HEALTH = [50,300,700,1,300,700,50000,100000];
+const ENEMY_HEALTH = [50,300,700,1,300,700,50000,180000];
 let ENEMY_SPEED = [1/8000,1/10000,1/15000,1/4000,1/10000,1/15000,1/22000,1/26000];
-const ENEMY_REWARD = [8,18,28,1,22,32,2000,10000];
+const ENEMY_REWARD = [8,18,28,1,22,32,3000,10000];
 let LEVEL_SPEED_MODIFIER = [0.7, 0.8, 0.9];
 
 let waveInProgress = false;
@@ -682,7 +682,7 @@ let Tower = new Phaser.Class({
                     this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
                     if(this.TowerType%8 !== 4 && this.TowerType%8 !== 6){
                         this.setActive(false);
-                        if(this.TowerType <8){MONEY+=TOWER_PRICES[this.TowerType-1]/UPGRADE_MULTIPLIER;}
+                        if(this.TowerType <8){MONEY+=Math.floor(TOWER_PRICES[this.TowerType-1]/UPGRADE_MULTIPLIER);}
                         else{MONEY+=TOWER_PRICES[(this.TowerType%8)-1];}
 
                         playSound('sell');
