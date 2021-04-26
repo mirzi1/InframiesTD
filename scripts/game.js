@@ -1699,7 +1699,7 @@ function generateAnims(){
     game.anims.create({key: "t4_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t4",{start:14, end:22}), repeat: 0});
     game.anims.create({key: "t5_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t5",{start:0, end:5}), repeat: 0});
     game.anims.create({key: "t6_idle", frameRate: 15, frames: game.anims.generateFrameNumbers("t6_idle",{start:0, end:6}), repeat: -1});
-    game.anims.create({key: "t6_charge", frameRate: 24, frames: game.anims.generateFrameNumbers("t6",{start:0, end:11}), repeat: 0});
+    game.anims.create({key: "t6_charge", frameRate: 40, frames: game.anims.generateFrameNumbers("t6",{start:0, end:11}), repeat: 0});
     game.anims.create({key: "t6_fire", frameRate: 15, frames: game.anims.generateFrameNumbers("t6",{start:12, end:18}), repeat: 0});
     game.anims.create({key: "t7_idle", frameRate: 7, frames: game.anims.generateFrameNumbers("t7_idle",{start:0, end:1}), repeat: -1});
     game.anims.create({key: "t7_fire", frameRate: 24, frames: game.anims.generateFrameNumbers("t7",{start:0, end:2}), repeat: 0});
