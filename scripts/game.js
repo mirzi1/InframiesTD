@@ -58,7 +58,7 @@ let fsmusic;
 let music_enabled = true;
 let sound_enabled = true;
 
-let difficulty_str = "EASY";
+let difficulty_str = "MEDIUM";
 
 let emitter_upgrade;
 let emitter_enemies;
