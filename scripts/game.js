@@ -58,6 +58,8 @@ let fsmusic;
 let music_enabled = true;
 let sound_enabled = true;
 
+let difficulty_str = "EASY";
+
 let emitter_upgrade;
 let emitter_enemies;
 //let emitter_victory;
@@ -66,6 +68,8 @@ let emitter_thermal2;
 let emitter_end;
 
 let cross = [];
+let priceText = [];
+
 
 let SCORE = 0;
 let LEVEL = -2;
@@ -73,16 +77,18 @@ let WAVE = 0;
 let HEALTH;
 let MONEY;
 let STARTHEALTH = 50;
-const STARTMONEY = 250;
-const WAVE_REWARD = 300;
+const STARTMONEY = 400;
+let WAVE_REWARD = 600;
 let SELECTED_TOWER = 1;
 
 let WAVE_SPEEDS = [150, 125, 100];
 let WAVE_SPEED = 150;
 let MIN_WAVE_SPEED = 20;
+let NUKE_TIMER = 10000;
 
 const bigfont = { font: " 16px font1", fill: "#3CCEFF", boundsAlignH: "center", boundsAlignV: "middle" };
 const bigfont_white = { font: "16px font1", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+const bigfont_white_right = { font: "16px font1", fill: "#fff", align:"right", boundsAlignH: "center", boundsAlignV: "middle" };
 const selectedfont = { font: "12px font2", fill: "#fff", align:"center", boundsAlignH: "center", boundsAlignV: "middle" };
 const textfont_big_left = { font: "18px font2", fill: "#fff", align:"left",boundsAlignH: "center", boundsAlignV: "middle" };
 const textfont_big = { font: "18px font2,sans-serif", fill: "#fff", align:"center", boundsAlignH: "center", boundsAlignV: "middle" };
@@ -92,8 +98,8 @@ const textfont_superbig = { font: "100px font1", fill: "#fff", align:"center", b
 
 const HUD_ICON_SCALE = 0.5;
 
-const ENEMY_HEALTH = [50,300,800,1,300,800,70000,150000];
-const ENEMY_SPEED = [1/8000,1/10000,1/15000,1/4000,1/10000,1/15000,1/16000,1/20000];
+const ENEMY_HEALTH = [50,300,700,1,300,700,70000,150000];
+let ENEMY_SPEED = [1/8000,1/10000,1/15000,1/4000,1/10000,1/15000,1/16000,1/20000];
 const ENEMY_REWARD = [8,18,28,1,22,32,2000,10000];
 let LEVEL_SPEED_MODIFIER = [0.7, 0.8, 0.9];
 
@@ -101,27 +107,27 @@ let waveInProgress = false;
 let nextEnemy = 0;
 let waveIndex = 0;
 
-const CREDITS = ['InframiesTD v1.1\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
+const CREDITS = ['InframiesTD v1.2\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
                 '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nNeed for Speed III - Hydrus 606\nNeed For Speed III - Romulus 3 (Mellow Sonic 2nd Remix)\nTimesplitters Future Perfect - Spaceport\nTimesplitters 2 - Ice Station\nRe-Volt - Credits\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
                 '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs. This game wouldn\'t be a reality without their game framework.\n\n']
 
-const TOWER_PRICES = [250,400,450,1000,700,600,3000,4000];
+const TOWER_PRICES = [400,550,600,750,650,650,2500,3500];
 
 let UPGRADE_MULTIPLIER = 1;
 
-const TOWER_SPEED = [700,1300,2000,3000,1000,1100,100,1000,
-                    500,1000,1500,2500,700,900,70,1000];
-const TOWER_RANGE = [400,350,300,2000,300,500,500,2000,
-                    450,350,400,2000,350,600,550,2000];
+let TOWER_SPEED = [700,1700,2000,3000,1000,1100,100,1000,
+                    500,1300,1500,2500,700,900,70,1000];
+let TOWER_RANGE = [350,250,300,2000,300,500,500,2000,
+                    350,250,400,2000,350,600,550,2000];
 const TOWER_DESCRIPTION = ['Laser - Basic and all around good tower.',
-                            'Electric - Low damage, slows enemies on hit.',
+                            'Electric - Slows enemies on hit.',
                             'Rocket - Slow but lethal, explosions deal area of effect damage.',
                             'Rail - Big damage, slow firing rate, no range limit.',
                             'Shotgunner - Low damage, multiple projectiles',
                             'Thermal - Deals damage to shielded enemies and pierces through them.',
                             'Rapid - Expensive, but has amazing firerate.',
                             'Nuke - Vaporizes everything except bosses, 30 second cooldown'];
-const TOWER_UPGRADE_DESCRIPTION = [ '+firerate, +range, damage shielded enemies',
+const TOWER_UPGRADE_DESCRIPTION = [ '+firerate, damage shielded enemies',
                                     '+firerate, enemies become even slower',
                                     '+firerate, +range, +damage, damage shielded enemies',
                                     '+firerate, piercing projectiles',
@@ -130,16 +136,16 @@ const TOWER_UPGRADE_DESCRIPTION = [ '+firerate, +range, damage shielded enemies'
                                     '+firerate, +range, +damage',
                                     ''];
 
-const TOWER_DAMAGE = [50,10,100,500,10,50,40,1000,
-                      70,10,100,500,15,80,80,1000,
+const TOWER_DAMAGE = [50,0,100,500,10,50,35,1000,
+                      70,0,100,500,15,80,55,1000,
                       15, 30];
-const PROJECTILE_SPEED = [900,600,500,4000,1000,800,700,1000,
-                          900,600,600,5000,1200,1000,700,1000,
+let PROJECTILE_SPEED = [1000,500,500,4000,1000,800,700,1000,
+                          1000,600,600,5000,1200,1000,700,1000,
                           0, 0];
-const PROJECTILE_LIFESPAN = [400,500,1500,1000,300,500,600,500,
-                             400,500,1500,1000,300,500,600,500,
+let PROJECTILE_LIFESPAN = [280,500,1500,1000,300,500,600,500,
+                             280,500,1500,1000,300,500,600,500,
                              500, 500];
-const TOWER_FREEZETIME = 2000;
+let TOWER_FREEZETIME = 1000;
 
 const GRID_W = 50;
 const GRID_H = 50;
@@ -331,8 +337,8 @@ function preload(){
     });
 
     this.load.on('progress', function(value){
-        fsText.setText(Math.round(value*100)+"%");
-        temploadrect.width = (Math.round((value*100)))*12.8;
+        fsText.setText(Math.floor(value*100)+"%");
+        temploadrect.width = (Math.floor((value*100)))*12.8;
 
         if(value === 1){
             background.alpha = 1;
@@ -509,7 +515,7 @@ let Enemy = new Phaser.Class({
         Phaser.GameObjects.Sprite.call(this,game,0,0,'a'+this.id);
         this.play('a'+this.id+'_normal');
         this.follower = {t: 0, vec: new Phaser.Math.Vector2()};
-        this.hp = 0;
+        this.hp = ENEMY_HEALTH[this.id-1];
         this.prevx = 0;
         this.speed = ENEMY_SPEED[this.id-1];
         this.alpha = 0;
@@ -524,6 +530,10 @@ let Enemy = new Phaser.Class({
             ease: 'Sine.easeOut',
             repeat: 0
         });
+        if(this.id >= 7){
+            //boss health bar
+            this.hptext = add.text(this.x, this.y, Math.floor(this.hp), textfont_big).setOrigin(0.5).setStroke('#000000', 5).setDepth(5);
+        }
     },
     update:
     function(time, delta){
@@ -539,6 +549,11 @@ let Enemy = new Phaser.Class({
             this.setFlip(true);
         }
 
+        if(this.id >= 7){
+            this.hptext.x = this.x;
+            this.hptext.y = this.y;
+        }
+
         if(this.slowed){
             if(globalTime > this.unfreeze) {
                 this.speed = ENEMY_SPEED[this.id-1];
@@ -552,23 +567,18 @@ let Enemy = new Phaser.Class({
         // akcie po dokonceni cesty
         if (this.follower.t >= 1)
         {
+            if(this.id>=7){
+                this.hptext.destroy();
+                HEALTH-=999;
+            }
+            HEALTH--;
+            updateHpText();
             this.setActive(false);
             this.destroy();
-            HEALTH--;
-            if(this.id >= 7)HEALTH-=49;
-            updateHpText();
         }
     },
     startOnPath:
     function(){
-        this.hp = ENEMY_HEALTH[this.id-1];
-        /*
-        //TODO new boss health bars
-        if(this.id>=7){
-            waveInfo.setColor('#FF0000');
-            showBossHealth();
-            waveInfo.setText('BOSS HEALTH: '+this.hp);
-        }*/
         this.follower.t = 0;
         path.getPoint(this.follower.t, this.follower.vec);
         this.setPosition(this.follower.vec.x, this.follower.vec.y);
@@ -587,23 +597,20 @@ let Enemy = new Phaser.Class({
         }
 
         if(this.id>=7){
-            waveInfo.setText('BOSS HEALTH: '+Math.round(this.hp));
+            this.hptext.setText(Math.floor(this.hp));
         }
 
         if(this.hp <= 0) {
             MONEY+=ENEMY_REWARD[this.id-1];
-            SCORE+=Math.round(ENEMY_REWARD[this.id-1]*(1-this.follower.t));
+            SCORE+=Math.floor(ENEMY_REWARD[this.id-1]*(1-this.follower.t));
             updateMoneyText();
             createAnimated(this.x,this.y,'a'+this.id, this.flipX);
             this.setActive(false);
-            this.destroy();
-            playSound('a'+this.id);
-            /*
-            //TODO 2
             if(this.id>=7){
-                hideWaveInfo();
+                this.hptext.destroy();
             }
-            */
+            playSound('a'+this.id);
+            this.destroy();
         }
     },
     slow:
@@ -620,7 +627,7 @@ let Enemy = new Phaser.Class({
             else{
                 this.speed = ENEMY_SPEED[this.id - 1] / 4;
             }
-            this.unfreeze = globalTime + TOWER_FREEZETIME*1.5;
+            this.unfreeze = globalTime + TOWER_FREEZETIME;
             this.tint = 0xff5555;
         }
         this.slowed = true;
@@ -675,7 +682,7 @@ let Tower = new Phaser.Class({
                     this.i = Math.floor(this.y / GRID_H);this.j = Math.floor(this.x / GRID_W);
                     if(this.TowerType%8 !== 4 && this.TowerType%8 !== 6){
                         this.setActive(false);
-                        if(this.TowerType <8){MONEY+=TOWER_PRICES[this.TowerType-1]/2;}
+                        if(this.TowerType <8){MONEY+=TOWER_PRICES[this.TowerType-1]/UPGRADE_MULTIPLIER;}
                         else{MONEY+=TOWER_PRICES[(this.TowerType%8)-1];}
 
                         playSound('sell');
@@ -828,7 +835,7 @@ let Tower = new Phaser.Class({
 
                 tw.add({
                     targets: nukeIcon,
-                    duration: 20000,
+                    duration: NUKE_TIMER,
                     angle: 7200,
                     alpha: 0.7,
                     ease: 'Sine.easeIn',
@@ -974,15 +981,15 @@ function create(){
     fsText.alpha = 0;
     background.alpha = 0;
 
-    let difficulty = 0;
+    let difficulty = 1;
 
-    let difficultybutton = this.add.image(420,580, 'menu_buttons', 1).setDepth(3).setInteractive().on('pointerdown', () => {
+    let difficultybutton = this.add.image(420,580, 'menu_buttons', 2).setDepth(3).setInteractive().on('pointerdown', () => {
         difficulty++;
         if(difficulty === 3) difficulty = 0;
         switch(difficulty){
-            case 0: difficultybutton.setTexture("menu_buttons", 1);break;
-            case 1: difficultybutton.setTexture("menu_buttons", 2);break;
-            case 2: difficultybutton.setTexture("menu_buttons", 3);break;
+            case 0: difficultybutton.setTexture("menu_buttons", 1);difficulty_str = "EASY";break;
+            case 1: difficultybutton.setTexture("menu_buttons", 2);difficulty_str = "MEDIUM";break;
+            case 2: difficultybutton.setTexture("menu_buttons", 3);difficulty_str = "HARD";break;
         }
     });
     difficultybutton.alpha = 0;
@@ -993,25 +1000,44 @@ function create(){
         }
         switch(difficulty){
             case 0:
-                WAVE_SPEEDS = [150,125,100];
-                LEVEL_SPEED_MODIFIER = [0.7, 0.8, 0.9];
-                STARTHEALTH = 50;
+                WAVE_SPEEDS = [150,120,100];
+                LEVEL_SPEED_MODIFIER = [0.65, 0.75, 0.85];
+                //STARTHEALTH = 50;
                 UPGRADE_MULTIPLIER = 1;
                 MIN_WAVE_SPEED = 30;
                 break;
             case 1:
-                WAVE_SPEEDS = [125,100,90];
-                LEVEL_SPEED_MODIFIER = [0.75, 0.85, 0.95];
-                STARTHEALTH = 30;
-                UPGRADE_MULTIPLIER = 2;
+                WAVE_SPEEDS = [150,120,100];
+                LEVEL_SPEED_MODIFIER = [0.65, 0.75, 0.85];
+                //STARTHEALTH = 30;
+                UPGRADE_MULTIPLIER = 1.5;
                 MIN_WAVE_SPEED = 20;
                 break;
             case 2:
-                WAVE_SPEEDS = [100,90,80];
-                LEVEL_SPEED_MODIFIER = [0.8, 0.9, 1];
-                STARTHEALTH = 10;
-                UPGRADE_MULTIPLIER = 2;
+                //quicko mode
+                ENEMY_SPEED = [1/4000,1/5000,1/7500,1/2000,1/5000,1/7500,1/8000,1/10000];
+
+                TOWER_SPEED = [350,850,1000,1500,500,550,50,500,
+                               250,650,750,1250,350,450,35,500];
+
+                PROJECTILE_SPEED = [2000,1000,1000,8000,2000,1600,1400,2000,
+                                    2000,1200,1200,10000,2400,2000,1400,2000,
+                                    0, 0];
+
+                PROJECTILE_LIFESPAN = [140,250,750,500,150,250,300,250,
+                                        140,250,7500,500,150,250,300,250,
+                                        250, 250];
+
+                TOWER_FREEZETIME = 500;
+
+                NUKE_TIMER = 5000;
+
+                WAVE_SPEEDS = [75,60,50];
+                LEVEL_SPEED_MODIFIER = [1.3, 1.5, 1.7];
                 MIN_WAVE_SPEED = 10;
+
+                //STARTHEALTH = 30;
+                UPGRADE_MULTIPLIER = 1.5;
                 break;
         }
         nextLevel();
@@ -1167,8 +1193,8 @@ function damageEnemy(enemy, bullet) {
 
         if(enemy.shield === false){
             switch (bullet.type){
-                case 2: enemy.slow(0); createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
-                case 10: enemy.slow(1); createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
+                case 2: enemy.slow(0); if(emitter_electric.emitters.first.alive.length < 10){emitter_electric.emitParticleAt(bullet.x, bullet.y);}break;
+                case 10: enemy.slow(1); if(emitter_electric2.emitters.first.alive.length < 10){emitter_electric2.emitParticleAt(bullet.x, bullet.y);}break;
                 case 3: addBullet(bullet.x, bullet.y, 0, 17);break;
                 case 11: addBullet(bullet.x, bullet.y, 0, 18);break;
                 case 6: if(emitter_thermal.emitters.first.alive.length < 10){emitter_thermal.emitParticleAt(bullet.x, bullet.y);}break;
@@ -1178,7 +1204,7 @@ function damageEnemy(enemy, bullet) {
             }
             enemy.receiveDamage(bullet.damage);
             switch(bullet.type){
-                case 17: case 18: break;
+                case 2: case 10: case 17: case 18: break;
                 case 6: case 14: case 12: bullet.damage /= 1.5;break;
                 default:bullet.setActive(false);bullet.destroy();break;
             }
@@ -1201,6 +1227,12 @@ function changeSelectedTower(id){
     SELECTED_TOWER=id;
     moveSelector(SELECTED_TOWER-1);
     updateTowerInfo();
+    if(priceText[0].text != TOWER_PRICES[0]+'$'){
+        for(let i = 0; i < priceText.length; i++){
+            priceText[i].setText(TOWER_PRICES[i]+'$');
+            priceText[i].setColor('#FFFFFF');
+        }
+    }
 }
 
 function moveSelector(position){
@@ -1249,6 +1281,11 @@ function sellTool(){
     selectedInfo.setText('Sell (For half the price)');
     game.input.setDefaultCursor('url(assets/graphics/ui/cursor_delete.cur), pointer');
 
+    for(let i = 0; i < priceText.length-1; i++){
+        priceText[i].setText(TOWER_PRICES[i]/2+'$');
+        priceText[i].setColor('#FFAAAA');
+    }
+
     tw.add({
         targets: selector,
         duration: 200,
@@ -1265,6 +1302,11 @@ function upgradeTool(){
     selectedImg.setTexture('button_icons', 0).setScale(1);
     selectedInfo.setText('Upgrade ('+UPGRADE_MULTIPLIER+'x the cost of the tower)');
     game.input.setDefaultCursor('url(assets/graphics/ui/cursor_upgrade.cur), pointer');
+
+    for(let i = 0; i < priceText.length-1; i++){
+        priceText[i].setText(TOWER_PRICES[i]*UPGRADE_MULTIPLIER+'$');
+        priceText[i].setColor('#AAFFAA');
+    }
 
     tw.add({
         targets: selector,
@@ -1359,11 +1401,11 @@ function updateMoneyText(){
 }
 
 function updateScoreText(){
-    scoreText.setText("Score: "+SCORE+timestring);
+    scoreText.setText(difficulty_str+"\nScore: "+SCORE+timestring);
 }
 
 function updateTimeString(){
-    timestring = "\nWave: " + (new Date(globalTime-prevwavetime).toISOString().slice(11, -1)) + "\nTime: " + (new Date(globalTime).toISOString().slice(11, -1));
+    timestring = "\nW: " + (new Date(globalTime-prevwavetime).toISOString().slice(11, -1)) + "\nT: " + (new Date(globalTime).toISOString().slice(11, -1));
 }
 
 function nextWave(){
@@ -1701,15 +1743,12 @@ function generateAnims(){
 
 function updateWaveInfo(){
     waveInfo.setText(WAVE_DESCRIPTION[WAVE]);
-    waveInfo.setColor('#FFFFFF');
     waveInfo.x = 590;
-    waveInfo.scale = 1.5;
     waveInfo.alpha = 0;
     tw.add({
         targets: waveInfo,
         duration: 300,
         x: 690,
-        scale: 1,
         alpha: 1,
         ease: 'Sine.easeOut',
         repeat: 0
@@ -1723,8 +1762,7 @@ function hideWaveInfo(){
         duration: 300,
         x: 790,
         alpha : 0,
-        scale: 1.2,
-        ease: 'Sine.easeIn',
+        ease: 'Sine.easeOut',
         repeat: 0
     });
 }
@@ -1994,14 +2032,14 @@ function showEndScreen(){
                 scale: 1,
                 ease: 'Sine.easeOut',
                 onComplete: ()=>{
-                    let playerTimeString = "T: " + (new Date(finalTime).toISOString().slice(11, -1));
+                    let playerTimeString = difficulty_str+"\nT: " + (new Date(finalTime).toISOString().slice(11, -1));
 
                     for(let i = 0; i<times.length; i++){
                         playerTimeString += "\n"+ (i+1) +": "+ (new Date(times[i]).toISOString().slice(11, -1));
                     }
 
-                    playerScoreText = add.text(640, 320, "SCORE: "+SCORE , textfont_bigger).setOrigin(0.5).setDepth(5);
-                    add.text(1270,710,playerTimeString,textfont_big_right).setStroke('#000000', 5).setDepth(5).setOrigin(1);
+                    playerScoreText = add.text(640, 320, SCORE, textfont_bigger).setOrigin(0.5).setDepth(5);
+                    add.text(1270,710,playerTimeString, textfont_big_right).setStroke('#000000', 5).setDepth(5).setOrigin(1);
                     for(let i = 0; i<3; i++){
                         playerNameText[i] = add.text(540+i*100, 500, "A", textfont_superbig).setOrigin(0.5).setDepth(5);
                     }
@@ -2142,15 +2180,19 @@ function createGame(){
     graphics.lineStyle(3, 0xaaaaaa).alpha = 0;
 
     emitter_upgrade = this.add.particles('button_icons').setDepth(1);
-    emitter_enemies = this.add.particles('a3').setDepth(3);
+    emitter_enemies = this.add.particles(['a3']).setDepth(3);
     //emitter_victory = this.add.particles('star').setDepth(3);
     emitter_end = this.add.particles('star').setDepth(3);
 
     emitter_thermal = this.add.particles('p4_destroy').setDepth(1);
     emitter_thermal2 = this.add.particles('p12_destroy').setDepth(1);
 
+    emitter_electric = this.add.particles('p2_destroy').setDepth(1);
+    emitter_electric2 = this.add.particles('p10_destroy').setDepth(1);
+
     emitter_thermal.createEmitter({
-        frame: 0,
+        frame: [0,1,2,3],
+        randomFrame: true,
         angle: { min: 0, max: 360 },
         speed: { min: 20, max: 200 },
         lifespan: { min: 100, max: 500 },
@@ -2160,12 +2202,35 @@ function createGame(){
     });
 
     emitter_thermal2.createEmitter({
-        frame: 0,
+        frame: [0,1,2,3],
+        randomFrame: true,
         angle: { min: 0, max: 360 },
         speed: { min: 20, max: 200 },
         lifespan: { min: 100, max: 500 },
         alpha: { start: 1, end: 0 },
         scale: { start: 1, end: 3 },
+        on: false
+    });
+
+    emitter_electric.createEmitter({
+        frame: [0,1,2,3],
+        randomFrame: true,
+        angle: { min: 0, max: 360 },
+        speed: { min: 20, max: 200 },
+        lifespan: { min: 100, max: 500 },
+        alpha: { start: 1, end: 0 },
+        scale: { start: 1, end: 2 },
+        on: false
+    });
+
+    emitter_electric2.createEmitter({
+        frame: [0,1,2,3],
+        randomFrame: true,
+        angle: { min: 0, max: 360 },
+        speed: { min: 20, max: 200 },
+        lifespan: { min: 100, max: 500 },
+        alpha: { start: 1, end: 0 },
+        scale: { start: 1, end: 2 },
         on: false
     });
 
@@ -2239,8 +2304,8 @@ function createGame(){
 
     waveInfo = this.add.text(690,70,'',textfont_big).setStroke('#000000', 5).setDepth(2).setOrigin(0.5);
     scoreText = this.add.text(1270,710,'',textfont_big_right).setStroke('#000000', 5).setDepth(2).setOrigin(1);
-    timestring = "\nWave: " + (new Date(0).toISOString().slice(11, -1)) + "\nTime: " + (new Date(0).toISOString().slice(11, -1));
-    scoreText.setText("Score: "+SCORE+"\n"+timestring);
+    timestring = "\nW: " + (new Date(0).toISOString().slice(11, -1)) + "\nT: " + (new Date(0).toISOString().slice(11, -1));
+    scoreText.setText(difficulty_str+"\nScore: "+SCORE+timestring);
 
     //upgrade, sell
     this.add.image(36,683, 'button_small', 1).setDepth(2).setInteractive().on('pointerdown', () => upgradeTool());
@@ -2277,7 +2342,7 @@ function createGame(){
 
     //cenovky
     for(let i=0; i<8; i++){
-        this.add.text(54,75*i+127, TOWER_PRICES[i]+'$', bigfont_white).setDepth(2).setStroke('#000000', 2).setOrigin(0.5);
+        priceText[i] = this.add.text(54,75*i+127, TOWER_PRICES[i]+'$', bigfont_white).setDepth(2).setStroke('#000000', 2).setOrigin(0.5);
     }
 
     setUIColor(0x000000, 0x000000, '#000000');
@@ -2307,6 +2372,6 @@ function createGame(){
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ZERO) .on('down', function() {sellTool()}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)    .on('down', function() {upgradeTool()}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)    .on('down', function() {sellTool()}, this);
-    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)    .on('down', function() {if(!waveInProgress && canGoToNextLevel)nextWave()}, this);
-    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).on('down', function() {if(!waveInProgress && canGoToNextLevel)nextWave()}, this);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)    .on('down', function() {if(!waveInProgress && canGoToNextLevel && HEALTH > 0)nextWave()}, this);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).on('down', function() {if(!waveInProgress && canGoToNextLevel && HEALTH > 0)nextWave()}, this);
 }

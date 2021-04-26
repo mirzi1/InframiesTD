@@ -25,7 +25,7 @@
         }
         @font-face {
             font-family: font2;
-            src: url('assets/fonts/Orbitron.ttf');
+            src: url('assets/fonts/SourceSansPro-Bold.ttf');
         }
     </style>
 </head>
