@@ -107,11 +107,11 @@ let waveInProgress = false;
 let nextEnemy = 0;
 let waveIndex = 0;
 
-const CREDITS = ['InframiesTD v1.2\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
+const CREDITS = ['InframiesTD v1.2.1\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
                 '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nNeed for Speed III - Hydrus 606\nNeed For Speed III - Romulus 3 (Mellow Sonic 2nd Remix)\nTimesplitters Future Perfect - Spaceport\nTimesplitters 2 - Ice Station\nRe-Volt - Credits\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
                 '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs. This game wouldn\'t be a reality without their game framework.\n\n']
 
-const TOWER_PRICES = [400,550,600,750,650,650,2500,3500];
+const TOWER_PRICES = [400,550,600,750,650,700,2500,3500];
 
 let UPGRADE_MULTIPLIER = 1;
 
@@ -949,7 +949,7 @@ let Bullet = new Phaser.Class({
         }
 
         switch(this.type%8){
-            case 3: case 4: case 6: case 7: this.setRotation(angle);
+            case 3: case 4: case 6: case 7: this.setRotation(angle);break;
         }
 
         this.dx = Math.cos(angle);
@@ -1001,14 +1001,14 @@ function create(){
         switch(difficulty){
             case 0:
                 WAVE_SPEEDS = [150,120,100];
-                LEVEL_SPEED_MODIFIER = [0.65, 0.75, 0.85];
+                LEVEL_SPEED_MODIFIER = [0.6, 0.7, 0.8];
                 //STARTHEALTH = 50;
                 UPGRADE_MULTIPLIER = 1;
                 MIN_WAVE_SPEED = 30;
                 break;
             case 1:
                 WAVE_SPEEDS = [150,120,100];
-                LEVEL_SPEED_MODIFIER = [0.65, 0.75, 0.85];
+                LEVEL_SPEED_MODIFIER = [0.6, 0.7, 0.8];
                 //STARTHEALTH = 30;
                 UPGRADE_MULTIPLIER = 1.5;
                 MIN_WAVE_SPEED = 20;
@@ -1033,7 +1033,7 @@ function create(){
                 NUKE_TIMER = 5000;
 
                 WAVE_SPEEDS = [75,60,50];
-                LEVEL_SPEED_MODIFIER = [1.3, 1.5, 1.7];
+                LEVEL_SPEED_MODIFIER = [1.2, 1.4, 1.6];
                 MIN_WAVE_SPEED = 10;
 
                 //STARTHEALTH = 30;
@@ -1214,6 +1214,8 @@ function damageEnemy(enemy, bullet) {
                 enemy.receiveDamage(bullet.damage);
                 switch(bullet.type){
                     case 1: case 9: case 11: bullet.setActive(false);bullet.destroy();createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
+                    case 2: enemy.slow(0); if(emitter_electric.emitters.first.alive.length < 10){emitter_electric.emitParticleAt(bullet.x, bullet.y);}break;
+                    case 10: enemy.slow(1); if(emitter_electric2.emitters.first.alive.length < 10){emitter_electric2.emitParticleAt(bullet.x, bullet.y);}break;
                     case 6: if(emitter_thermal.emitters.first.alive.length < 10){emitter_thermal.emitParticleAt(bullet.x, bullet.y);}bullet.damage /= 1.5;break;
                     case 14: if(emitter_thermal2.emitters.first.alive.length < 10){emitter_thermal2.emitParticleAt(bullet.x, bullet.y)}bullet.damage /= 1.5;break;
                     default: createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
@@ -1673,7 +1675,7 @@ function generateAnims(){
     game.anims.create({key: "a3_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a3_destroy",{start:3, end:10}), repeat: 0});
     game.anims.create({key: "a4_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a4",{start:0, end:9}), repeat: -1});
     game.anims.create({key: "a4_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a4_hurt",{start:0, end:9}), repeat: 0});
-    game.anims.create({key: "a4_destroy", frameRate: 24, frames: game.anims.generateFrameNumbers("a4_destroy",{start:0, end:13}), repeat: 0});
+    game.anims.create({key: "a4_destroy", frameRate: 34, frames: game.anims.generateFrameNumbers("a4_destroy",{start:0, end:13}), repeat: 0});
     game.anims.create({key: "a5_normal", frameRate: 15, frames: game.anims.generateFrameNumbers("a5",{start:0, end:6}), repeat: -1});
     game.anims.create({key: "a5_hurt", frameRate: 15, frames: game.anims.generateFrameNumbers("a5_hurt",{start:1, end:10}), repeat: 0});
     game.anims.create({key: "a5_destroy", frameRate: 15, frames: game.anims.generateFrameNumbers("a5_destroy",{start:4, end:10}), repeat: 0});
