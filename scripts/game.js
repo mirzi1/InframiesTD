@@ -107,7 +107,7 @@ let waveInProgress = false;
 let nextEnemy = 0;
 let waveIndex = 0;
 
-const CREDITS = ['InframiesTD v1.2.1\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
+const CREDITS = ['InframiesTD v1.2.2\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
                 '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nNeed for Speed III - Hydrus 606\nNeed For Speed III - Romulus 3 (Mellow Sonic 2nd Remix)\nTimesplitters Future Perfect - Spaceport\nTimesplitters 2 - Ice Station\nRe-Volt - Credits\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
                 '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs. This game wouldn\'t be a reality without their game framework.\n\n']
 
@@ -1210,7 +1210,7 @@ function damageEnemy(enemy, bullet) {
             }
         }
         else{
-            if(bullet.type === 6 || bullet.type === 9 || bullet.type === 14 || bullet.type === 11){
+            if(bullet.type === 2 || bullet.type === 10 || bullet.type === 6 || bullet.type === 9 || bullet.type === 14 || bullet.type === 11){
                 enemy.receiveDamage(bullet.damage);
                 switch(bullet.type){
                     case 1: case 9: case 11: bullet.setActive(false);bullet.destroy();createAnimated(bullet.x,bullet.y,'p'+bullet.type, false);break;
