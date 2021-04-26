@@ -99,7 +99,7 @@ const textfont_superbig = { font: "100px font1", fill: "#fff", align:"center", b
 const HUD_ICON_SCALE = 0.5;
 
 const ENEMY_HEALTH = [50,300,700,1,300,700,70000,150000];
-let ENEMY_SPEED = [1/8000,1/10000,1/15000,1/4000,1/10000,1/15000,1/16000,1/20000];
+let ENEMY_SPEED = [1/8000,1/10000,1/15000,1/4000,1/10000,1/15000,1/20000,1/24000];
 const ENEMY_REWARD = [8,18,28,1,22,32,2000,10000];
 let LEVEL_SPEED_MODIFIER = [0.7, 0.8, 0.9];
 
@@ -107,7 +107,7 @@ let waveInProgress = false;
 let nextEnemy = 0;
 let waveIndex = 0;
 
-const CREDITS = ['InframiesTD v1.2.2\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
+const CREDITS = ['InframiesTD v1.2.3\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
                 '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nNeed for Speed III - Hydrus 606\nNeed For Speed III - Romulus 3 (Mellow Sonic 2nd Remix)\nTimesplitters Future Perfect - Spaceport\nTimesplitters 2 - Ice Station\nRe-Volt - Credits\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
                 '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs. This game wouldn\'t be a reality without their game framework.\n\n']
 
@@ -1015,7 +1015,7 @@ function create(){
                 break;
             case 2:
                 //quicko mode
-                ENEMY_SPEED = [1/4000,1/5000,1/7500,1/2000,1/5000,1/7500,1/8000,1/10000];
+                ENEMY_SPEED = [1/4000,1/5000,1/7500,1/2000,1/5000,1/7500,1/10000,1/12000];
 
                 TOWER_SPEED = [350,850,1000,1500,500,550,50,500,
                                250,650,750,1250,350,450,35,500];
