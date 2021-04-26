@@ -111,7 +111,7 @@ const CREDITS = ['InframiesTD v1.2.1\n\n Credits: \n mirzi - Game programming\nE
                 '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nNeed for Speed III - Hydrus 606\nNeed For Speed III - Romulus 3 (Mellow Sonic 2nd Remix)\nTimesplitters Future Perfect - Spaceport\nTimesplitters 2 - Ice Station\nRe-Volt - Credits\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
                 '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs. This game wouldn\'t be a reality without their game framework.\n\n']
 
-const TOWER_PRICES = [400,550,600,750,650,700,2500,3500];
+const TOWER_PRICES = [400,550,600,750,650,750,2500,3500];
 
 let UPGRADE_MULTIPLIER = 1;
 
@@ -136,8 +136,8 @@ const TOWER_UPGRADE_DESCRIPTION = [ '+firerate, damage shielded enemies',
                                     '+firerate, +range, +damage',
                                     ''];
 
-const TOWER_DAMAGE = [50,0,100,500,10,50,35,1000,
-                      70,0,100,500,15,80,55,1000,
+const TOWER_DAMAGE = [50,0,100,500,10,40,35,1000,
+                      70,0,100,500,15,70,55,1000,
                       15, 30];
 let PROJECTILE_SPEED = [1000,500,500,4000,1000,800,700,1000,
                           1000,600,600,5000,1200,1000,700,1000,
@@ -145,7 +145,7 @@ let PROJECTILE_SPEED = [1000,500,500,4000,1000,800,700,1000,
 let PROJECTILE_LIFESPAN = [280,500,1500,1000,300,500,600,500,
                              280,500,1500,1000,300,500,600,500,
                              500, 500];
-let TOWER_FREEZETIME = 1000;
+let TOWER_FREEZETIME = 800;
 
 const GRID_W = 50;
 const GRID_H = 50;
@@ -1028,7 +1028,7 @@ function create(){
                                         140,250,7500,500,150,250,300,250,
                                         250, 250];
 
-                TOWER_FREEZETIME = 500;
+                TOWER_FREEZETIME = 400;
 
                 NUKE_TIMER = 5000;
 
