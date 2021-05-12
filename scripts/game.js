@@ -256,7 +256,7 @@ const WAVE_DESCRIPTION = [
         '',
         '',
         'You see a massive shining figure in the distance...',
-/*50*/  'End of the line. The robot leader has no mercy!',
+/*50*/  'Judgement day.',
         'gg'
 ];
 
