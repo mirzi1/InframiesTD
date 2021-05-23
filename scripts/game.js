@@ -2376,4 +2376,9 @@ function createGame(){
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)    .on('down', function() {sellTool()}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)    .on('down', function() {if(!waveInProgress && canGoToNextLevel && HEALTH > 0)nextWave()}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).on('down', function() {if(!waveInProgress && canGoToNextLevel && HEALTH > 0)nextWave()}, this);
+
+    //TODO remove this message after hardmode is finished
+    if(difficulty_str == "HARD"){
+        alert('Hard mode is still a work in progress, don\'t really know if it\'s fully completable but you do you');
+    }
 }
