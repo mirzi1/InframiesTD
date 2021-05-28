@@ -20,16 +20,21 @@ let config = {
     }
 };
 
+let version = "1.2.4";
+
 let game = new Phaser.Game(config);
 let graphics;
+
 let waveText;
 let hpText;
 let moneyText;
+
 let nextWaveButton;
 let restartButton;
 let musicButton;
 let soundButton;
 let fullscreenButton;
+
 let background;
 let path;
 let selector;
@@ -37,28 +42,32 @@ let selectedImg;
 let selectedInfo;
 let waveInfo;
 let scoreText;
+
 let uitop;
 let uileft;
-let blinkSpaces = false;
+
 let tw;
 let add;
+
 let start;
 let finish;
+
 let globalTime;
 let fsrect;
 let creditsText;
 let fsText;
 let nukeIcon;
-let nukeReady = true;
 let camera;
-let gameInProgress = false;
-let canGoToNextLevel = true;
+
 let music;
 let fsmusic;
+
+let nukeReady = true;
+let gameInProgress = false;
+let canGoToNextLevel = true;
+let blinkSpaces = false;
 let music_enabled = true;
 let sound_enabled = true;
-
-let difficulty_str = "MEDIUM";
 
 let emitter_upgrade;
 let emitter_enemies;
@@ -70,6 +79,7 @@ let emitter_end;
 let cross = [];
 let priceText = [];
 
+let difficulty_str = "MEDIUM";
 
 let SCORE = 0;
 let LEVEL = -2;
@@ -81,7 +91,7 @@ const STARTMONEY = 400;
 let WAVE_REWARD = 600;
 let SELECTED_TOWER = 1;
 
-let WAVE_SPEEDS = [150, 125, 100];
+let WAVE_SPEEDS = [150, 120, 100];
 let WAVE_SPEED = 150;
 let MIN_WAVE_SPEED = 20;
 let NUKE_TIMER = 10000;
@@ -101,13 +111,13 @@ const HUD_ICON_SCALE = 0.5;
 const ENEMY_HEALTH = [50,300,700,1,300,700,50000,180000];
 let ENEMY_SPEED = [1/8000,1/10000,1/15000,1/4000,1/10000,1/15000,1/22000,1/26000];
 const ENEMY_REWARD = [8,18,28,1,22,32,3000,10000];
-let LEVEL_SPEED_MODIFIER = [0.7, 0.8, 0.9];
+let LEVEL_SPEED_MODIFIER = [0.6, 0.7, 0.8];
 
 let waveInProgress = false;
 let nextEnemy = 0;
 let waveIndex = 0;
 
-const CREDITS = ['InframiesTD v1.2.3\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
+const CREDITS = ['InframiesTD v'+version+'\n\n Credits: \n mirzi - Game programming\nELdii - Database and backend programming\nROGERsvk - Graphic design, UI design\n' +
                 '\nMusic used:\nTimesplitters 2 - Astrolander\nUnreal Tournament - Foregone Destruction\nNeed for Speed III - Hydrus 606\nNeed For Speed III - Romulus 3 (Mellow Sonic 2nd Remix)\nTimesplitters Future Perfect - Spaceport\nTimesplitters 2 - Ice Station\nRe-Volt - Credits\nTimesplitters 2 - Mission Success\nTimesplitters 2 - Mission Failed\n' +
                 '\nSound effects are mostly mashups from freesound.org.\nSource code is available at github.com/mirzi1/InframiesTD\nShoutouts to the Phaser devs. This game wouldn\'t be a reality without their game framework.\n\n']
 
@@ -1000,44 +1010,46 @@ function create(){
         }
         switch(difficulty){
             case 0:
-                WAVE_SPEEDS = [150,120,100];
-                LEVEL_SPEED_MODIFIER = [0.6, 0.7, 0.8];
                 //STARTHEALTH = 50;
                 UPGRADE_MULTIPLIER = 1;
                 MIN_WAVE_SPEED = 30;
                 break;
             case 1:
-                WAVE_SPEEDS = [150,120,100];
-                LEVEL_SPEED_MODIFIER = [0.6, 0.7, 0.8];
                 //STARTHEALTH = 30;
                 UPGRADE_MULTIPLIER = 1.5;
                 MIN_WAVE_SPEED = 20;
                 break;
             case 2:
                 //quicko mode
-                ENEMY_SPEED = [1/4000,1/5000,1/7500,1/2000,1/5000,1/7500,1/11000,1/13000];
-
-                TOWER_SPEED = [350,850,1000,1500,500,550,50,500,
-                               250,650,750,1250,350,450,35,500];
-
-                PROJECTILE_SPEED = [2000,1000,1000,8000,2000,1600,1400,2000,
-                                    2000,1200,1200,10000,2400,2000,1400,2000,
-                                    0, 0];
-
-                PROJECTILE_LIFESPAN = [140,250,750,500,150,250,300,250,
-                                        140,250,7500,500,150,250,300,250,
-                                        250, 250];
-
-                TOWER_FREEZETIME = 400;
-
-                NUKE_TIMER = 5000;
-
-                WAVE_SPEEDS = [75,60,50];
-                LEVEL_SPEED_MODIFIER = [1.2, 1.4, 1.6];
+                UPGRADE_MULTIPLIER = 1.5;
+                TOWER_FREEZETIME /= 1.5;
+                TOWER_FREEZETIME /= 1.5;
+                NUKE_TIMER /= 1.5;
                 MIN_WAVE_SPEED = 10;
 
-                //STARTHEALTH = 30;
-                UPGRADE_MULTIPLIER = 1.5;
+                for(let i = 0; i < ENEMY_SPEED.length; i++){
+                    ENEMY_SPEED[i] *= 1.5;
+                }
+
+                for(let i = 0; i < TOWER_SPEED.length; i++){
+                    TOWER_SPEED[i] /= 1.7;
+                }
+
+                for(let i = 0; i < PROJECTILE_SPEED.length; i++){
+                    PROJECTILE_SPEED[i] *= 1.5;
+                }
+
+                for(let i = 0; i < PROJECTILE_LIFESPAN.length; i++){
+                    PROJECTILE_LIFESPAN[i] /= 1.5;
+                }
+
+                for(let i = 0; i < WAVE_SPEEDS.length; i++){
+                    WAVE_SPEEDS[i] /= 1.5;
+                }
+
+                for(let i = 0; i < LEVEL_SPEED_MODIFIER.length; i++){
+                    LEVEL_SPEED_MODIFIER[i] *= 1.5;
+                }
                 break;
         }
         nextLevel();
@@ -2034,7 +2046,7 @@ function showEndScreen(){
                 scale: 1,
                 ease: 'Sine.easeOut',
                 onComplete: ()=>{
-                    let playerTimeString = difficulty_str+"\nT: " + (new Date(finalTime).toISOString().slice(11, -1));
+                    let playerTimeString = version+"\n"+difficulty_str+"\nT: " + (new Date(finalTime).toISOString().slice(11, -1));
 
                     for(let i = 0; i<times.length; i++){
                         playerTimeString += "\n"+ (i+1) +": "+ (new Date(times[i]).toISOString().slice(11, -1));
@@ -2376,9 +2388,4 @@ function createGame(){
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)    .on('down', function() {sellTool()}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)    .on('down', function() {if(!waveInProgress && canGoToNextLevel && HEALTH > 0)nextWave()}, this);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).on('down', function() {if(!waveInProgress && canGoToNextLevel && HEALTH > 0)nextWave()}, this);
-
-    //TODO remove this message after hardmode is finished
-    if(difficulty_str == "HARD"){
-        alert('Hard mode is still a work in progress, don\'t really know if it\'s fully completable but you do you');
-    }
 }
