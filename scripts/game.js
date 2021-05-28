@@ -1028,7 +1028,7 @@ function create(){
                 MIN_WAVE_SPEED = 10;
 
                 for(let i = 0; i < ENEMY_SPEED.length; i++){
-                    ENEMY_SPEED[i] *= 1.5;
+                    ENEMY_SPEED[i] *= 1.4;
                 }
 
                 for(let i = 0; i < TOWER_SPEED.length; i++){
@@ -1044,7 +1044,7 @@ function create(){
                 }
 
                 for(let i = 0; i < WAVE_SPEEDS.length; i++){
-                    WAVE_SPEEDS[i] /= 1.5;
+                    WAVE_SPEEDS[i] /= 1.4;
                 }
 
                 for(let i = 0; i < LEVEL_SPEED_MODIFIER.length; i++){
