@@ -88,7 +88,7 @@ let HEALTH;
 let MONEY;
 let STARTHEALTH = 50;
 const STARTMONEY = 400;
-let WAVE_REWARD = 600;
+let WAVE_REWARD = 500;
 let SELECTED_TOWER = 1;
 
 let WAVE_SPEEDS = [130, 120, 100];
@@ -111,7 +111,7 @@ const HUD_ICON_SCALE = 0.5;
 const ENEMY_HEALTH = [50,300,700,1,300,700,50000,180000];
 let ENEMY_SPEED = [1/8000,1/10000,1/15000,1/4000,1/10000,1/15000,1/22000,1/26000];
 const ENEMY_REWARD = [8,18,28,1,22,32,3000,10000];
-let LEVEL_SPEED_MODIFIER = [0.65, 0.7, 0.8];
+let LEVEL_SPEED_MODIFIER = [0.7, 0.6, 0.7];
 
 let waveInProgress = false;
 let nextEnemy = 0;
@@ -231,7 +231,7 @@ const WAVE_DESCRIPTION = [
         '',
         '',
         'A huge swarm of quick enemies is coming!',
-        'Shielded enemies can only take damage from Thermal or upgraded Laser and Rocket towers.',
+        'Shielded enemies can only take damage only from certain types of towers.',
         'Shielded enemies are very dangerous, make sure you have a few towers that are capable of taking them down.\nOtherwise you may have a few problems in later waves.',
         '',
         'A bunch of shielded enemies are on the way.',
@@ -1414,7 +1414,7 @@ function updateMoneyText(){
 }
 
 function updateScoreText(){
-    scoreText.setText(difficulty_str+"\nScore: "+SCORE+timestring);
+    scoreText.setText(version+" "+difficulty_str+"\nScore: "+SCORE+timestring);
 }
 
 function updateTimeString(){
@@ -2044,7 +2044,7 @@ function showEndScreen(){
                 scale: 1,
                 ease: 'Sine.easeOut',
                 onComplete: ()=>{
-                    let playerTimeString = version+"\n"+difficulty_str+"\nT: " + (new Date(finalTime).toISOString().slice(11, -1));
+                    let playerTimeString = version+" "+difficulty_str+"\nT: " + (new Date(finalTime).toISOString().slice(11, -1));
 
                     for(let i = 0; i<times.length; i++){
                         playerTimeString += "\n"+ (i+1) +": "+ (new Date(times[i]).toISOString().slice(11, -1));
