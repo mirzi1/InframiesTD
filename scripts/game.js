@@ -20,7 +20,7 @@ let config = {
     }
 };
 
-let version = "1.2.4";
+let version = "1.2.5";
 
 let game = new Phaser.Game(config);
 let graphics;
@@ -91,7 +91,7 @@ const STARTMONEY = 400;
 let WAVE_REWARD = 600;
 let SELECTED_TOWER = 1;
 
-let WAVE_SPEEDS = [150, 120, 100];
+let WAVE_SPEEDS = [130, 120, 100];
 let WAVE_SPEED = 150;
 let MIN_WAVE_SPEED = 20;
 let NUKE_TIMER = 10000;
@@ -111,7 +111,7 @@ const HUD_ICON_SCALE = 0.5;
 const ENEMY_HEALTH = [50,300,700,1,300,700,50000,180000];
 let ENEMY_SPEED = [1/8000,1/10000,1/15000,1/4000,1/10000,1/15000,1/22000,1/26000];
 const ENEMY_REWARD = [8,18,28,1,22,32,3000,10000];
-let LEVEL_SPEED_MODIFIER = [0.6, 0.7, 0.8];
+let LEVEL_SPEED_MODIFIER = [0.65, 0.7, 0.8];
 
 let waveInProgress = false;
 let nextEnemy = 0;
@@ -127,8 +127,8 @@ let UPGRADE_MULTIPLIER = 1;
 
 let TOWER_SPEED = [700,1700,2000,3000,1000,1100,100,1000,
                     500,1300,1500,2500,700,900,70,1000];
-let TOWER_RANGE = [350,250,300,2000,300,500,500,2000,
-                    350,250,400,2000,350,600,550,2000];
+let TOWER_RANGE = [340,250,300,2000,300,500,500,2000,
+                    340,250,400,2000,350,600,550,2000];
 const TOWER_DESCRIPTION = ['Laser - Basic and all around good tower.',
                             'Electric - Slows enemies on hit.',
                             'Rocket - Slow but lethal, explosions deal area of effect damage.',
@@ -1023,7 +1023,6 @@ function create(){
                 //quicko mode
                 UPGRADE_MULTIPLIER = 1.5;
                 TOWER_FREEZETIME /= 1.5;
-                TOWER_FREEZETIME /= 1.5;
                 NUKE_TIMER /= 1.5;
                 MIN_WAVE_SPEED = 10;
 
@@ -1048,7 +1047,7 @@ function create(){
                 }
 
                 for(let i = 0; i < LEVEL_SPEED_MODIFIER.length; i++){
-                    LEVEL_SPEED_MODIFIER[i] *= 1.5;
+                    LEVEL_SPEED_MODIFIER[i] *= 1.4;
                 }
                 break;
         }
@@ -1513,8 +1512,7 @@ function nextLevel(){
                 background.setTexture('bg'+LEVEL);
                 background.x = 695;
                 background.y = 380;
-                background.scaleX = 0.8;
-                background.scaleY = 0.8;
+                background.scale = 0.8;
                 tw.add({
                     targets: background,
                     duration: 500,
